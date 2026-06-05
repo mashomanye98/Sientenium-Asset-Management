@@ -10,18 +10,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-/**
- * User Controller - Handles all user-related web requests
- *
- * URL Mappings:
- * - GET    /users           → List all users
- * - GET    /users/new       → Show create user form
- * - POST   /users           → Create new user
- * - GET    /users/edit/{id} → Show edit user form
- * - POST   /users/edit/{id} → Update user
- * - POST   /users/delete/{id} → Delete user
- * - GET    /users/{id}      → View single user details
- */
+
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -29,12 +18,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    /**
-     *  LIST all users
-     * URL: GET /users
-     *
-     * What it does: Fetches all users from database and displays in a table
-     */
+
     @GetMapping
     public String listUsers(Model model) {
         List<User> users = userService.getAllUsers();
@@ -43,12 +27,7 @@ public class UserController {
         return "user-list"; // Expects: src/main/resources/templates/user-list.html
     }
 
-    /**
-     *  SHOW create user form
-     * URL: GET /users/new
-     *
-     * What it does: Displays an empty form for creating a new user
-     */
+
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new User());
@@ -59,16 +38,7 @@ public class UserController {
         return "user-form"; // Expects: src/main/resources/templates/user-form.html
     }
 
-    /**
-     * CREATE new user
-     * URL: POST /users
-     *
-     * What it does: Saves the new user to the database
-     *
-     * @param user The user object from the form (Spring binds form fields automatically)
-     * @param plainPassword Plain text password (will be hashed in service)
-     * @param redirectAttributes For showing success/error messages after redirect
-     */
+
     @PostMapping
     public String createUser(@ModelAttribute User user,
                              @RequestParam String plainPassword,
@@ -85,14 +55,7 @@ public class UserController {
         }
     }
 
-    /**
-     *  SHOW edit user form
-     * URL: GET /users/edit/{id}
-     *
-     * What it does: Fetches user by ID and displays form pre-filled with their data
-     *
-     * @param id The user ID from the URL (e.g., /users/edit/5)
-     */
+
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id,
                                Model model,
@@ -111,16 +74,6 @@ public class UserController {
         }
     }
 
-    /**
-     *  UPDATE user
-     * URL: POST /users/edit/{id}
-     *
-     * What it does: Updates existing user with form data
-     *
-     * @param id The user ID to update
-     * @param user The updated user data from the form
-     * @param plainPassword Optional new password (leave blank to keep current)
-     */
     @PostMapping("/edit/{id}")
     public String updateUser(@PathVariable Long id,
                              @ModelAttribute User user,
@@ -137,12 +90,7 @@ public class UserController {
         }
     }
 
-    /**
-     *  DELETE user
-     * URL: POST /users/delete/{id}
-     *
-     * What it does: Permanently removes user from database
-     */
+
     @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
@@ -157,12 +105,7 @@ public class UserController {
         return "redirect:/users";
     }
 
-    /**
-     *  VIEW single user details
-     * URL: GET /users/{id}
-     *
-     * What it does: Shows detailed view of one user (optional feature)
-     */
+
     @GetMapping("/{id}")
     public String viewUser(@PathVariable Long id,
                            Model model,
