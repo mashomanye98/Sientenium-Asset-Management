@@ -13,6 +13,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/users")
+/*Thabo Hlompho Monei*/
 public class UserController {
 
     @Autowired
