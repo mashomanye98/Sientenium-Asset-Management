@@ -17,7 +17,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     // Get all users
     public List<User> getAllUsers() {
