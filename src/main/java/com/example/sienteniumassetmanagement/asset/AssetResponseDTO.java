@@ -1,29 +1,22 @@
 /*Hlongwane Sinenhlanhla*/
-package com.example.sienteniumassetmanagement.dto;
-
-import jakarta.validation.constraints.*;
-
-import java.math.*;
-import java.time.*;
+package com.example.sienteniumassetmanagement.asset;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.*;
 
 @Getter
 @Setter
-public class AssetRequestDTO {
+public class AssetResponseDTO {
 
-    @NotBlank
+    private Long assetId;
     private String title;
-
-    @NotBlank
     private String category;
-
-    @NotBlank
     private String serialNumber;
-
     private LocalDate acquisitionDate;
     private BigDecimal cost;
     private String location;
     private String condition;
     private String photoPath;
+    private String status;
 
 }

@@ -1,9 +1,5 @@
 /*Hlongwane Sinenhlanhla*/
-package com.example.sienteniumassetmanagement.service;
-import com.example.sienteniumassetmanagement.dto.AssetRequestDTO;
-import com.example.sienteniumassetmanagement.dto.AssetResponseDTO;
-import com.example.sienteniumassetmanagement.model.Asset;
-import com.example.sienteniumassetmanagement.repository.AssetRepository;
+package com.example.sienteniumassetmanagement.asset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

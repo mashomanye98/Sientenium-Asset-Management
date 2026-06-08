@@ -1,4 +1,4 @@
-package com.example.sienteniumassetmanagement.model;
+package com.example.sienteniumassetmanagement.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,18 +9,30 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "user")
+@Table(name = "Users")
 public class User {
     // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "department")
     private String department;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
-    private String role; // Admin / Manager / Borrower
+
+    @Column(name = "role")
+    private String role;
+
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
+
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     // Constructors

@@ -1,6 +1,5 @@
-package com.example.sienteniumassetmanagement.repository;
+package com.example.sienteniumassetmanagement.auditlog;
 
-import com.example.sienteniumassetmanagement.model.AuditLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

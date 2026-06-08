@@ -1,7 +1,5 @@
 /*Hlongwane Sinenhlanhla*/
-package com.example.sienteniumassetmanagement.controller;
-import com.example.sienteniumassetmanagement.dto.*;
-import com.example.sienteniumassetmanagement.service.AssetService;
+package com.example.sienteniumassetmanagement.asset;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
