@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+
+    <link rel="stylesheet" href="styling/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+        <div>
+
+            <!-- USER PROFILE (Manager Context) -->
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
+                </div>
+
+                <h3>Johannes Motsemme</h3>
+
+                <!-- Role is important for RBAC (role-based access control) -->
+                <p>Manager</p>
+
+                <span>Asset Management System</span>
+            </div>
+
+            <!-- ================= MANAGER NAVIGATION ================= -->
+            <nav>
+
+                <a href="#" class="active">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+
+                <!-- LOAN APPROVAL WORKFLOW (core manager function) -->
+                <a href="#">
+                    <i class="fa-regular fa-file-lines"></i>
+                    Loan Requests Approval
+                    <span class="badge">5</span>
+                </a>
+
+                <!-- LOAN LIFECYCLE MANAGEMENT -->
+                <a href="#">
+                    <i class="fa-solid fa-right-left"></i>
+                    Asset Check-Out / Check-In
+                </a>
+
+                <!-- OVERDUE MONITORING -->
+                <a href="#">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Overdue Loans
+                    <span class="badge">2</span>
+                </a>
+
+                <!-- ASSET RETIREMENT -->
+                <a href="#">
+                    <i class="fa-solid fa-box-archive"></i>
+                    Retire Assets
+                </a>
+
+                <!-- REPORTING -->
+                <a href="#">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Reports & Insights
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </a>
+
+            </nav>
+
+        </div>
+
+        <button id="logout-btn" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Log Out
+        </button>
+
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-content">
+
+        <div class="top-bar">
+            <h1>Manager Dashboard</h1>
+
+            <button class="new-document-btn">
+                <i class="fa-solid fa-plus"></i>
+                New Asset
+            </button>
+        </div>
+
+        <!-- ================= SYSTEM OVERVIEW (Manager view) ================= -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="icon blue">
+                    <i class="fa-solid fa-file-circle-exclamation"></i>
+                </div>
+                <div>
+                    <span>Pending Approvals</span>
+                    <h3>8 Requests</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon orange">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div>
+                    <span>Active Loans</span>
+                    <h3>14 Loans</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon red">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <span>Overdue Assets</span>
+                    <h3>2 Assets</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon green">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </div>
+                <div>
+                    <span>Total Assets</span>
+                    <h3>25 Assets</h3>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= LOAN APPROVAL TABLE ================= -->
+        <section class="card">
+
+            <div class="card-header">
+                <h2>Loan Requests (Approve / Reject)</h2>
+                <a href="#">View All</a>
+            </div>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Request</th>
+                            <th>Type</th>
+                            <th>Due Date</th>
+                            <th>Requested By</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Laptop Request</td>
+                            <td><span class="status proposal">Asset Loan</span></td>
+                            <td>12 Jan 2025</td>
+                            <td>Thabo M.</td>
+                            <td>
+                                <a class="review-link">Approve / Reject</a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Projector Request</td>
+                            <td><span class="status application">Asset Loan</span></td>
+                            <td>13 Jan 2026</td>
+                            <td>Sinenhlanhla H.</td>
+                            <td>
+                                <a class="review-link">Approve / Reject</a>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ================= LOAN LIFECYCLE CONTROL ================= -->
+        <section class="card">
+
+            <div class="card-header">
+                <h2>Loan Lifecycle (Check-Out / Check-In)</h2>
+            </div>
+
+            <ul class="document-list">
+
+                <li>
+                    <i class="fa-solid fa-arrow-right"></i>
+                    Asset Checked Out - Laptop #L102
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Asset Returned - Projector #P11
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Loan Overdue - Printer #PR9
+                </li>
+
+            </ul>
+
+        </section>
+
+        <!-- ================= REPORTS + ACTIVITIES ================= -->
+        <section class="bottom-grid">
+
+            <div class="card">
+
+                <div class="card-header">
+                    <h2>Recent Reports</h2>
+                </div>
+
+                <ul class="document-list">
+                    <li><i class="fa-regular fa-file-lines"></i> Monthly Loan Report</li>
+                    <li><i class="fa-regular fa-file-lines"></i> Asset Retirement Report</li>
+                    <li><i class="fa-regular fa-file-lines"></i> Overdue Analysis</li>
+                </ul>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+                    <h2>Recent Manager Actions</h2>
+                </div>
+
+                <div class="activity">
+                    <div class="activity-icon success">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Loan Approved</h4>
+                        <p>Projector request approved</p>
+                    </div>
+                    <span>5m</span>
+                </div>
+
+                <div class="activity">
+                    <div class="activity-icon danger">
+                        <i class="fa-solid fa-xmark"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Loan Rejected</h4>
+                        <p>Laptop request rejected</p>
+                    </div>
+                    <span>12m</span>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="scripts/dashboard.js"></script>
+
+</body>
+</html>

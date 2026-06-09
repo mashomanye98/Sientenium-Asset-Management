@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan App - Login</title>
+    <link rel="stylesheet" href="styles/sign-In.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+     
+
+<div class="container">
+
+    <!-- LEFT SIDE -->
+    <div class="left-panel">
+        <div class="overlay">
+            <p class="tagline">Your Assets. Organized. Protected and Optimized.</p>
+        </div>
+    </div>
+
+   <!-- RIGHT SIDE -->
+<div class="right-panel">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+
+    <div class="logo">
+    <div class="logo-icon">
+        <i class="fa-solid fa-chart-line"></i>
+    </div>
+    <span>Sientenium</span>
+    </div>
+
+   <a href="signUp.html" class="signup-link">
+    <i class="fa-solid fa-user-plus"></i>
+    <span>Sign Up</span>
+</a>
+
+</div>
+
+    <!-- Form -->
+    <div class="form-container">
+           <div id="customAlert" class="alert"></div>
+
+        <h2>Sign In</h2>
+
+        <form id="loginForm" autocomplete="off">
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="loginEmail" placeholder="Email" autocomplete="off" required>
+            </div>
+
+            <div class="input-group">
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Password"
+                                required
+                            >
+
+                            <i class="fa-solid fa-eye toggle-password"
+                            data-target="password"></i>
+            </div>
+
+            <p class="forgot">Forgot password?</p>
+
+            <button type="submit" class="btn">Sign In</button>
+
+
+            <!-- Divider -->
+            <div class="divider">
+            <span>or continue with</span>
+            </div>
+
+            <!-- Social Login -->
+            <div class="social-login">
+                <button class="social-btn google">
+                    <i class="fa-brands fa-google"></i>
+                    <span>Google</span>
+                </button>
+
+                <button class="social-btn apple">
+                    <i class="fa-brands fa-apple"></i>
+                    <span>Apple</span>
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 Sientenium Inc.</p>
+        <a href="terms&conditions.html">Terms and Conditions</a>
+        <a href="contactus.html">Contact Us</a>
+    </div>
+
+</div>
+
+</div>
+<script src="scripts/sign-In.js"></script>
+</body>
+</html>
