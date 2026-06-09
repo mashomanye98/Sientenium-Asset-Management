@@ -1,5 +1,6 @@
-package com.sientenium.api.entity;
+package com.example.sienteniumassetmanagement.User.entity;
 
+import com.sientenium.api.entity.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

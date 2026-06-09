@@ -1,7 +1,8 @@
-package com.sientenium.api.repository;
+package com.example.sienteniumassetmanagement.User.repository;
 
-import com.sientenium.api.entity.User;
 import java.util.Optional;
+
+import com.example.sienteniumassetmanagement.User.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

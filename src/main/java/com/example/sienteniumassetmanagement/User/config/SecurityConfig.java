@@ -1,7 +1,7 @@
-package com.sientenium.api.config;
+package com.example.sienteniumassetmanagement.User.config;
 
-import com.sientenium.api.service.CustomUserDetailsService;
 
+import com.example.sienteniumassetmanagement.User.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -107,7 +107,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/styles/**",
                                 "/scripts/**",
-                                "/images/**"
+                                "/images/**",
+                                "/upload/**",
+                                "/photo/**",
+                                "/api/upload/**" //Remove this, I wanted to test only
                         ).permitAll()
 
                         /*
