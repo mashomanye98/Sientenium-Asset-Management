@@ -1,7 +1,5 @@
-package com.example.sienteniumassetmanagement.service;
+package com.example.sienteniumassetmanagement.user;
 
-import com.example.sienteniumassetmanagement.model.User;
-import com.example.sienteniumassetmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

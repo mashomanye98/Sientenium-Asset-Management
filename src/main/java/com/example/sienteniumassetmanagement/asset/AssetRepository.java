@@ -1,6 +1,5 @@
-package com.example.sienteniumassetmanagement.repository;
+package com.example.sienteniumassetmanagement.asset;
 
-import com.example.sienteniumassetmanagement.model.Asset;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
