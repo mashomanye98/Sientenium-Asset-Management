@@ -1,0 +1,311 @@
+<!--
+Project     : Sientenium Asset Management System
+File        : staff-dashboard.html
+Description : Staff dashboard for viewing assets,
+              requests, active loans and notifications.
+
+Developed By: Johannes Motsemme
+Version     : 1.0
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sientenium | Staff Dashboard</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- ==================================
+         SIDEBAR
+    =================================== -->
+    <aside class="sidebar">
+            <!-- USER PROFILE (Staff Context) -->
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
+                </div>
+
+                <h3>Thabo Monei</h3>
+
+                <!-- Role is important for RBAC (role-based access control) -->
+                <p>Staff</p>
+
+                <span>Sientenium Asset Management</span>
+            <nav>
+
+                <a href="#" class="active">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-box"></i>
+                    Available Assets
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-hand-holding"></i>
+                    Loan Requests
+                    <span class="badge">4</span>
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    Loan History
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Return Asset
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-bell"></i>
+                    Notifications
+                </a>
+
+            </nav>
+
+        </div>
+
+        <button class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+
+    </aside>
+
+    <!-- ==================================
+         MAIN CONTENT
+    =================================== -->
+    <main class="main-content">
+
+        <!-- Dashboard Header -->
+        <div class="top-bar">
+
+            <div>
+                <h1>Staff Dashboard</h1>
+                <p>
+                    Welcome back. Manage your assets and loans.
+                </p>
+            </div>
+
+            <button class="new-document-btn">
+                Request Asset
+            </button>
+
+        </div>
+
+        <!-- Statistics -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="icon blue">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+
+                <div>
+                    <h3>245</h3>
+                    <p>Available Assets</p>
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="icon purple">
+                    <i class="fa-solid fa-file-signature"></i>
+                </div>
+
+                <div>
+                    <h3>4</h3>
+                    <p>Pending Requests</p>
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="icon indigo">
+                    <i class="fa-solid fa-laptop"></i>
+                </div>
+
+                <div>
+                    <h3>2</h3>
+                    <p>Active Loans</p>
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="icon green">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <div>
+                    <h3>1</h3>
+                    <p>Due Soon</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Available Assets -->
+        <section class="card">
+
+            <div class="card-header">
+                <h2>Available Assets</h2>
+                <a href="#">View All</a>
+            </div>
+
+            <table>
+
+                <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Condition</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr>
+                    <td>Dell Latitude 5420</td>
+                    <td>Laptop</td>
+                    <td>IT Store</td>
+                    <td>Excellent</td>
+                    <td>
+                        <span class="status application">
+                            Available
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Canon Projector</td>
+                    <td>Projector</td>
+                    <td>Boardroom</td>
+                    <td>Good</td>
+                    <td>
+                        <span class="status application">
+                            Available
+                        </span>
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- Active Loans + Notifications -->
+        <div class="bottom-grid">
+
+            <!-- Active Loans -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h2>My Active Loans</h2>
+                </div>
+
+                <table>
+
+                    <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr>
+                        <td>Dell Latitude 5420</td>
+                        <td>15 June 2026</td>
+                        <td>
+                            <span class="status proposal">
+                                Active
+                            </span>
+                        </td>
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- Notifications -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h2>Notifications</h2>
+                </div>
+
+                <div class="activity">
+
+                    <div class="activity-icon success">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+
+                    <div class="activity-content">
+                        <h4>Loan Approved</h4>
+                        <p>Your projector request was approved.</p>
+                    </div>
+
+                </div>
+
+                <div class="activity">
+
+                    <div class="activity-icon danger">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+
+                    <div class="activity-content">
+                        <h4>Asset Due Soon</h4>
+                        <p>Your laptop is due in 2 days.</p>
+                    </div>
+
+                </div>
+
+                <div class="activity">
+
+                    <div class="activity-icon success">
+                        <i class="fa-solid fa-box"></i>
+                    </div>
+
+                    <div class="activity-content">
+                        <h4>Asset Returned</h4>
+                        <p>Projector returned successfully.</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>
