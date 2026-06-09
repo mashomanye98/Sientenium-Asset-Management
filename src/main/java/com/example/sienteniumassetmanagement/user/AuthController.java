@@ -1,10 +1,6 @@
-package com.sientenium.api.controller;
+package com.example.sienteniumassetmanagement.user;
 
-import com.sientenium.api.dto.AuthResponse;
 import com.sientenium.api.dto.LoginRequest;
-import com.sientenium.api.dto.RegisterRequest;
-import com.sientenium.api.dto.UserSummaryResponse;
-import com.sientenium.api.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;

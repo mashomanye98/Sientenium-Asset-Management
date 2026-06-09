@@ -1,4 +1,4 @@
-package com.sientenium.api.entity;
+package com.example.sienteniumassetmanagement.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

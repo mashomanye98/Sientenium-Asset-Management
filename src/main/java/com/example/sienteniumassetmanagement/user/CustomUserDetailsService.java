@@ -1,7 +1,5 @@
-package com.sientenium.api.service;
+package com.example.sienteniumassetmanagement.user;
 
-import com.sientenium.api.entity.User;
-import com.sientenium.api.repository.UserRepository;
 import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

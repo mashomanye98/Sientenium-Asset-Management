@@ -1,4 +1,4 @@
-package com.sientenium.api.config;
+package com.example.sienteniumassetmanagement.user;
 
 import com.sientenium.api.service.CustomUserDetailsService;
 

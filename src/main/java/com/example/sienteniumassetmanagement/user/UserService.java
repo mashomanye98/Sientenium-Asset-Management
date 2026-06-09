@@ -1,13 +1,6 @@
-package com.sientenium.api.service;
+package com.example.sienteniumassetmanagement.user;
 
-import com.sientenium.api.dto.AuthResponse;
-import com.sientenium.api.dto.LoginRequest;
-import com.sientenium.api.dto.RegisterRequest;
-import com.sientenium.api.dto.UserSummaryResponse;
-import com.sientenium.api.entity.Role;
-import com.sientenium.api.entity.User;
 import java.util.List;
-import com.sientenium.api.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
