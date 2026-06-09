@@ -15,7 +15,7 @@ public class AssetService {
     // CREATE
     public AssetResponseDTO createAsset(AssetRequestDTO dto) {
         Asset asset = mapToEntity(dto);
-        asset.setStatus(Asset.AssetStatus.valueOf("available")); // default status
+        asset.setStatus(Asset.AssetStatus.AVAILABLE); // default status
         Asset saved = assetRepository.save(asset);
         return mapToResponse(saved);
     }
@@ -56,7 +56,7 @@ public class AssetService {
     public void retireAsset(Long id) {
         Asset asset = assetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
-        asset.setStatus(Asset.AssetStatus.valueOf("retired"));
+        asset.setStatus(Asset.AssetStatus.RETIRED);
         assetRepository.save(asset);
     }
 
@@ -64,12 +64,12 @@ public class AssetService {
     private Asset mapToEntity(AssetRequestDTO dto) {
         Asset asset = new Asset();
         asset.setTitle(dto.getTitle());
-        asset.setCategory(Asset.AssetCategory.valueOf(dto.getCategory()));
+        asset.setCategory(Asset.AssetCategory.valueOf(dto.getCategory().toUpperCase().replace(" ", "_")));
         asset.setSerialNumber(dto.getSerialNumber());
         asset.setAcquisitionDate(dto.getAcquisitionDate());
         asset.setCost(dto.getCost());
         asset.setLocation(dto.getLocation());
-        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCondition()));
+        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCondition().toUpperCase()));
         asset.setPhotoPath(dto.getPhotoPath());
         return asset;
     }

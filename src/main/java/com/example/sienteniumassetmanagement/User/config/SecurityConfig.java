@@ -108,9 +108,11 @@ public class SecurityConfig {
                                 "/styles/**",
                                 "/scripts/**",
                                 "/images/**",
-                                "/upload/**",
+                                "/uploads/**",
                                 "/photo/**",
-                                "/api/upload/**" //Remove this, I wanted to test only
+                               "/",
+                               // "/api/upload/**",
+                                "/assets/**"  //Remove this, I wanted to test only
                         ).permitAll()
 
                         /*
@@ -118,7 +120,13 @@ public class SecurityConfig {
                          */
                         .requestMatchers(
                                 "/api/auth/register",
-                                "/api/auth/login"
+                                "/api/auth/login",
+                                "/api/upload/**",      // ← to be removed
+                                "/api/assets/**",      // ← add this
+                                "/swagger-ui/**",      // ← add this
+                                "/v3/api-docs/**",
+                                "/error", // ← add this
+                                "/swagger-ui.html"
                         ).permitAll()
 
                         /*
