@@ -1,4 +1,4 @@
-package com.sientenium.api.dto;
+package com.example.sienteniumassetmanagement.User.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -15,7 +15,7 @@ public class AssetService {
     // CREATE
     public AssetResponseDTO createAsset(AssetRequestDTO dto) {
         Asset asset = mapToEntity(dto);
-        asset.setStatus("available"); // default status
+        asset.setStatus(Asset.AssetStatus.valueOf("available")); // default status
         Asset saved = assetRepository.save(asset);
         return mapToResponse(saved);
     }
@@ -41,12 +41,12 @@ public class AssetService {
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
 
         asset.setTitle(dto.getTitle());
-        asset.setCategory(dto.getCategory());
+        asset.setCategory(Asset.AssetCategory.valueOf(dto.getCategory()));
         asset.setSerialNumber(dto.getSerialNumber());
         asset.setAcquisitionDate(dto.getAcquisitionDate());
         asset.setCost(dto.getCost());
         asset.setLocation(dto.getLocation());
-        asset.setCondition(dto.getCondition());
+        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCategory()));
         asset.setPhotoPath(dto.getPhotoPath());
 
         return mapToResponse(assetRepository.save(asset));
@@ -56,7 +56,7 @@ public class AssetService {
     public void retireAsset(Long id) {
         Asset asset = assetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
-        asset.setStatus("retired");
+        asset.setStatus(Asset.AssetStatus.valueOf("retired"));
         assetRepository.save(asset);
     }
 
@@ -64,12 +64,12 @@ public class AssetService {
     private Asset mapToEntity(AssetRequestDTO dto) {
         Asset asset = new Asset();
         asset.setTitle(dto.getTitle());
-        asset.setCategory(dto.getCategory());
+        asset.setCategory(Asset.AssetCategory.valueOf(dto.getCategory()));
         asset.setSerialNumber(dto.getSerialNumber());
         asset.setAcquisitionDate(dto.getAcquisitionDate());
         asset.setCost(dto.getCost());
         asset.setLocation(dto.getLocation());
-        asset.setCondition(dto.getCondition());
+        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCondition()));
         asset.setPhotoPath(dto.getPhotoPath());
         return asset;
     }
@@ -78,14 +78,14 @@ public class AssetService {
         AssetResponseDTO dto = new AssetResponseDTO();
         dto.setAssetId(asset.getAssetId());
         dto.setTitle(asset.getTitle());
-        dto.setCategory(asset.getCategory());
+        dto.setCategory(String.valueOf(asset.getCategory()));
         dto.setSerialNumber(asset.getSerialNumber());
         dto.setAcquisitionDate(asset.getAcquisitionDate());
         dto.setCost(asset.getCost());
         dto.setLocation(asset.getLocation());
-        dto.setCondition(asset.getCondition());
+        dto.setCondition(String.valueOf(asset.getCondition()));
         dto.setPhotoPath(asset.getPhotoPath());
-        dto.setStatus(asset.getStatus());
+        dto.setStatus(String.valueOf(asset.getStatus()));
         return dto;
     }
 }

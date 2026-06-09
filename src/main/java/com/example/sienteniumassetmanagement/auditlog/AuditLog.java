@@ -1,7 +1,5 @@
 package com.example.sienteniumassetmanagement.auditlog;
-
-
-import com.example.sienteniumassetmanagement.user.User;
+import com.example.sienteniumassetmanagement.User.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

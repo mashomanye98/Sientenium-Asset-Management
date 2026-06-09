@@ -1,6 +1,14 @@
-package com.example.sienteniumassetmanagement.user;
+package com.example.sienteniumassetmanagement.User.service;
 
 import java.util.List;
+
+import com.example.sienteniumassetmanagement.User.dto.AuthResponse;
+import com.example.sienteniumassetmanagement.User.dto.LoginRequest;
+import com.example.sienteniumassetmanagement.User.dto.RegisterRequest;
+import com.example.sienteniumassetmanagement.User.dto.UserSummaryResponse;
+import com.example.sienteniumassetmanagement.User.entity.Role;
+import com.example.sienteniumassetmanagement.User.entity.User;
+import com.example.sienteniumassetmanagement.User.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

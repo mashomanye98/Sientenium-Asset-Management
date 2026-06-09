@@ -1,4 +1,4 @@
-package com.example.sienteniumassetmanagement.user;
+package com.example.sienteniumassetmanagement.User.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,5 +58,3 @@ public class User {
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
 }
-
-

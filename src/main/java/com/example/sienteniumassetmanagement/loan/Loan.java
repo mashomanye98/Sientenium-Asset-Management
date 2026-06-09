@@ -1,22 +1,14 @@
 package com.example.sienteniumassetmanagement.loan;
 
+import com.example.sienteniumassetmanagement.User.entity.User;
 import com.example.sienteniumassetmanagement.asset.Asset;
-import com.example.sienteniumassetmanagement.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "loan",
-        indexes = {
-                @Index(name = "idx_loan_status", columnList = "status"),
-                @Index(name = "idx_loan_due_date", columnList = "due_date"),
-                @Index(name = "idx_loan_user_id", columnList = "user_id"),
-                @Index(name = "idx_loan_asset_id", columnList = "asset_id")
-        })
+@Table(name = "loan")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,13 +19,13 @@ public class Loan {
     @Column(name = "loan_id")
     private Long loanId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "asset_id", nullable = false)
-    private Asset asset;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "asset_id", nullable = false)
+    private Long assetId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+    private Long userId;
 
     @Column(name = "request_date", nullable = false)
     private LocalDateTime requestDate;
@@ -49,16 +41,9 @@ public class Loan {
     @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
 
-    // Only set when status == RETURNED
+    @Column(name = "return_date", nullable = false)
     private LocalDateTime returnDate;
 
-    // Auditing fields (requires @EnableJpaAuditing)
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
 
 
@@ -69,7 +54,7 @@ public class Loan {
     // ----
 
     // ----- Business logic helpers -----
-    public void approve(LocalDateTime checkoutDate) {
+    public void approve() {
         if (this.status != LoanStatus.PENDING) {
             throw new IllegalStateException("Only pending loans can be approved");
         }
@@ -96,6 +81,10 @@ public class Loan {
         }
         this.status = LoanStatus.RETURNED;
         this.returnDate = returnDate;
+    }
+    public boolean isOverdue() {
+        if (status.equals(LoanStatus.RETURNED)) return false;
+        return LocalDateTime.now().isAfter(dueDate);
     }
 
     // ----- Optional setters for mutable fields (if needed) -----

@@ -1,4 +1,4 @@
-package com.example.sienteniumassetmanagement.user;
+package com.example.sienteniumassetmanagement.User.dto;
 
 public class AuthResponse {
     private String message;
