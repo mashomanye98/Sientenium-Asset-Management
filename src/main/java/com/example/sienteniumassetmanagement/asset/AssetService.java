@@ -46,7 +46,7 @@ public class AssetService {
         asset.setAcquisitionDate(dto.getAcquisitionDate());
         asset.setCost(dto.getCost());
         asset.setLocation(dto.getLocation());
-        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCategory()));
+        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCondition()));
         asset.setPhotoPath(dto.getPhotoPath());
 
         return mapToResponse(assetRepository.save(asset));

@@ -108,7 +108,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/styles/**",
                                 "/scripts/**",
-                                "/images/**"
+                                "/images/**",
+                                "/upload/**",
+                                "/photo/**",
+                                "/api/upload/**" //Remove this, I wanted to test only
                         ).permitAll()
 
                         /*
