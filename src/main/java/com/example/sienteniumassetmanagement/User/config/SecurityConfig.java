@@ -147,29 +147,18 @@ public class SecurityConfig {
                                 "STAFF"
                         )
                         // ========== LOAN ENDPOINTS ==========
-
-                        // GET endpoints - View loans (accessible by authenticated users)
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/loans",
-                                "/api/loans/{loanId}",
-                                "/api/loans/user/{userId}"
-                        ).authenticated()
-
-                        // POST endpoint - Create loan (accessible by authenticated users)
-                        .requestMatchers(HttpMethod.POST, "/api/loans")
-                        .authenticated()
-
-                        // PUT endpoints - Approve/Reject loans (ADMIN only)
-                        .requestMatchers(
-                                HttpMethod.PUT,
-                                "/api/loans/{loanId}/approve",
-                                "/api/loans/{loanId}/reject"
-                        ).hasRole("ADMIN")
-
-                        // DELETE endpoint - Delete loan (ADMIN only)
-                        .requestMatchers(HttpMethod.DELETE, "/api/loans/{loanId}")
-                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/loans/**").hasAnyRole(
+                                        "ADMIN",
+                                        "MANAGER",
+                                        "STAFF"
+                                )
+                        .requestMatchers(HttpMethod.POST, "/api/loans").hasAnyRole(
+                                "ADMIN",
+                                "MANAGER",
+                                "STAFF"
+                        )
+                        .requestMatchers(HttpMethod.PUT, "/api/loans/*/approve", "/api/loans/*/reject").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/loans/*").hasRole("ADMIN")
                         /*
                          * Everything else requires
                          * authentication.
