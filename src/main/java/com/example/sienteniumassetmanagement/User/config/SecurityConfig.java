@@ -5,6 +5,7 @@ import com.example.sienteniumassetmanagement.User.service.CustomUserDetailsServi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -153,7 +154,30 @@ public class SecurityConfig {
                                 "MANAGER",
                                 "STAFF"
                         )
+                        // ========== LOAN ENDPOINTS ==========
 
+                        // GET endpoints - View loans (accessible by authenticated users)
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/loans",
+                                "/api/loans/{loanId}",
+                                "/api/loans/user/{userId}"
+                        ).authenticated()
+
+                        // POST endpoint - Create loan (accessible by authenticated users)
+                        .requestMatchers(HttpMethod.POST, "/api/loans")
+                        .authenticated()
+
+                        // PUT endpoints - Approve/Reject loans (ADMIN only)
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/loans/{loanId}/approve",
+                                "/api/loans/{loanId}/reject"
+                        ).hasRole("ADMIN")
+
+                        // DELETE endpoint - Delete loan (ADMIN only)
+                        .requestMatchers(HttpMethod.DELETE, "/api/loans/{loanId}")
+                        .hasRole("ADMIN")
                         /*
                          * Everything else requires
                          * authentication.

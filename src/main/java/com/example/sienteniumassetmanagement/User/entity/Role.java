@@ -1,4 +1,4 @@
-package com.sientenium.api.entity;
+package com.example.sienteniumassetmanagement.User.entity;
 
 public enum Role {
     ROLE_ADMIN,
