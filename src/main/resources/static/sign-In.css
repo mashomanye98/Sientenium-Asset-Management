@@ -38,7 +38,7 @@ body{
 
     background: 
         linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.15)),
-        linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        url('../images/Sientenium.jpg') center/cover no-repeat;
 
     color:white;
     display:flex;
@@ -254,7 +254,7 @@ body{
     padding:12px;
     border:none;
     border-radius:25px;
-    background: linear-gradient(90deg, #a43cff, #ff2e63);
+    background:#747E90;
     color:white;
     font-weight:bold;
     cursor:pointer;
@@ -347,6 +347,22 @@ body{
 
 .footer .contact{
     cursor:pointer;
+}
+
+.footer a {
+    color: #888;; /* Matches the text color */
+    text-decoration: none; /* Removes the default underline */
+    transition: color 0.2s ease, transform 0.1s ease; /* Smooth transition effect */
+    cursor: pointer;
+}
+
+.footer a:hover {
+    color: #747E90;
+    text-decoration: underline; /* Adds an underline on hover */
+}
+
+.footer a:active {
+    color: #4D5664; /* An even darker gray for the split second it is pressed */
 }
 
 .btn:hover{
