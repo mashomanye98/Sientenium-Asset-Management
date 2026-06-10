@@ -1,0 +1,392 @@
+/* RESET */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* BODY */
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg, #eaeaea, #f9f9f9);
+    padding:20px;
+} 
+/* MAIN CONTAINER */
+.container{
+    width:100%;
+    max-width:1200px;   /* prevents full stretch */
+    min-height:800px; /* flexibility */
+    height:auto;
+    display:flex;
+    border-radius:20px;
+    overflow:hidden;
+
+    background:#fff;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+
+}
+
+
+/* LEFT PANEL */
+.left-panel{
+    flex:1.65; /* more space for image */
+    position:relative;
+
+    background: 
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.15)),
+        url('/images/Sientenium.jpg') center/cover no-repeat;
+
+    color:white;
+    display:flex;
+    align-items:center;
+    padding:40px;
+}
+
+.overlay{
+    max-width:400px;
+     z-index:2;
+}
+
+/* Tagline at top center */
+.tagline{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:12px;
+    opacity:0.8;
+    text-align:center;
+    width:80%;
+    color:darkgray
+}
+
+
+/* RIGHT PANEL */
+.right-panel{
+    flex:1.5;
+    background:white;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    padding:20px 30px;
+    position:relative;
+
+    /* NEW STYLES */
+    border-radius:20px;          /* rounded corners */
+    margin-left:-40px;           /* overlap effect */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15); /* depth */
+    z-index:2;                   /* bring above left panel */
+}
+
+/* FORM */
+.form-container{
+    width:100%;
+    max-width:320px;
+    margin:5px auto 0; /* pushes form slightly down */
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:bold;
+    font-size:14px;
+    color:rgba(0,0,0,0.6)
+}
+.logo-icon{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    /* 🔥 Gradient ring */
+    background: linear-gradient(135deg, #0066ff, #ffffff, #000000);
+    padding:2px;
+    box-shadow: 0 0 10px rgba(0, 102, 255, 0.4);
+}
+.logo-icon i{
+    width:100%;
+    height:100%;
+    background:#fff;
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:14px;
+    color:#0066ff;
+}
+.top-bar{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+/* ===================== ALERTS */
+.alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 250px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  display: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  text-align: center;
+  z-index: 2000;
+}
+
+.alert.error { background-color: #e74c3c; }
+.alert.success { background-color: #2ecc71; }
+.alert::before { content: "⚠️"; margin-right: 8px; }
+.alert.success::before { content: "✅"; }
+
+.signup-link{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    color:#686868;
+    cursor:pointer;
+    transition:0.3s;
+    text-decoration:none; /* 🔥 ADD THIS */
+     padding:6px 10px;
+    border-radius:20px;
+}
+
+.signup-link i{
+    font-size:14px;
+}
+
+.signup-link:hover i{
+    transform:scale(1.1);
+}
+.signup-link:hover{
+    color:#505caa;
+}
+.form-container h2{
+    margin-bottom:20px;
+    color:#4a4a4a
+}
+
+.input-group{
+    position:relative; /* 🔥 REQUIRED */
+    margin-bottom:15px;
+}
+
+/* ICON */
+.input-group i{
+    position:absolute;
+    left:15px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:14px;
+    color:#999;
+    pointer-events:none; /* 🔥 prevents click issues */
+}
+
+/* Password Toggle Icon */
+.input-group .toggle-password{
+    left:auto;      /* remove left positioning */
+    right:15px;     /* place on right side */
+    cursor:pointer;
+    pointer-events:auto;
+    color:#999;
+}
+
+.input-group .toggle-password:hover{
+    color:#003366;
+}
+
+/* INPUT */
+.input-group input{
+    width:100%;
+    padding:12px 12px 12px 40px; /* 🔥 space for icon */
+    border-radius:25px;
+    border:1px solid #ddd;
+    outline:none;
+    transition:0.3s;
+}
+
+/* FOCUS STATE */
+.input-group input:focus{
+    border-color:#003366;
+    box-shadow:0 0 8px rgba(0, 51, 102, 0.2);
+    background:#e6f0ff;
+}
+
+/* ICON ON FOCUS */
+.input-group input:focus + i,
+.input-group:hover i{
+    color:#003366;
+}
+
+/* Much better icon react when input is focused */
+.input-group:focus-within i{
+    color:#003366;
+    transform:translateY(-50%) scale(1.1);
+}
+/* FORGOT */
+.forgot{
+    font-size:12px;
+    color:#ff5a3c;
+    margin-bottom:20px;
+    cursor:pointer;
+}
+
+/* BUTTON */
+.btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:25px;
+    background:#747E90;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+
+    transition: all 0.3s ease; /* smoother animation */
+}
+
+/* 🔥 HOVER EFFECT */
+.btn:hover{
+    background: #2c405e; /* blue */
+    transform: translateY(-3px); /* move up */
+    box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4); /* glow */
+}
+.btn:active{
+    transform: translateY(0); /* press down */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.divider{
+    display:flex;
+    align-items:center;
+    margin:20px 0;
+    font-size:12px;
+    color:#888;
+}
+
+.divider::before,
+.divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#ddd;
+}
+
+.divider span{
+    margin:0 10px;
+}
+
+.social-login{
+    display:flex;
+    gap:10px;
+}
+.social-btn{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    padding:10px;
+    border-radius:25px;
+    border:1px solid #ddd;
+    background:#fff;
+
+    cursor:pointer;
+    font-size:13px;
+    transition:0.3s;
+}
+
+.social-btn.google i{
+    color:#0e5ed5;
+}
+
+.social-btn.google:hover{
+    border-color:#3030ed;
+    background:#f5f5f5;
+}
+
+.social-btn.apple i{
+    color:#000;
+}
+
+.social-btn.apple:hover{
+    border-color:#5f5f5f;
+    background:#f5f5f5;
+}
+
+.social-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(72, 125, 230, 0.1);
+}
+
+.footer{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:#888;
+    margin-top: 45px;
+}
+
+.footer .contact{
+    cursor:pointer;
+}
+
+.footer a {
+    color: #888;; /* Matches the text color */
+    text-decoration: none; /* Removes the default underline */
+    transition: color 0.2s ease, transform 0.1s ease; /* Smooth transition effect */
+    cursor: pointer;
+}
+
+.footer a:hover {
+    color: #747E90;
+    text-decoration: underline; /* Adds an underline on hover */
+}
+
+.footer a:active {
+    color: #4D5664; /* An even darker gray for the split second it is pressed */
+}
+
+.btn:hover{
+    opacity:0.9;
+}
+
+/* RESPONSIVE */
+@media(max-width: 768px){
+    .container{
+        flex-direction:column;
+        height:auto;
+    }
+
+    .left-panel{
+        display:none;
+    }
+
+    .right-panel{
+        padding:40px 0;
+    }
+}
+/* Desktop scaling for larger screens */
+@media(min-width: 1200px){
+    .container{
+        transform: scale(0.95);
+    }
+}
