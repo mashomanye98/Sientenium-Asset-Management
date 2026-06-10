@@ -155,18 +155,21 @@ public class SecurityConfig {
                                 "STAFF"
                         )
                         // ========== LOAN ENDPOINTS ==========
-                        .requestMatchers(HttpMethod.GET, "/api/loans/**").hasAnyRole(
-                                        "ADMIN",
-                                        "MANAGER",
-                                        "STAFF"
-                                )
-                        .requestMatchers(HttpMethod.POST, "/api/loans").hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "STAFF"
-                        )
-                        .requestMatchers(HttpMethod.PUT, "/api/loans/*/approve", "/api/loans/*/reject").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/loans/*").hasRole("ADMIN")
+                        // ===== LOANS =====
+                        .requestMatchers(HttpMethod.GET, "/api/loans/**")
+                        .hasAnyRole("ADMIN", "MANAGER", "STAFF")
+
+                        .requestMatchers(HttpMethod.POST, "/api/loans")
+                        .hasAnyRole("ADMIN", "MANAGER", "STAFF")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/loans/*/approve")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/loans/*/reject")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/loans/*")
+                        .hasRole("ADMIN")
                         /*
                          * Everything else requires
                          * authentication.
