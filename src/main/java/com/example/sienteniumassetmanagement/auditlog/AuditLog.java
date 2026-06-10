@@ -41,12 +41,6 @@ public class AuditLog {
     @Column(nullable = false, updatable = false)
     private LocalDateTime timestamp;
 
-    // Store as JSON if needed – requires a converter or Hibernate Types
-    @Column(columnDefinition = "json")
-    private String oldValue;   // or use Map<String, Object> + converter
-
-    @Column(columnDefinition = "json")
-    private String newValue;   // same as above
 
     // No setters for logId, timestamp, user? (If user can change, add setter but careful)
     // Only allow updates to values if needed, otherwise omit setters.
