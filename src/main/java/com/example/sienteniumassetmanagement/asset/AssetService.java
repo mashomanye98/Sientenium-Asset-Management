@@ -15,7 +15,7 @@ public class AssetService {
     // CREATE
     public AssetResponseDTO createAsset(AssetRequestDTO dto) {
         Asset asset = mapToEntity(dto);
-        asset.setStatus(Asset.AssetStatus.valueOf("available")); // default status
+        asset.setStatus(Asset.AssetStatus.AVAILABLE); // default status
         Asset saved = assetRepository.save(asset);
         return mapToResponse(saved);
     }
@@ -56,7 +56,7 @@ public class AssetService {
     public void retireAsset(Long id) {
         Asset asset = assetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
-        asset.setStatus(Asset.AssetStatus.valueOf("retired"));
+        asset.setStatus(Asset.AssetStatus.RETIRED);
         assetRepository.save(asset);
     }
 
@@ -64,12 +64,12 @@ public class AssetService {
     private Asset mapToEntity(AssetRequestDTO dto) {
         Asset asset = new Asset();
         asset.setTitle(dto.getTitle());
-        asset.setCategory(Asset.AssetCategory.valueOf(dto.getCategory()));
+        asset.setCategory(Asset.AssetCategory.valueOf(dto.getCategory().toUpperCase().replace(" ", "_")));
         asset.setSerialNumber(dto.getSerialNumber());
         asset.setAcquisitionDate(dto.getAcquisitionDate());
         asset.setCost(dto.getCost());
         asset.setLocation(dto.getLocation());
-        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCondition()));
+        asset.setCondition(Asset.AssetCondition.valueOf(dto.getCondition().toUpperCase()));
         asset.setPhotoPath(dto.getPhotoPath());
         return asset;
     }
@@ -88,4 +88,50 @@ public class AssetService {
         dto.setStatus(String.valueOf(asset.getStatus()));
         return dto;
     }
+    // SEARCH BY TITLE
+    public List<AssetResponseDTO> searchByTitle(String title) {
+        return assetRepository.findByTitleContainingIgnoreCase(title)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // SEARCH BY CATEGORY
+    public List<AssetResponseDTO> searchByCategory(String category) {
+        Asset.AssetCategory assetCategory = Asset.AssetCategory
+                .valueOf(category.toUpperCase().replace(" ", "_"));
+        return assetRepository.findByCategory(assetCategory)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // SEARCH BY STATUS
+    public List<AssetResponseDTO> searchByStatus(String status) {
+        Asset.AssetStatus assetStatus = Asset.AssetStatus
+                .valueOf(status.toUpperCase());
+        return assetRepository.findByStatus(assetStatus)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // FILTER BY LOCATION
+    public List<AssetResponseDTO> filterByLocation(String location) {
+        return assetRepository.findByLocationContainingIgnoreCase(location)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // FILTER BY CONDITION
+    public List<AssetResponseDTO> filterByCondition(String condition) {
+        Asset.AssetCondition assetCondition = Asset.AssetCondition
+                .valueOf(condition.toUpperCase());
+        return assetRepository.findByCondition(assetCondition)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
 }

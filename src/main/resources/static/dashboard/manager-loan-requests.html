@@ -1,0 +1,233 @@
+<!-- manager-loan-requests.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager - Loan Requests</title>
+    <link rel="stylesheet" href="styling/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div>
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
+                </div>
+                <h3>Johannes Motsemme</h3>
+                <p>Manager</p>
+                <span>Asset Management System</span>
+            </div>
+
+            <nav>
+                <a href="manager-dashboard.html">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+                <a href="manager-loan-requests.html" class="active">
+                    <i class="fa-regular fa-file-lines"></i>
+                    Loan Requests Approval
+                    <span class="badge">5</span>
+                </a>
+                <a href="manager-checkout-checkin.html">
+                    <i class="fa-solid fa-right-left"></i>
+                    Asset Check-Out / Check-In
+                </a>
+                <a href="#">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Overdue Loans
+                    <span class="badge">2</span>
+                </a>
+                <a href="manager-retire-assets.html">
+                    <i class="fa-solid fa-box-archive"></i>
+                    Retire Assets
+                </a>
+                <a href="#">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Reports & Insights
+                </a>
+                <a href="#">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </a>
+            </nav>
+        </div>
+        <button id="logout-btn" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Log Out
+        </button>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-content">
+
+        <div class="top-bar">
+            <h1>Loan Requests Approval</h1>
+            <div class="filter-group">
+                <select class="filter-select" style="padding: 10px 16px; border-radius: 10px; border: 1px solid #ddd; background: white;">
+                    <option>All Requests</option>
+                    <option>Pending</option>
+                    <option>Approved</option>
+                    <option>Rejected</option>
+                </select>
+                <input type="text" placeholder="Search by name or asset..." class="search-input" style="padding: 10px 16px; border-radius: 10px; border: 1px solid #ddd;">
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="icon blue">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+                <div>
+                    <span>Pending Requests</span>
+                    <h3>5 Requests</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon green">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                    <span>Approved This Month</span>
+                    <h3>12 Requests</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon red">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+                <div>
+                    <span>Rejected</span>
+                    <h3>3 Requests</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- All Loan Requests Table -->
+        <section class="card">
+            <div class="card-header">
+                <h2>All Loan Requests (Approve / Reject)</h2>
+                <span style="color: var(--muted); font-size: 0.8rem;">Total: 12 requests</span>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Request / Type</th>
+                            <th>Asset Category</th>
+                            <th>Due Date</th>
+                            <th>Requested By</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>REQ-001</td>
+                            <td>Laptop Request <br><small style="color: var(--muted);">Asset Loan</small></td>
+                            <td>Electronics</td>
+                            <td>12 Jan 2025</td>
+                            <td>Thabo M.</td>
+                            <td>IT Department</td>
+                            <td><span class="status proposal">Pending</span></td>
+                            <td>
+                                <a class="review-link" style="color: #10b981; margin-right: 12px;">Approve</a>
+                                <a class="review-link" style="color: #ef4444;">Reject</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>REQ-002</td>
+                            <td>Projector Request <br><small style="color: var(--muted);">Asset Loan</small></td>
+                            <td>Audio Visual</td>
+                            <td>13 Jan 2026</td>
+                            <td>Sinenhlanhla H.</td>
+                            <td>Marketing</td>
+                            <td><span class="status proposal">Pending</span></td>
+                            <td>
+                                <a class="review-link" style="color: #10b981; margin-right: 12px;">Approve</a>
+                                <a class="review-link" style="color: #ef4444;">Reject</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>REQ-003</td>
+                            <td>Tablet Loan <br><small style="color: var(--muted);">Asset Loan</small></td>
+                            <td>Mobile Device</td>
+                            <td>20 Jan 2025</td>
+                            <td>Lerato K.</td>
+                            <td>Sales</td>
+                            <td><span class="status proposal">Pending</span></td>
+                            <td>
+                                <a class="review-link" style="color: #10b981; margin-right: 12px;">Approve</a>
+                                <a class="review-link" style="color: #ef4444;">Reject</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>REQ-004</td>
+                            <td>Camera Kit <br><small style="color: var(--muted);">Asset Loan</small></td>
+                            <td>Photography</td>
+                            <td>18 Jan 2025</td>
+                            <td>Naledi M.</td>
+                            <td>Communications</td>
+                            <td><span class="status proposal">Pending</span></td>
+                            <td>
+                                <a class="review-link" style="color: #10b981; margin-right: 12px;">Approve</a>
+                                <a class="review-link" style="color: #ef4444;">Reject</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>REQ-005</td>
+                            <td>Monitor Request <br><small style="color: var(--muted);">Asset Loan</small></td>
+                            <td>Display</td>
+                            <td>15 Jan 2025</td>
+                            <td>David N.</td>
+                            <td>Design</td>
+                            <td><span class="status application">Approved</span></td>
+                            <td><span style="color: var(--muted); font-size: 0.75rem;">Processed</span></td>
+                        </tr>
+                        <tr>
+                            <td>REQ-006</td>
+                            <td>Keyboard Request <br><small style="color: var(--muted);">Asset Loan</small></td>
+                            <td>Peripheral</td>
+                            <td>10 Jan 2025</td>
+                            <td>Lisa R.</td>
+                            <td>Admin</td>
+                            <td><span class="status" style="background:#fee2e2; color:#dc2626;">Rejected</span></td>
+                            <td><span style="color: var(--muted); font-size: 0.75rem;">Processed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Summary Cards -->
+        <div class="bottom-grid" style="margin-top: 0;">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Approval Summary</h2>
+                </div>
+                <ul class="document-list">
+                    <li><i class="fa-regular fa-clock"></i> Pending: 4 requests</li>
+                    <li><i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Approved this week: 3</li>
+                    <li><i class="fa-solid fa-times-circle" style="color: #ef4444;"></i> Rejected: 2</li>
+                </ul>
+            </div>
+   
+        </div>
+
+    </main>
+
+</div>
+
+<script src="#"></script>
+</body>
+</html>
