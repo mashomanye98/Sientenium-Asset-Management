@@ -114,7 +114,6 @@ public class LoanService {
         dto.setCheckoutDate(loan.getCheckoutDate());
         dto.setDueDate(loan.getDueDate());
         dto.setReturnDate(loan.getReturnDate());
-        dto.setIsOverdue(loan.isOverdue());  // FIXED: Added this line
         return dto;
     }
 }
