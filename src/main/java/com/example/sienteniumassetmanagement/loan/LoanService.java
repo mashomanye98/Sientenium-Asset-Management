@@ -22,7 +22,7 @@ public class LoanService {
         Asset asset = assetRepository.findById(requestDTO.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
 
-        User user = userRepository.findById(requestDTO.getUserId())
+        User user = userRepository.findById(requestDTO.getAssetId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Loan loan = new Loan();
@@ -87,19 +87,19 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
-//    public List<LoanResponseDTO> getLoansByStatus(LoanStatus status) {
-//        // FIXED: Changed parameter from String to LoanStatus
-//        return loanRepository.findByStatus(String.valueOf(status)).stream()
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<LoanResponseDTO> getOverdueLoans() {
-//        // FIXED: Changed "APPROVED" to LoanStatus.APPROVED
-//        return loanRepository.findByStatusAndDueDateBefore(LoanStatus.APPROVED, LocalDateTime.now()).stream()
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
+    public List<LoanResponseDTO> getLoansByStatus(Loan.LoanStatus status) {
+        // FIXED: Changed parameter from String to LoanStatus
+        return loanRepository.findByStatus(String.valueOf(status)).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<LoanResponseDTO> getOverdueLoans() {
+        // FIXED: Changed "APPROVED" to LoanStatus.APPROVED
+        return loanRepository.findByStatusAndDueDateBefore(String.valueOf(Loan.LoanStatus.APPROVED), LocalDateTime.now()).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public void deleteLoan(Long loanId) {
         loanRepository.deleteById(loanId);

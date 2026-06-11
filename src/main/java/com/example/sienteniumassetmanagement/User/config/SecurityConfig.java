@@ -113,7 +113,8 @@ public class SecurityConfig {
                                 "/photo/**",
                                "/",
                                // "/api/upload/**",
-                                "/assets/**"  //Remove this, I wanted to test only
+                                "/assets/**",
+                                "/loans/**"
                         ).permitAll()
 
                         /*
@@ -154,22 +155,6 @@ public class SecurityConfig {
                                 "MANAGER",
                                 "STAFF"
                         )
-                        // ========== LOAN ENDPOINTS ==========
-                        // ===== LOANS =====
-                        .requestMatchers(HttpMethod.GET, "/api/loans/**")
-                        .hasAnyRole("ADMIN", "MANAGER", "STAFF")
-
-                        .requestMatchers(HttpMethod.POST, "/api/loans")
-                        .hasAnyRole("ADMIN", "MANAGER", "STAFF")
-
-                        .requestMatchers(HttpMethod.PUT, "/api/loans/*/approve")
-                        .hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.PUT, "/api/loans/*/reject")
-                        .hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.DELETE, "/api/loans/*")
-                        .hasRole("ADMIN")
                         /*
                          * Everything else requires
                          * authentication.

@@ -22,13 +22,13 @@ public class Loan {
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "asset_id", nullable = false)
-    private Long assetId;
+    private long  assetId;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id", nullable = false)
-    private Long userId;
+    private long userId;
 
-    @Column(name = "request_date", nullable = false)
+    @Column(name = "request_date")
     private LocalDateTime requestDate;
 
 
