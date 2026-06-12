@@ -24,6 +24,23 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.CREATED).body(loan);
     }
 
+    @GetMapping("/approved")
+    public ResponseEntity<List<LoanResponseDTO>> getApprovedLoans() {
+        return ResponseEntity.ok(loanService.getApprovedLoans());
+    }
+
+    @GetMapping("/rejected")
+    public ResponseEntity<List<LoanResponseDTO>> getRejectedLoans() {
+        return ResponseEntity.ok(loanService.getRejectedLoans());
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<LoanResponseDTO>> getPendingLoans() {
+        return ResponseEntity.ok(loanService.getPendingLoans());
+    }
+
+
+
     // APPROVE LOAN (ADMIN ONLY)
     @PutMapping("/{loanId}/approve")
     public ResponseEntity<LoanResponseDTO> approveLoan(@PathVariable Long loanId) {
@@ -47,6 +64,8 @@ public class LoanController {
     public ResponseEntity<List<LoanResponseDTO>> getAllLoans() {
         return ResponseEntity.ok(loanService.getAllLoans());
     }
+
+
 
     //  GET USER LOANS (OWNER OR ADMIN/MANAGER)
     @GetMapping("/user/{userId}")

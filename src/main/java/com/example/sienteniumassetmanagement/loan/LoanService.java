@@ -6,6 +6,8 @@ import com.example.sienteniumassetmanagement.asset.Asset;
 import com.example.sienteniumassetmanagement.asset.AssetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,10 +30,10 @@ public class LoanService {
         Loan loan = new Loan();
         loan.setAssetId(requestDTO.getAssetId());
         loan.setUserId(requestDTO.getUserId());
-        loan.setRequestDate(LocalDateTime.now());
+        loan.setRequestDate(LocalDate.from(LocalDateTime.now()));
         // FIXED: Changed "Loan.LoanStatus.PENDING" to "LoanStatus.PENDING"
         loan.setStatus(Loan.LoanStatus.PENDING);
-        loan.setDueDate(requestDTO.getDueDate());
+        loan.setDueDate(LocalDate.from(requestDTO.getDueDate()));
 
         Loan savedLoan = loanRepository.save(loan);
         return convertToDTO(savedLoan);
@@ -43,7 +45,7 @@ public class LoanService {
 
         // FIXED: Changed "Loan.LoanStatus.APPROVED" to "LoanStatus.APPROVED"
         loan.setStatus(Loan.LoanStatus.APPROVED);
-        loan.setCheckoutDate(LocalDateTime.now());
+        loan.setCheckoutDate(LocalDate.from(LocalDateTime.now()));
         Loan updatedLoan = loanRepository.save(loan);
         return convertToDTO(updatedLoan);
     }
@@ -64,7 +66,7 @@ public class LoanService {
 
         // FIXED: Changed "Loan.LoanStatus.RETURNED" to "LoanStatus.RETURNED"
         loan.setStatus(Loan.LoanStatus.RETURNED);
-        loan.setReturnDate(LocalDateTime.now());
+        loan.setReturnDate(LocalDate.from(LocalDateTime.now()));
         Loan updatedLoan = loanRepository.save(loan);
         return convertToDTO(updatedLoan);
     }
@@ -87,12 +89,13 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
-    public List<LoanResponseDTO> getLoansByStatus(Loan.LoanStatus status) {
-        // FIXED: Changed parameter from String to LoanStatus
-        return loanRepository.findByStatus(String.valueOf(status)).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
+
+//    public List<LoanResponseDTO> getLoansByStatus(Loan.LoanStatus status) {
+//        // FIXED: Changed parameter from String to LoanStatus
+//        return loanRepository.findByStatus(String.valueOf(status)).stream()
+//                .map(this::convertToDTO)
+//                .collect(Collectors.toList());
+//    }
 
     public List<LoanResponseDTO> getOverdueLoans() {
         // FIXED: Changed "APPROVED" to LoanStatus.APPROVED
@@ -100,6 +103,30 @@ public class LoanService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+    //Testing  all loans status
+
+    public List<LoanResponseDTO> getApprovedLoans() {
+        return loanRepository.findByStatus(Loan.LoanStatus.APPROVED)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<LoanResponseDTO> getRejectedLoans() {
+        return loanRepository.findByStatus(Loan.LoanStatus.REJECTED)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<LoanResponseDTO> getPendingLoans() {
+        return loanRepository.findByStatus(Loan.LoanStatus.PENDING)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+
 
     public void deleteLoan(Long loanId) {
         loanRepository.deleteById(loanId);
@@ -109,11 +136,11 @@ public class LoanService {
         LoanResponseDTO dto = new LoanResponseDTO();
         dto.setLoanId(loan.getLoanId());
         dto.setUserId(loan.getUserId());
-        dto.setRequestDate(loan.getRequestDate());
+        dto.setRequestDate(loan.getRequestDate().atStartOfDay());
         dto.setStatus(String.valueOf(loan.getStatus()));
-        dto.setCheckoutDate(loan.getCheckoutDate());
-        dto.setDueDate(loan.getDueDate());
-        dto.setReturnDate(loan.getReturnDate());
+        dto.setCheckoutDate(loan.getCheckoutDate().atStartOfDay());
+        dto.setDueDate(loan.getDueDate().atStartOfDay());
+        dto.setReturnDate(loan.getReturnDate().atStartOfDay());
         return dto;
     }
 }

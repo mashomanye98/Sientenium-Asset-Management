@@ -1,11 +1,11 @@
 package com.example.sienteniumassetmanagement.loan;
 
-import com.example.sienteniumassetmanagement.User.entity.User;
-import com.example.sienteniumassetmanagement.asset.Asset;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 
 
 @Entity
@@ -29,7 +29,7 @@ public class Loan {
     private long userId;
 
     @Column(name = "request_date")
-    private LocalDateTime requestDate;
+    private LocalDate    requestDate;
 
 
     @Enumerated(EnumType.STRING)
@@ -37,14 +37,13 @@ public class Loan {
     private LoanStatus status;
 
     // Only set when status == APPROVED
-    private LocalDateTime checkoutDate;
+    private LocalDate checkoutDate;
 
-    @Column(name = "due_date", nullable = false)
-    private LocalDateTime dueDate;
+    @Column(name = "due_date")
+    private LocalDate dueDate;
 
-    @Column(name = "return_date", nullable = false)
-    private LocalDateTime returnDate;
-
+    @Column(name = "return_date")
+    private LocalDate returnDate;
 
 
 
@@ -73,7 +72,7 @@ public class Loan {
         this.status = LoanStatus.REJECTED;
     }
 
-    public void returnLoan(LocalDateTime returnDate) {
+    public void returnLoan(LocalDate returnDate) {
         if (this.status != LoanStatus.APPROVED) {
             throw new IllegalStateException("Only approved loans can be returned");
         }
@@ -85,15 +84,15 @@ public class Loan {
     }
     public boolean isOverdue() {
         if (status.equals(LoanStatus.RETURNED)) return false;
-        return LocalDateTime.now().isAfter(dueDate);
+        return LocalDateTime.now().isAfter(dueDate.atStartOfDay());
     }
 
     // ----- Optional setters for mutable fields (if needed) -----
-    public void setDueDate(LocalDateTime dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         if (dueDate == null) {
             throw new IllegalArgumentException("Due date cannot be null");
         }
-        if (dueDate.isBefore(requestDate)) {
+        if (dueDate.isBefore(ChronoLocalDate.from(requestDate.atStartOfDay()))) {
             throw new IllegalArgumentException("Due date cannot be before request date");
         }
         this.dueDate = dueDate;
