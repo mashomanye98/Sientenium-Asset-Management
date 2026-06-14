@@ -21,21 +21,17 @@ public class Loan {
 
     // Keep FK columns as Long. Replace with @ManyToOne if you want full entity relations.
     @Column(name = "asset_id", nullable = false)
-    @NotNull
     private Long assetId;
 
     @Column(name = "user_id", nullable = false)
-    @NotNull
     private Long userId;
 
     @Column(name = "request_date")
-    @NotNull
     private LocalDate requestDate;
 
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    @NotNull
     private LoanStatus status = LoanStatus.PENDING;
 
     // Only set when status == APPROVED

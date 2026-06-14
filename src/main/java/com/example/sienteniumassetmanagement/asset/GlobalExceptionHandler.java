@@ -11,37 +11,29 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handles @Valid validation failures — shows field-level messages
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(
-            MethodArgumentNotValidException ex) {
+//    // Handles @Valid validation failures — shows field-level messages
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<Map<String, String>> handleValidationErrors(
+//            MethodArgumentNotValidException ex) {
+//
+//        Map<String, String> errors = new HashMap<>();
+//
+//        ex.getBindingResult().getFieldErrors().forEach(error ->
+//                errors.put(error.getField(), error.getDefaultMessage())
+//        );
+//
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+//    }
+////
+//    // Handles duplicate serial number and other DB constraint violations
+//    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+//    public ResponseEntity<Map<String, String>> handleDuplicateKey(
+//            org.springframework.dao.DataIntegrityViolationException ex) {
+//
+//        Map<String, String> error = new HashMap<>();
+//        error.put("error", "Serial number already exists — please use a unique serial number");
+//        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+//    }
 
-        Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
-
-    // Handles duplicate serial number and other DB constraint violations
-    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateKey(
-            org.springframework.dao.DataIntegrityViolationException ex) {
-
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Serial number already exists — please use a unique serial number");
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-    }
-
-    // Handles asset not found
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleRuntimeException(
-            RuntimeException ex) {
-
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
 }
