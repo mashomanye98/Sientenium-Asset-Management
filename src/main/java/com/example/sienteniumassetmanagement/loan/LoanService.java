@@ -24,16 +24,18 @@ public class LoanService {
         Asset asset = assetRepository.findById(requestDTO.getAssetId())
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
 
-        User user = userRepository.findById(requestDTO.getAssetId())
+        User user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Loan loan = new Loan();
         loan.setAssetId(requestDTO.getAssetId());
         loan.setUserId(requestDTO.getUserId());
-        loan.setRequestDate(LocalDate.from(LocalDateTime.now()));
-        // FIXED: Changed "Loan.LoanStatus.PENDING" to "LoanStatus.PENDING"
+        loan.setRequestDate(requestDTO.getRequestDate() != null ? requestDTO.getRequestDate().toLocalDate() : LocalDate.now());
+        // status defaults to PENDING in entity, but set explicitly for clarity
         loan.setStatus(Loan.LoanStatus.PENDING);
-        loan.setDueDate(LocalDate.from(requestDTO.getDueDate()));
+        if (requestDTO.getDueDate() != null) {
+            loan.setDueDate(requestDTO.getDueDate().toLocalDate());
+        }
 
         Loan savedLoan = loanRepository.save(loan);
         return convertToDTO(savedLoan);
@@ -43,9 +45,8 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
 
-        // FIXED: Changed "Loan.LoanStatus.APPROVED" to "LoanStatus.APPROVED"
-        loan.setStatus(Loan.LoanStatus.APPROVED);
-        loan.setCheckoutDate(LocalDate.from(LocalDateTime.now()));
+        // Use business method which validates dates and state
+        loan.approve(LocalDate.now(), loan.getDueDate());
         Loan updatedLoan = loanRepository.save(loan);
         return convertToDTO(updatedLoan);
     }
@@ -54,8 +55,7 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
 
-        // FIXED: Changed "Loan.LoanStatus.REJECTED" to "LoanStatus.REJECTED"
-        loan.setStatus(Loan.LoanStatus.REJECTED);
+        loan.reject();
         Loan updatedLoan = loanRepository.save(loan);
         return convertToDTO(updatedLoan);
     }
@@ -64,9 +64,7 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
 
-        // FIXED: Changed "Loan.LoanStatus.RETURNED" to "LoanStatus.RETURNED"
-        loan.setStatus(Loan.LoanStatus.RETURNED);
-        loan.setReturnDate(LocalDate.from(LocalDateTime.now()));
+        loan.returnLoan(LocalDate.now());
         Loan updatedLoan = loanRepository.save(loan);
         return convertToDTO(updatedLoan);
     }
@@ -89,21 +87,11 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
-
-//    public List<LoanResponseDTO> getLoansByStatus(Loan.LoanStatus status) {
-//        // FIXED: Changed parameter from String to LoanStatus
-//        return loanRepository.findByStatus(String.valueOf(status)).stream()
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
-
     public List<LoanResponseDTO> getOverdueLoans() {
-        // FIXED: Changed "APPROVED" to LoanStatus.APPROVED
-        return loanRepository.findByStatusAndDueDateBefore(String.valueOf(Loan.LoanStatus.APPROVED), LocalDateTime.now()).stream()
+        return loanRepository.findByStatusAndDueDateBefore(Loan.LoanStatus.APPROVED, LocalDate.now()).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    //Testing  all loans status
 
     public List<LoanResponseDTO> getApprovedLoans() {
         return loanRepository.findByStatus(Loan.LoanStatus.APPROVED)
@@ -126,8 +114,6 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
-
-
     public void deleteLoan(Long loanId) {
         loanRepository.deleteById(loanId);
     }
@@ -135,12 +121,13 @@ public class LoanService {
     private LoanResponseDTO convertToDTO(Loan loan) {
         LoanResponseDTO dto = new LoanResponseDTO();
         dto.setLoanId(loan.getLoanId());
+        dto.setAssetId(loan.getAssetId());
         dto.setUserId(loan.getUserId());
-        dto.setRequestDate(loan.getRequestDate().atStartOfDay());
-        dto.setStatus(String.valueOf(loan.getStatus()));
-        dto.setCheckoutDate(loan.getCheckoutDate().atStartOfDay());
-        dto.setDueDate(loan.getDueDate().atStartOfDay());
-        dto.setReturnDate(loan.getReturnDate().atStartOfDay());
+        dto.setRequestDate(loan.getRequestDate() != null ? loan.getRequestDate().atStartOfDay() : null);
+        dto.setStatus(loan.getStatus() != null ? String.valueOf(loan.getStatus()) : null);
+        dto.setCheckoutDate(loan.getCheckoutDate() != null ? loan.getCheckoutDate().atStartOfDay() : null);
+        dto.setDueDate(loan.getDueDate() != null ? loan.getDueDate().atStartOfDay() : null);
+        dto.setReturnDate(loan.getReturnDate() != null ? loan.getReturnDate().atStartOfDay() : null);
         return dto;
     }
 }
