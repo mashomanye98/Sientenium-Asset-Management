@@ -1,12 +1,11 @@
 package com.example.sienteniumassetmanagement.loan;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDate;
-
+import java.util.Objects;
 
 @Entity
 @Table(name = "loan")
@@ -20,23 +19,27 @@ public class Loan {
     @Column(name = "loan_id")
     private Long loanId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "asset_id", nullable = false)
-    private long  assetId;
+    // Keep FK columns as Long. Replace with @ManyToOne if you want full entity relations.
+    @Column(name = "asset_id", nullable = false)
+    @NotNull
+    private Long assetId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-    private long userId;
+    @Column(name = "user_id", nullable = false)
+    @NotNull
+    private Long userId;
 
     @Column(name = "request_date")
-    private LocalDate    requestDate;
+    @NotNull
+    private LocalDate requestDate;
 
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private LoanStatus status;
+    @NotNull
+    private LoanStatus status = LoanStatus.PENDING;
 
     // Only set when status == APPROVED
+    @Column(name = "checkout_date")
     private LocalDate checkoutDate;
 
     @Column(name = "due_date")
@@ -46,7 +49,6 @@ public class Loan {
     private LocalDate returnDate;
 
 
-
     // ----- Nested Enum for Status -----
     public enum LoanStatus {
         PENDING, APPROVED, REJECTED, RETURNED
@@ -54,15 +56,28 @@ public class Loan {
     // ----
 
     // ----- Business logic helpers -----
-    public void approve() {
+    /**
+     * Approve the loan providing a checkout date and optional due date.
+     */
+    public void approve(@NotNull LocalDate checkoutDate, LocalDate dueDate) {
         if (this.status != LoanStatus.PENDING) {
             throw new IllegalStateException("Only pending loans can be approved");
         }
-        if (checkoutDate == null) {
-            throw new IllegalArgumentException("Checkout date must be provided");
+        Objects.requireNonNull(checkoutDate, "Checkout date must be provided");
+        if (requestDate != null && checkoutDate.isBefore(requestDate)) {
+            throw new IllegalArgumentException("Checkout date cannot be before request date");
         }
-        this.status = LoanStatus.APPROVED;
+        if (dueDate != null) {
+            if (dueDate.isBefore(checkoutDate)) {
+                throw new IllegalArgumentException("Due date cannot be before checkout date");
+            }
+            if (requestDate != null && dueDate.isBefore(requestDate)) {
+                throw new IllegalArgumentException("Due date cannot be before request date");
+            }
+            this.dueDate = dueDate;
+        }
         this.checkoutDate = checkoutDate;
+        this.status = LoanStatus.APPROVED;
     }
 
     public void reject() {
@@ -76,15 +91,18 @@ public class Loan {
         if (this.status != LoanStatus.APPROVED) {
             throw new IllegalStateException("Only approved loans can be returned");
         }
-        if (returnDate == null) {
-            throw new IllegalArgumentException("Return date must be provided");
+        Objects.requireNonNull(returnDate, "Return date must be provided");
+        if (checkoutDate != null && returnDate.isBefore(checkoutDate)) {
+            throw new IllegalArgumentException("Return date cannot be before checkout date");
         }
-        this.status = LoanStatus.RETURNED;
         this.returnDate = returnDate;
+        this.status = LoanStatus.RETURNED;
     }
+
     public boolean isOverdue() {
-        if (status.equals(LoanStatus.RETURNED)) return false;
-        return LocalDateTime.now().isAfter(dueDate.atStartOfDay());
+        if (this.status == null || this.status == LoanStatus.RETURNED) return false;
+        if (this.dueDate == null) return false;
+        return LocalDate.now().isAfter(this.dueDate);
     }
 
     // ----- Optional setters for mutable fields (if needed) -----
@@ -92,12 +110,13 @@ public class Loan {
         if (dueDate == null) {
             throw new IllegalArgumentException("Due date cannot be null");
         }
-        if (dueDate.isBefore(ChronoLocalDate.from(requestDate.atStartOfDay()))) {
+        if (requestDate == null) {
+            throw new IllegalStateException("Request date must be set before setting due date");
+        }
+        if (dueDate.isBefore(requestDate)) {
             throw new IllegalArgumentException("Due date cannot be before request date");
         }
         this.dueDate = dueDate;
     }
-
-
 
 }
