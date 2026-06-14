@@ -6,9 +6,10 @@ import com.example.sienteniumassetmanagement.asset.Asset;
 import com.example.sienteniumassetmanagement.asset.AssetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,21 +21,29 @@ public class LoanService {
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public LoanResponseDTO createLoan(LoanRequestDTO requestDTO) {
         Asset asset = assetRepository.findById(requestDTO.getAssetId())
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
 
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        LocalDate reqDate = requestDTO.getRequestDate() != null
+                ? requestDTO.getRequestDate().toLocalDate() : LocalDate.now();
 
         Loan loan = new Loan();
         loan.setAssetId(requestDTO.getAssetId());
         loan.setUserId(requestDTO.getUserId());
-        loan.setRequestDate(requestDTO.getRequestDate() != null ? requestDTO.getRequestDate().toLocalDate() : LocalDate.now());
-        // status defaults to PENDING in entity, but set explicitly for clarity
+        loan.setRequestDate(reqDate);
         loan.setStatus(Loan.LoanStatus.PENDING);
+
         if (requestDTO.getDueDate() != null) {
-            loan.setDueDate(requestDTO.getDueDate().toLocalDate());
+            LocalDate due = requestDTO.getDueDate().toLocalDate();
+            if (due.isBefore(reqDate)) {
+                throw new IllegalArgumentException("Due date cannot be before request date");
+            }
+            loan.setDueDate(due);
         }
 
         Loan savedLoan = loanRepository.save(loan);
