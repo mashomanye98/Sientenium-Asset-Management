@@ -38,4 +38,5 @@ public class AuthController {
     public ResponseEntity<List<UserSummaryResponse>> getUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
 }
