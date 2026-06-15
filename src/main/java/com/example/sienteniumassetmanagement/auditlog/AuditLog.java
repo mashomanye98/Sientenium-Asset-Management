@@ -1,16 +1,28 @@
 package com.example.sienteniumassetmanagement.auditlog;
-import com.example.sienteniumassetmanagement.User.entity.User;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-/*Mashomanye  Masemola
 
- */
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Table(name = "audit_log")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,31 +32,26 @@ public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @Column(name = "log_id")
     private Long logId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
+    @Column(name = "entity_type", nullable = false, length = 20)
     private EntityType entityType;
 
-    @Column(nullable = false)
+    @Column(name = "entity_id", nullable = false)
     private Long entityId;
 
-    @Column(nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
+    @Column(name = "action", nullable = false, length = 20)
     private Action action;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp;
-
-
-    // No setters for logId, timestamp, user? (If user can change, add setter but careful)
-    // Only allow updates to values if needed, otherwise omit setters.
-    // Use builder for creation.
 
     public enum EntityType {
         ASSET, LOAN
