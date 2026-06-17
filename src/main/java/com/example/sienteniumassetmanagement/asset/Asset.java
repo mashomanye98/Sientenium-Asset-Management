@@ -49,7 +49,7 @@ public class Asset {
 
 
     public enum AssetCategory {
-        IT_EQUIPMENT, FURNITURE, VEHICLE, MACHINERY, OTHER
+        IT_EQUIPMENT, FURNITURE
     }
 
     public enum AssetCondition {

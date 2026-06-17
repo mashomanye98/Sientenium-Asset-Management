@@ -41,6 +41,13 @@ public class AssetController {
         return ResponseEntity.noContent().build();
     }
 
+    // HARD DELETE - permanently removes asset from the database
+    @DeleteMapping("/{id}/permanent")
+    public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
+        assetService.deleteAsset(id);
+        return ResponseEntity.noContent().build();
+    }
+
     // SEARCH
 
     @GetMapping("/search/title")
@@ -79,4 +86,19 @@ public class AssetController {
             @RequestParam String condition) {
         return ResponseEntity.ok(assetService.filterByCondition(condition));
     }
+
+//    // Currently loaned assets — assets I currently have checked out
+//    @GetMapping("/myassets/current")
+//    public ResponseEntity<List<AssetResponseDTO>> getCurrentlyLoanedAssets(
+//            @RequestParam Long userId) {
+//        return ResponseEntity.ok(assetService.getCurrentlyLoanedAssets(userId));
+//    }
+//
+//    // Full history — all assets I have ever borrowed
+//    @GetMapping("/myassets/history")
+//    public ResponseEntity<List<AssetResponseDTO>> getAllLoanedAssets(
+//            @RequestParam Long userId) {
+//        return ResponseEntity.ok(assetService.getAllLoanedAssets(userId));
+//    }
+//
 }

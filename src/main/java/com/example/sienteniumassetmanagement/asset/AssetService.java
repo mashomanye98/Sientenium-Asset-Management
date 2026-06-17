@@ -134,4 +134,28 @@ public class AssetService {
                 .collect(Collectors.toList());
     }
 
+    // HARD DELETE - permanently removes the asset from the database
+    public void deleteAsset(Long id) {
+        if (!assetRepository.existsById(id)) {
+            throw new RuntimeException("Asset not found");
+        }
+        assetRepository.deleteById(id);
+    }
+
+    // Currently loaned assets
+//    public List<AssetResponseDTO> getCurrentlyLoanedAssets(Long userId) {
+//        return assetRepository.findCurrentlyLoanedAssetsByUser(userId)
+//                .stream()
+//                .map(this::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
+//
+//    // Full loan history
+//    public List<AssetResponseDTO> getAllLoanedAssets(Long userId) {
+//        return assetRepository.findAllLoanedAssetsByUser(userId)
+//                .stream()
+//                .map(this::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
+
 }
