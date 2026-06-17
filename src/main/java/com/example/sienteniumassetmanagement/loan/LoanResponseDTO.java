@@ -14,10 +14,14 @@ import java.time.LocalDateTime;
 public class LoanResponseDTO {
     private Long loanId;
     private Long assetId;
+    private String assetName;        // NEW: Asset name
+    private String assetCategory;    // NEW: Asset category
     private Long userId;
+    private String userName;         // NEW: User full name
+    private String userDepartment;   // NEW: User department
     private LocalDateTime requestDate;
     private String status;
     private LocalDateTime checkoutDate;
     private LocalDateTime dueDate;
-    private LocalDateTime returnDate;// Make sure this field exists
+    private LocalDateTime returnDate;
 }

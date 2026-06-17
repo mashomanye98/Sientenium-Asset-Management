@@ -41,7 +41,8 @@
                     <i class="fa-solid fa-right-left"></i>
                     Asset Check-Out / Check-In
                 </a>
-                <a href="#" id="overdue-link">
+                <!-- Keep the overdue link but make it work within the page -->
+                <a href="manager-loan-requests.html?filter=overdue" id="overdue-link">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     Overdue Loans
                     <span class="badge" id="overdue-count">0</span>
@@ -118,6 +119,7 @@
         </section>
 
         <!-- All Loan Requests Table -->
+        <!-- All Loan Requests Table -->
         <section class="card">
             <div class="card-header">
                 <h2>All Loan Requests (Approve / Reject)</h2>
@@ -128,11 +130,11 @@
                     <thead>
                     <tr>
                         <th>Loan ID</th>
-                        <th>Asset ID</th>
+                        <th>Asset</th>
                         <th>Asset Category</th>
                         <th>Request Date</th>
                         <th>Due Date</th>
-                        <th>User ID</th>
+                        <th>User</th>
                         <th>Department</th>
                         <th>Status</th>
                         <th>Action</th>
