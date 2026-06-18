@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.web.server.ResponseStatusException;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
@@ -51,16 +50,17 @@ public class LoanService {
         return convertToDTO(savedLoan);
     }
 
+    @Transactional
     public LoanResponseDTO approveLoan(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
 
-        // Use business method which validates dates and state
         loan.approve(LocalDate.now(), loan.getDueDate());
         Loan updatedLoan = loanRepository.save(loan);
         return convertToDTO(updatedLoan);
     }
 
+    @Transactional
     public LoanResponseDTO rejectLoan(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
@@ -70,39 +70,46 @@ public class LoanService {
         return convertToDTO(updatedLoan);
     }
 
+    // 🔥 ADD THIS METHOD IF MISSING
+    @Transactional
     public LoanResponseDTO returnLoan(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new RuntimeException("Loan not found"));
+                .orElseThrow(() -> new RuntimeException("Loan not found with id: " + loanId));
 
         loan.returnLoan(LocalDate.now());
         Loan updatedLoan = loanRepository.save(loan);
         return convertToDTO(updatedLoan);
     }
 
+    @Transactional(readOnly = true)
     public LoanResponseDTO getLoanById(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
         return convertToDTO(loan);
     }
 
+    @Transactional(readOnly = true)
     public List<LoanResponseDTO> getAllLoans() {
         return loanRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<LoanResponseDTO> getLoansByUser(Long userId) {
         return loanRepository.findByUserId(userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<LoanResponseDTO> getOverdueLoans() {
         return loanRepository.findByStatusAndDueDateBefore(Loan.LoanStatus.APPROVED, LocalDate.now()).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<LoanResponseDTO> getApprovedLoans() {
         return loanRepository.findByStatus(Loan.LoanStatus.APPROVED)
                 .stream()
@@ -110,6 +117,7 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<LoanResponseDTO> getRejectedLoans() {
         return loanRepository.findByStatus(Loan.LoanStatus.REJECTED)
                 .stream()
@@ -117,6 +125,7 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<LoanResponseDTO> getPendingLoans() {
         return loanRepository.findByStatus(Loan.LoanStatus.PENDING)
                 .stream()
@@ -124,15 +133,48 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteLoan(Long loanId) {
         loanRepository.deleteById(loanId);
     }
 
     private LoanResponseDTO convertToDTO(Loan loan) {
+        // Fetch asset details
+        String assetName = "N/A";
+        String assetCategory = "N/A";
+        try {
+            Asset asset = assetRepository.findById(loan.getAssetId())
+                    .orElse(null);
+            if (asset != null) {
+                assetName = asset.getTitle();
+                assetCategory = asset.getCategory() != null ? asset.getCategory().name() : "N/A";
+            }
+        } catch (Exception e) {
+            // Asset not found, keep defaults
+        }
+
+        // Fetch user details
+        String userName = "N/A";
+        String userDepartment = "N/A";
+        try {
+            User user = userRepository.findById(loan.getUserId())
+                    .orElse(null);
+            if (user != null) {
+                userName = user.getFullName();
+                userDepartment = user.getDepartment();
+            }
+        } catch (Exception e) {
+            // User not found, keep defaults
+        }
+
         LoanResponseDTO dto = new LoanResponseDTO();
         dto.setLoanId(loan.getLoanId());
         dto.setAssetId(loan.getAssetId());
+        dto.setAssetName(assetName);
+        dto.setAssetCategory(assetCategory);
         dto.setUserId(loan.getUserId());
+        dto.setUserName(userName);
+        dto.setUserDepartment(userDepartment);
         dto.setRequestDate(loan.getRequestDate() != null ? loan.getRequestDate().atStartOfDay() : null);
         dto.setStatus(loan.getStatus() != null ? String.valueOf(loan.getStatus()) : null);
         dto.setCheckoutDate(loan.getCheckoutDate() != null ? loan.getCheckoutDate().atStartOfDay() : null);

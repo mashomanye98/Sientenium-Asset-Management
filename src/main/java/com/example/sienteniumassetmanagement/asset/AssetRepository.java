@@ -1,6 +1,8 @@
 package com.example.sienteniumassetmanagement.asset;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,5 +30,13 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
 
     // Filter by condition
     List<Asset> findByCondition(Asset.AssetCondition condition);
+
+    // Assets currently on loan to a user (active loans only)
+//    @Query("SELECT l.asset FROM Loan l WHERE l.user.userId = :userId AND l.status = 'approved' AND l.returnDate IS NULL")
+//    List<Asset> findCurrentlyLoanedAssetsByUser(@Param("userId") Long userId);
+//
+//    // All assets ever borrowed by a user (full history)
+//    @Query("SELECT l.asset FROM Loan l WHERE l.user.userId = :userId")
+//    List<Asset> findAllLoanedAssetsByUser(@Param("userId") Long userId);
 
 }

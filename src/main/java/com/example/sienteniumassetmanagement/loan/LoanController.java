@@ -4,11 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/loans")
@@ -39,41 +37,49 @@ public class LoanController {
         return ResponseEntity.ok(loanService.getPendingLoans());
     }
 
+    // GET OVERDUE LOANS
+    @GetMapping("/overdue")
+    public ResponseEntity<List<LoanResponseDTO>> getOverdueLoans() {
+        return ResponseEntity.ok(loanService.getOverdueLoans());
+    }
 
-
-    // APPROVE LOAN (ADMIN ONLY)
+    // APPROVE LOAN
     @PutMapping("/{loanId}/approve")
     public ResponseEntity<LoanResponseDTO> approveLoan(@PathVariable Long loanId) {
         return ResponseEntity.ok(loanService.approveLoan(loanId));
     }
 
-    // REJECT LOAN (ADMIN ONLY)
+    // REJECT LOAN
     @PutMapping("/{loanId}/reject")
     public ResponseEntity<LoanResponseDTO> rejectLoan(@PathVariable Long loanId) {
         return ResponseEntity.ok(loanService.rejectLoan(loanId));
     }
 
-       //  GET SINGLE LOAN
+    // 🔥 ADD THIS - RETURN LOAN
+    @PutMapping("/{loanId}/return")
+    public ResponseEntity<LoanResponseDTO> returnLoan(@PathVariable Long loanId) {
+        return ResponseEntity.ok(loanService.returnLoan(loanId));
+    }
+
+    // GET SINGLE LOAN
     @GetMapping("/{loanId}")
     public ResponseEntity<LoanResponseDTO> getLoanById(@PathVariable Long loanId) {
         return ResponseEntity.ok(loanService.getLoanById(loanId));
     }
 
-    //  GET ALL LOANS
+    // GET ALL LOANS
     @GetMapping
     public ResponseEntity<List<LoanResponseDTO>> getAllLoans() {
         return ResponseEntity.ok(loanService.getAllLoans());
     }
 
-
-
-    //  GET USER LOANS (OWNER OR ADMIN/MANAGER)
+    // GET USER LOANS
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<LoanResponseDTO>> getLoansByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(loanService.getLoansByUser(userId));
     }
 
-    // DELETE LOAN (ADMIN ONLY)
+    // DELETE LOAN
     @DeleteMapping("/{loanId}")
     public ResponseEntity<Void> deleteLoan(@PathVariable Long loanId) {
         loanService.deleteLoan(loanId);

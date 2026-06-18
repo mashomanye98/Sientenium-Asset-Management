@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager - Loan Requests</title>
     <link rel="stylesheet" href="styling/dashboard.css">
+    <link rel="stylesheet" href="styling/loan-request.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 <body>
 
@@ -20,7 +22,7 @@
                 <div class="profile-image">
                     <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
                 </div>
-                <h3>Johannes Motsemme</h3>
+                <h3 id="user-name">Johannes Motsemme</h3>
                 <p>Manager</p>
                 <span>Asset Management System</span>
             </div>
@@ -32,11 +34,15 @@
                 </a>
                 <a href="manager-loan-requests.html" class="active">
                     <i class="fa-regular fa-file-lines"></i>
-                    Loan Requests
-                    <span class="badge">5</span>
+                    Loan Requests Approval
+                    <span class="badge" id="pending-count">0</span>
                 </a>
-
-                <a href="#">
+                <a href="manager-checkout-checkin.html">
+                    <i class="fa-solid fa-right-left"></i>
+                    Asset Check-Out / Check-In
+                </a>
+                <!-- OVERDUE MONITORING -->
+                <a href="manager-overdue-loans.html">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     Overdue Loans
                     <span class="badge">2</span>
@@ -67,13 +73,17 @@
         <div class="top-bar">
             <h1>Loan Requests Approval</h1>
             <div class="filter-group">
-                <select class="filter-select" style="padding: 10px 16px; border-radius: 10px; border: 1px solid #ddd; background: white;">
-                    <option>All Requests</option>
-                    <option>Pending</option>
-                    <option>Approved</option>
-                    <option>Rejected</option>
+                <select id="status-filter" class="filter-select" style="padding: 10px 16px; border-radius: 10px; border: 1px solid #ddd; background: white;">
+                    <option value="ALL">All Requests</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="RETURNED">Returned</option>
                 </select>
-                <input type="text" placeholder="Search by name or asset..." class="search-input" style="padding: 10px 16px; border-radius: 10px; border: 1px solid #ddd;">
+                <input type="text" id="search-input" placeholder="Search by user or asset ID..." class="search-input" style="padding: 10px 16px; border-radius: 10px; border: 1px solid #ddd;">
+                <button id="refresh-btn" class="refresh-btn">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
             </div>
         </div>
 
@@ -85,7 +95,7 @@
                 </div>
                 <div>
                     <span>Pending Requests</span>
-                    <h3>5 Requests</h3>
+                    <h3 id="stat-pending">0 Requests</h3>
                 </div>
             </div>
             <div class="stat-card">
@@ -93,8 +103,8 @@
                     <i class="fa-solid fa-check"></i>
                 </div>
                 <div>
-                    <span>Approved This Month</span>
-                    <h3>12 Requests</h3>
+                    <span>Approved</span>
+                    <h3 id="stat-approved">0 Requests</h3>
                 </div>
             </div>
             <div class="stat-card">
@@ -103,57 +113,60 @@
                 </div>
                 <div>
                     <span>Rejected</span>
-                    <h3>3 Requests</h3>
+                    <h3 id="stat-rejected">0 Requests</h3>
                 </div>
             </div>
         </section>
 
         <!-- All Loan Requests Table -->
+        <!-- All Loan Requests Table -->
         <section class="card">
             <div class="card-header">
                 <h2>All Loan Requests (Approve / Reject)</h2>
-                <span style="color: var(--muted); font-size: 0.8rem;">Total: 12 requests</span>
+                <span style="color: var(--muted); font-size: 0.8rem;" id="total-count">Total: 0 requests</span>
             </div>
             <div class="table-wrapper">
-                <table>
+                <table id="loans-table">
                     <thead>
-                        <tr>
-                            <th>Loan ID</th>
-                            <th>Asset ID</th>
-                            <th>User ID</th>
-                            <th>Checkout Date</th>
-                            <th>Due_date</th>
-                            <th>Request Date</th>
-                            <th>Return Date</th>
-                            <th>Status</th>
-                        </tr>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Asset</th>
+                        <th>Asset Category</th>
+                        <th>Request Date</th>
+                        <th>Due Date</th>
+                        <th>User</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
                     </thead>
-                    <tbody>
-
-                        <tr>
-                            <td><a>REQ-002</a></td>
-                            <td>Projector Request <br><small style="color: var(--muted);">Asset Loan</small></td>
-                            <td>Audio Visual</td>
-                            <td>13 Jan 2026</td>
-                            <td>Sinenhlanhla H.</td>
-                            <td>Marketing</td>
-                            <td><span class="status proposal">Pending</span></td>
-                            <td>
-                                <button class="review-link" style="color: #10b981; margin-right: 12px;">Approve</button>
-                                <a class="review-link" style="color: #ef4444;">Reject</a>
-                            </td>
-                        </tr>
-
+                    <tbody id="loans-tbody">
+                    <tr class="loading">
+                        <td colspan="9">Loading loans data...</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
+        <!-- Summary Cards -->
+        <div class="bottom-grid" style="margin-top: 0;">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Approval Summary</h2>
+                </div>
+                <ul class="document-list" id="summary-list">
+                    <li><i class="fa-regular fa-clock"></i> Pending: 0 requests</li>
+                    <li><i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Approved: 0</li>
+                    <li><i class="fa-solid fa-times-circle" style="color: #ef4444;"></i> Rejected: 0</li>
+                </ul>
+            </div>
+        </div>
 
     </main>
-
 </div>
 
-<script src="#"></script>
+<script src="scripts/loan-requests.js">
+</script>
 </body>
 </html>
