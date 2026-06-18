@@ -13,7 +13,7 @@
             background-color: #fef2f2;
         }
         .btn-checkout, .btn-checkin {
-            background: var(--primary);
+            background: #3b82f6;
             color: white;
             border: none;
             padding: 6px 14px;
@@ -21,9 +21,20 @@
             cursor: pointer;
             font-size: 0.75rem;
             margin-right: 5px;
+            transition: all 0.2s;
+        }
+        .btn-checkout:hover {
+            background: #2563eb;
         }
         .btn-checkin {
             background: #8b5cf6;
+        }
+        .btn-checkin:hover {
+            background: #7c3aed;
+        }
+        .btn-checkout:disabled, .btn-checkin:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .form-group {
             margin-bottom: 16px;
@@ -49,15 +60,24 @@
         }
         .form-row .form-group {
             flex: 1;
+            min-width: 200px;
         }
         .btn-primary {
-            background: var(--primary);
+            background: #3b82f6;
             color: white;
             border: none;
             padding: 10px 24px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .status-badge {
             display: inline-block;
@@ -83,6 +103,87 @@
             font-size: 0.85rem;
             color: #92400e;
         }
+        .notice-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        .toast-success {
+            background-color: #10b981;
+        }
+        .toast-error {
+            background-color: #ef4444;
+        }
+        .toast-info {
+            background-color: #3b82f6;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-select {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .search-input {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .refresh-btn:hover {
+            background: #2563eb;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        #checkout-table {
+            min-width: 900px;
+        }
     </style>
 </head>
 <body>
@@ -96,7 +197,7 @@
                 <div class="profile-image">
                     <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
                 </div>
-                <h3>Johannes Motsemme</h3>
+                <h3 id="user-name">Johannes Motsemme</h3>
                 <p>Manager</p>
                 <span>Asset Management System</span>
             </div>
@@ -109,16 +210,16 @@
                 <a href="manager-loan-requests.html">
                     <i class="fa-regular fa-file-lines"></i>
                     Loan Requests Approval
-                    <span class="badge">5</span>
+                    <span class="badge" id="pending-count">0</span>
                 </a>
                 <a href="manager-checkout-checkin.html" class="active">
                     <i class="fa-solid fa-right-left"></i>
                     Asset Check-Out / Check-In
                 </a>
-                <a href="#">
+                <a href="manager-overdue-loans.html">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     Overdue Loans
-                    <span class="badge">2</span>
+                    <span class="badge" id="overdue-count">0</span>
                 </a>
                 <a href="manager-retire-assets.html">
                     <i class="fa-solid fa-box-archive"></i>
@@ -145,11 +246,16 @@
 
         <div class="top-bar">
             <h1>Asset Check-Out / Check-In</h1>
-           
+            <div class="filter-group">
+                <input type="text" id="search-input" placeholder="Search by asset or borrower..." class="search-input">
+                <button id="refresh-btn" class="refresh-btn">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+            </div>
         </div>
 
         <!-- Notice -->
-        <div class="notice-box">
+        <div class="notice-box" id="notice-box">
             <i class="fa-solid fa-info-circle"></i> <strong>Manager Note:</strong> Use this page to check assets out to employees and process returns. Overdue items are highlighted in red.
         </div>
 
@@ -161,7 +267,7 @@
                 </div>
                 <div>
                     <span>Available Assets</span>
-                    <h3>16 Assets</h3>
+                    <h3 id="stat-available">0 Assets</h3>
                 </div>
             </div>
             <div class="stat-card">
@@ -170,7 +276,7 @@
                 </div>
                 <div>
                     <span>Checked Out</span>
-                    <h3>12 Loans</h3>
+                    <h3 id="stat-checkedout">0 Loans</h3>
                 </div>
             </div>
             <div class="stat-card">
@@ -179,7 +285,7 @@
                 </div>
                 <div>
                     <span>Overdue</span>
-                    <h3>2 Assets</h3>
+                    <h3 id="stat-overdue">0 Assets</h3>
                 </div>
             </div>
         </section>
@@ -187,68 +293,26 @@
         <!-- Checked Out Assets Table -->
         <section class="card">
             <div class="card-header">
-                <h2>Currently Checked Out Assets (Check-In)</h2>
+                <h2>Currently Checked Out Assets</h2>
                 <span style="color: var(--muted); font-size: 0.8rem;">Click Check-In to process returns</span>
             </div>
             <div class="table-wrapper">
-                <table>
+                <table id="checkout-table">
                     <thead>
-                        <tr>
-                            <th>Asset Name</th>
-                            <th>Asset Tag</th>
-                            <th>Borrower</th>
-                            <th>Department</th>
-                            <th>Due Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Asset Tag</th>
+                        <th>Borrower</th>
+                        <th>Department</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>MacBook Pro 14</td>
-                            <td>AST-101</td>
-                            <td>Thabo M.</td>
-                            <td>IT</td>
-                            <td>10 Jan 2025</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td><button class="btn-checkin">Check In</button></td>
-                        </tr>
-                        <tr class="warning-row">
-                            <td>Dell XPS 15</td>
-                            <td>AST-102</td>
-                            <td>Michael S.</td>
-                            <td>Finance</td>
-                            <td>10 Dec 2024</td>
-                            <td><span class="status-badge status-overdue">Overdue</span></td>
-                            <td><button class="btn-checkin">Check In</button></td>
-                        </tr>
-                        <tr>
-                            <td>iPad Air</td>
-                            <td>AST-104</td>
-                            <td>Sinienhlanhla H.</td>
-                            <td>Marketing</td>
-                            <td>16 Jan 2025</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td><button class="btn-checkin">Check In</button></td>
-                        </tr>
-                        <tr class="warning-row">
-                            <td>Wireless Headset</td>
-                            <td>AST-105</td>
-                            <td>Priya K.</td>
-                            <td>Support</td>
-                            <td>15 Dec 2024</td>
-                            <td><span class="status-badge status-overdue">Overdue</span></td>
-                            <td><button class="btn-checkin">Check In</button></td>
-                        </tr>
-                        <tr>
-                            <td>Epson Projector</td>
-                            <td>AST-103</td>
-                            <td>James W.</td>
-                            <td>Training</td>
-                            <td>19 Jan 2025</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td><button class="btn-checkin">Check In</button></td>
-                        </tr>
+                    <tbody id="checked-out-tbody">
+                    <tr>
+                        <td colspan="7" class="loading">Loading checked out assets...</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -257,61 +321,25 @@
         <!-- Available Assets Table -->
         <section class="card">
             <div class="card-header">
-                <h2>Available Assets (Ready for Check-Out)</h2>
+                <h2>Available Assets</h2>
+                <span style="color: var(--muted); font-size: 0.8rem;">Click Check-Out to loan an asset</span>
             </div>
             <div class="table-wrapper">
-                <table>
+                <table id="available-table">
                     <thead>
-                        <tr>
-                            <th>Asset Name</th>
-                            <th>Asset Tag</th>
-                            <th>Category</th>
-                            <th>Condition</th>
-                            <th>Location</th>
-                            <th>Action</th>
-                        </tr>
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Asset Tag</th>
+                        <th>Category</th>
+                        <th>Condition</th>
+                        <th>Location</th>
+                        <th>Action</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>HP EliteBook</td>
-                            <td>AST-107</td>
-                            <td>Laptop</td>
-                            <td>Good</td>
-                            <td>Storage Room A</td>
-                            <td><button class="btn-checkout">Check Out</button></td>
-                        </tr>
-                        <tr>
-                            <td>Logitech Webcam</td>
-                            <td>AST-108</td>
-                            <td>Peripheral</td>
-                            <td>Excellent</td>
-                            <td>Storage Room B</td>
-                            <td><button class="btn-checkout">Check Out</button></td>
-                        </tr>
-                        <tr>
-                            <td>Conference Microphone</td>
-                            <td>AST-109</td>
-                            <td>Audio</td>
-                            <td>Good</td>
-                            <td>Conference Room</td>
-                            <td><button class="btn-checkout">Check Out</button></td>
-                        </tr>
-                        <tr>
-                            <td>Canon Camera</td>
-                            <td>AST-106</td>
-                            <td>Photography</td>
-                            <td>Excellent</td>
-                            <td>Storage Room A</td>
-                            <td><button class="btn-checkout">Check Out</button></td>
-                        </tr>
-                        <tr>
-                            <td>External SSD 1TB</td>
-                            <td>AST-110</td>
-                            <td>Storage</td>
-                            <td>Good</td>
-                            <td>IT Office</td>
-                            <td><button class="btn-checkout">Check Out</button></td>
-                        </tr>
+                    <tbody id="available-tbody">
+                    <tr>
+                        <td colspan="6" class="loading">Loading available assets...</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -321,31 +349,30 @@
         <section class="card">
             <div class="card-header">
                 <h2>Quick Check Out Form</h2>
+                <span style="color: var(--muted); font-size: 0.8rem;">Select an available asset and borrower</span>
             </div>
-            <form>
+            <form id="checkout-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Select Asset</label>
-                        <select>
-                            <option>HP EliteBook (AST-107)</option>
-                            <option>Logitech Webcam (AST-108)</option>
-                            <option>Conference Microphone (AST-109)</option>
-                            <option>Canon Camera (AST-106)</option>
+                        <label>Select Asset <span style="color: red;">*</span></label>
+                        <select id="checkout-asset" required>
+                            <option value="">-- Select an asset --</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Borrower Name</label>
-                        <input type="text" placeholder="Enter employee name">
+                        <label>Borrower (User ID) <span style="color: red;">*</span></label>
+                        <input type="number" id="checkout-user" placeholder="Enter user ID" required min="1">
                     </div>
                     <div class="form-group">
-                        <label>Due Date</label>
-                        <input type="date">
+                        <label>Due Date <span style="color: red;">*</span></label>
+                        <input type="date" id="checkout-due-date" required>
                     </div>
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <button type="submit" class="btn-primary">Confirm Check Out</button>
+                        <button type="submit" class="btn-primary" id="checkout-submit-btn">Confirm Check Out</button>
                     </div>
                 </div>
+                <div id="checkout-form-message" style="margin-top: 10px;"></div>
             </form>
         </section>
 
@@ -353,6 +380,6 @@
 
 </div>
 
-<script src="scripts/dashboard.js"></script>
+<script src="scripts/checkout-checkin.js"></script>
 </body>
 </html>

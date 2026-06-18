@@ -10,13 +10,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .btn-retire {
-            background: #e11d48;
+            background: #dc2626;
             color: white;
             border: none;
             padding: 6px 14px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .btn-retire:hover {
+            background: #b91c1c;
+        }
+        .btn-retire:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-restore {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .btn-restore:hover {
+            background: #7c3aed;
         }
         .notice-warning {
             background: #fef3c7;
@@ -26,6 +47,16 @@
             border-radius: 12px;
             font-size: 0.85rem;
             color: #92400e;
+        }
+        .notice-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        .notice-danger {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            color: #991b1b;
         }
         .retire-form-group {
             margin-bottom: 16px;
@@ -37,7 +68,9 @@
             font-size: 0.85rem;
             color: var(--text);
         }
-        .retire-form-group input, .retire-form-group select, .retire-form-group textarea {
+        .retire-form-group input,
+        .retire-form-group select,
+        .retire-form-group textarea {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #ddd;
@@ -51,15 +84,152 @@
         }
         .retire-form-row .retire-form-group {
             flex: 1;
+            min-width: 200px;
         }
         .btn-warning {
-            background: #e11d48;
+            background: #dc2626;
             color: white;
             border: none;
             padding: 10px 24px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-warning:hover {
+            background: #b91c1c;
+        }
+        .btn-warning:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-available {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .status-loaned {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        .status-retired {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        .toast-success {
+            background-color: #10b981;
+        }
+        .toast-error {
+            background-color: #ef4444;
+        }
+        .toast-info {
+            background-color: #3b82f6;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+        .retired-row {
+            background-color: #f3f4f6;
+            opacity: 0.7;
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-select {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .search-input {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .refresh-btn:hover {
+            background: #2563eb;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        #retire-table {
+            min-width: 900px;
+        }
+        .tab-container {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--muted);
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -74,7 +244,7 @@
                 <div class="profile-image">
                     <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
                 </div>
-                <h3>Johannes Motsemme</h3>
+                <h3 id="user-name">Johannes Motsemme</h3>
                 <p>Manager</p>
                 <span>Asset Management System</span>
             </div>
@@ -87,16 +257,16 @@
                 <a href="manager-loan-requests.html">
                     <i class="fa-regular fa-file-lines"></i>
                     Loan Requests Approval
-                    <span class="badge">5</span>
+                    <span class="badge" id="pending-count">0</span>
                 </a>
                 <a href="manager-checkout-checkin.html">
                     <i class="fa-solid fa-right-left"></i>
                     Asset Check-Out / Check-In
                 </a>
-                <a href="#">
+                <a href="manager-overdue-loans.html">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     Overdue Loans
-                    <span class="badge">2</span>
+                    <span class="badge" id="overdue-count">0</span>
                 </a>
                 <a href="manager-retire-assets.html" class="active">
                     <i class="fa-solid fa-box-archive"></i>
@@ -123,15 +293,22 @@
 
         <div class="top-bar">
             <h1>Retire Assets</h1>
-     
+            <div class="filter-group">
+                <select id="status-filter" class="filter-select">
+                    <option value="ALL">All Assets</option>
+                    <option value="AVAILABLE">Available</option>
+                    <option value="LOANED">Loaned</option>
+                    <option value="RETIRED">Retired</option>
+                </select>
+                <input type="text" id="search-input" placeholder="Search by asset name or tag..." class="search-input">
+                <button id="refresh-btn" class="refresh-btn">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+            </div>
         </div>
 
-        <!-- Warning Notice -->
-        <div class="notice-warning">
-            <i class="fa-solid fa-triangle-exclamation"></i> <strong>Important:</strong> Retiring an asset will permanently remove it from the system. This action cannot be undone. Only assets that are not currently checked out can be retired.
-        </div>
 
-        <!-- Stats Summary -->
+        <!-- Stats Overview -->
         <section class="stats-grid">
             <div class="stat-card">
                 <div class="icon blue">
@@ -139,16 +316,25 @@
                 </div>
                 <div>
                     <span>Total Assets</span>
-                    <h3>28 Assets</h3>
+                    <h3 id="stat-total">0 Assets</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon green">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                    <span>Available</span>
+                    <h3 id="stat-available">0 Assets</h3>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="icon orange">
-                    <i class="fa-solid fa-wrench"></i>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </div>
                 <div>
-                    <span>Assets with Issues</span>
-                    <h3>5 Assets</h3>
+                    <span>Loaned</span>
+                    <h3 id="stat-loaned">0 Assets</h3>
                 </div>
             </div>
             <div class="stat-card">
@@ -156,164 +342,88 @@
                     <i class="fa-solid fa-archive"></i>
                 </div>
                 <div>
-                    <span>Pending Retirement</span>
-                    <h3>3 Assets</h3>
+                    <span>Retired</span>
+                    <h3 id="stat-retired">0 Assets</h3>
                 </div>
             </div>
         </section>
 
-        <!-- Assets Eligible for Retirement -->
+        <!-- Tabs -->
+        <div class="tab-container">
+            <button class="tab-btn active" data-tab="eligible">Eligible for Retirement</button>
+            <button class="tab-btn" data-tab="retired">Retired Assets</button>
+            <button class="tab-btn" data-tab="all">All Assets</button>
+        </div>
+
+        <!-- Assets Table -->
         <section class="card">
             <div class="card-header">
-                <h2>Assets Eligible for Retirement</h2>
-                <span style="color: var(--muted); font-size: 0.8rem;">These assets are not currently on loan</span>
+                <h2 id="table-title">Assets Eligible for Retirement</h2>
+                <span style="color: var(--muted); font-size: 0.8rem;" id="total-count">Total: 0 assets</span>
             </div>
             <div class="table-wrapper">
-                <table>
+                <table id="retire-table">
                     <thead>
-                        <tr>
-                            <th>Asset Name</th>
-                            <th>Asset Tag</th>
-                            <th>Category</th>
-                            <th>Condition</th>
-                            <th>Acquisition Date</th>
-                            <th>Location</th>
-                            <th>Action</th>
-                        </tr>
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Asset Tag</th>
+                        <th>Category</th>
+                        <th>Condition</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Old Dell Monitor</td>
-                            <td>AST-045</td>
-                            <td>Display</td>
-                            <td>Poor</td>
-                            <td>10 Mar 2019</td>
-                            <td>Storage Room C</td>
-                            <td><button class="btn-retire">Retire Asset</button></td>
-                        </tr>
-                        <tr>
-                            <td>Broken Keyboard</td>
-                            <td>AST-067</td>
-                            <td>Peripheral</td>
-                            <td>Damaged</td>
-                            <td>15 Jan 2020</td>
-                            <td>Repair Shop</td>
-                            <td><button class="btn-retire">Retire Asset</button></td>
-                        </tr>
-                        <tr>
-                            <td>Old Projector</td>
-                            <td>AST-032</td>
-                            <td>Audio Visual</td>
-                            <td>Poor</td>
-                            <td>20 Nov 2018</td>
-                            <td>Storage Room A</td>
-                            <td><button class="btn-retire">Retire Asset</button></td>
-                        </tr>
-                        <tr>
-                            <td>Worn Headset</td>
-                            <td>AST-088</td>
-                            <td>Audio</td>
-                            <td>Worn</td>
-                            <td>10 Jun 2021</td>
-                            <td>Storage Room B</td>
-                            <td><button class="btn-retire">Retire Asset</button></td>
-                        </tr>
-                        <tr>
-                            <td>Old Desktop Computer</td>
-                            <td>AST-023</td>
-                            <td>Computer</td>
-                            <td>Poor</td>
-                            <td>05 Aug 2017</td>
-                            <td>Storage Room C</td>
-                            <td><button class="btn-retire">Retire Asset</button></td>
-                        </tr>
+                    <tbody id="retire-tbody">
+                    <tr>
+                        <td colspan="7" class="loading">Loading assets...</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- Recently Retired Assets -->
+        <!-- Retirement Form -->
         <section class="card">
             <div class="card-header">
-                <h2>Recently Retired Assets</h2>
+                <h2>Retire an Asset</h2>
+                <span style="color: var(--muted); font-size: 0.8rem;">Select an asset and provide a reason for retirement</span>
             </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Asset Name</th>
-                            <th>Asset Tag</th>
-                            <th>Retirement Date</th>
-                            <th>Retired By</th>
-                            <th>Reason</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Old Laser Printer</td>
-                            <td>AST-015</td>
-                            <td>05 Jan 2025</td>
-                            <td>Johannes M.</td>
-                            <td>Beyond repair</td>
-                        </tr>
-                        <tr>
-                            <td>Broken Mouse</td>
-                            <td>AST-076</td>
-                            <td>03 Jan 2025</td>
-                            <td>Johannes M.</td>
-                            <td>Damaged</td>
-                        </tr>
-                        <tr>
-                            <td>Old Router</td>
-                            <td>AST-042</td>
-                            <td>28 Dec 2024</td>
-                            <td>Admin User</td>
-                            <td>Obsolete</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Retirement Request Form -->
-        <section class="card">
-            <div class="card-header">
-                <h2>Request Asset Retirement</h2>
-                <span style="color: var(--muted); font-size: 0.8rem;">For assets that need to be evaluated</span>
-            </div>
-            <form>
+            <form id="retire-form">
                 <div class="retire-form-row">
                     <div class="retire-form-group">
-                        <label>Select Asset</label>
-                        <select>
-                            <option>Old Dell Monitor (AST-045)</option>
-                            <option>Broken Keyboard (AST-067)</option>
-                            <option>Old Projector (AST-032)</option>
-                            <option>Worn Headset (AST-088)</option>
+                        <label>Select Asset <span style="color: red;">*</span></label>
+                        <select id="retire-asset" required>
+                            <option value="">-- Select an asset --</option>
                         </select>
                     </div>
                     <div class="retire-form-group">
-                        <label>Reason for Retirement</label>
-                        <select>
-                            <option>Damaged / Broken</option>
-                            <option>Obsolete / End of Life</option>
-                            <option>Lost / Stolen</option>
-                            <option>Replaced by newer model</option>
+                        <label>Reason for Retirement <span style="color: red;">*</span></label>
+                        <select id="retire-reason" required>
+                            <option value="">-- Select a reason --</option>
+                            <option value="DAMAGED">Damaged / Broken</option>
+                            <option value="OBSOLETE">Obsolete / End of Life</option>
+                            <option value="LOST">Lost / Stolen</option>
+                            <option value="REPLACED">Replaced by newer model</option>
+                            <option value="OTHER">Other</option>
                         </select>
                     </div>
                 </div>
                 <div class="retire-form-row">
                     <div class="retire-form-group" style="flex: 100%;">
                         <label>Additional Notes</label>
-                        <textarea rows="2" placeholder="Provide any additional information about this asset..."></textarea>
+                        <textarea id="retire-notes" rows="2" placeholder="Provide any additional information about this asset..."></textarea>
                     </div>
                 </div>
                 <div class="retire-form-row">
                     <div class="retire-form-group">
                         <label>&nbsp;</label>
-                        <button type="submit" class="btn-warning">Submit Retirement Request</button>
+                        <button type="submit" class="btn-warning" id="retire-submit-btn">
+                            <i class="fa-solid fa-box-archive"></i> Retire Asset
+                        </button>
                     </div>
                 </div>
+                <div id="retire-form-message" style="margin-top: 10px;"></div>
             </form>
         </section>
 
@@ -321,6 +431,6 @@
 
 </div>
 
-<script src="scripts/dashboard.js"></script>
+<script src="scripts/retire-assets.js"></script>
 </body>
 </html>
