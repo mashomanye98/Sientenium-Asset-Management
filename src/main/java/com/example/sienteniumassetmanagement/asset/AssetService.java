@@ -1,5 +1,6 @@
 /*Hlongwane Sinenhlanhla*/
 package com.example.sienteniumassetmanagement.asset;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,11 @@ public class AssetService {
         asset.setLocation(dto.getLocation());
         asset.setCondition(Asset.AssetCondition.valueOf(dto.getCondition()));
         asset.setPhotoPath(dto.getPhotoPath());
+
+        /*Thabo*/
+        if (dto.getStatus() != null && !dto.getStatus().isEmpty()) {
+            asset.setStatus(Asset.AssetStatus.valueOf(dto.getStatus()));
+        }
 
         return mapToResponse(assetRepository.save(asset));
     }
@@ -140,6 +146,18 @@ public class AssetService {
             throw new RuntimeException("Asset not found");
         }
         assetRepository.deleteById(id);
+    }
+
+    @Transactional
+    public AssetResponseDTO updateAssetStatus(Long id, String status) {
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Asset not found with id: " + id));
+
+        Asset.AssetStatus newStatus = Asset.AssetStatus.valueOf(status.toUpperCase());
+        asset.setStatus(newStatus);
+
+        Asset updated = assetRepository.save(asset);
+        return mapToResponse(updated);
     }
 
     // Currently loaned assets

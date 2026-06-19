@@ -64,33 +64,99 @@ async function fetchAllLoans() {
     }
 }
 
-// Approve loan
-async function approveLoan(loanId) {
-    try {
-        await apiRequest(`/loans/${loanId}/approve`, {
-            method: 'PUT'
-        });
-        showToast(`Loan ${loanId} approved successfully!`, 'success');
-        await fetchAllLoans();
-    } catch (error) {
-        console.error('Error approving loan:', error);
-        showToast('Failed to approve loan: ' + error.message, 'error');
-    }
-}
 
-// Reject loan
-async function rejectLoan(loanId) {
-    try {
-        await apiRequest(`/loans/${loanId}/reject`, {
-            method: 'PUT'
-        });
-        showToast(`Loan ${loanId} rejected`, 'info');
-        await fetchAllLoans();
-    } catch (error) {
-        console.error('Error rejecting loan:', error);
-        showToast('Failed to reject loan: ' + error.message, 'error');
-    }
-}
+        // Approve loan - Sets asset to LOANED
+        async function approveLoan(loanId) {
+            try {
+                var loan = null;
+                for (var i = 0; i < allLoans.length; i++) {
+                    if (allLoans[i].loanId === loanId) {
+                        loan = allLoans[i];
+                        break;
+                    }
+                }
+                if (!loan) {
+                    throw new Error('Loan not found');
+                }
+
+                // Approve
+                await apiRequest('/loans/' + loanId + '/approve', {
+                    method: 'PUT'
+                });
+
+                // Set asset to LOANED
+                var asset = await apiRequest('/api/assets/' + loan.assetId);
+                if (asset) {
+                    var requestData = {
+                        title: asset.title,
+                        category: asset.category,
+                        serialNumber: asset.serialNumber,
+                        acquisitionDate: asset.acquisitionDate,
+                        cost: asset.cost,
+                        location: asset.location,
+                        condition: asset.condition,
+                        photoPath: asset.photoPath,
+                        status: 'LOANED'
+                    };
+                    await apiRequest('/api/assets/' + loan.assetId, {
+                        method: 'PUT',
+                        body: JSON.stringify(requestData)
+                    });
+                }
+
+                showToast('Loan approved! Asset checked out.', 'success');
+                await fetchAllLoans();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed: ' + error.message, 'error');
+            }
+        }
+
+        // Reject loan - Restores asset to AVAILABLE (if needed)
+        async function rejectLoan(loanId) {
+            try {
+                var loan = null;
+                for (var i = 0; i < allLoans.length; i++) {
+                    if (allLoans[i].loanId === loanId) {
+                        loan = allLoans[i];
+                        break;
+                    }
+                }
+                if (!loan) {
+                    throw new Error('Loan not found');
+                }
+
+                await apiRequest('/loans/' + loanId + '/reject', {
+                    method: 'PUT'
+                });
+
+                // If asset is LOANED, restore to AVAILABLE
+                var asset = await apiRequest('/api/assets/' + loan.assetId);
+                if (asset && asset.status === 'LOANED') {
+                    var requestData = {
+                        title: asset.title,
+                        category: asset.category,
+                        serialNumber: asset.serialNumber,
+                        acquisitionDate: asset.acquisitionDate,
+                        cost: asset.cost,
+                        location: asset.location,
+                        condition: asset.condition,
+                        photoPath: asset.photoPath,
+                        status: 'AVAILABLE'
+                    };
+                    await apiRequest('/api/assets/' + loan.assetId, {
+                        method: 'PUT',
+                        body: JSON.stringify(requestData)
+                    });
+                }
+
+                showToast('Loan rejected.', 'info');
+                await fetchAllLoans();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed: ' + error.message, 'error');
+            }
+        }
 
 // Get status badge HTML
 function getStatusBadge(status) {

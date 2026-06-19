@@ -41,4 +41,6 @@ public class AssetRequestDTO {
     private String condition;
 
     private String photoPath;
+
+    private String status;
 }

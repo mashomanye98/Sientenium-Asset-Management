@@ -87,6 +87,14 @@ public class AssetController {
         return ResponseEntity.ok(assetService.filterByCondition(condition));
     }
 
+    // UPDATE ASSET STATUS
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<AssetResponseDTO> updateAssetStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+        return ResponseEntity.ok(assetService.updateAssetStatus(id, status));
+    }
+
 //    // Currently loaned assets — assets I currently have checked out
 //    @GetMapping("/myassets/current")
 //    public ResponseEntity<List<AssetResponseDTO>> getCurrentlyLoanedAssets(
