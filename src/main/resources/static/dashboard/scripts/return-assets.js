@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let activeLoans = [];
     const currentUser = getCurrentUser();
-    const readyKey = `readyReturnLoans:${currentUser.id || 'guest'}`;
 
     function getCurrentUser() {
         try {
@@ -16,18 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             return {};
         }
-    }
-
-    function getReadyLoanIds() {
-        try {
-            return JSON.parse(localStorage.getItem(readyKey)) || [];
-        } catch (error) {
-            return [];
-        }
-    }
-
-    function saveReadyLoanIds(ids) {
-        localStorage.setItem(readyKey, JSON.stringify(ids));
     }
 
     function formatDate(value) {
@@ -52,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return dueDate < today;
     }
 
-    function isReady(loan) {
-        return getReadyLoanIds().includes(String(loan.loanId));
+    function isReturned(loan) {
+        return String(loan.status || '').toUpperCase() === 'RETURNED' || Boolean(loan.returnDate);
     }
 
     function updateProfile() {
@@ -63,11 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateStats() {
-        const readyCount = activeLoans.filter(isReady).length;
-        const inUseCount = activeLoans.length - readyCount;
+        const returnedCount = activeLoans.filter(isReturned).length;
+        const inUseCount = activeLoans.length - returnedCount;
 
         document.getElementById('borrowedCount').textContent = activeLoans.length;
-        document.getElementById('readyCount').textContent = readyCount;
+        document.getElementById('readyCount').textContent = returnedCount;
         document.getElementById('inUseCount').textContent = inUseCount;
     }
 
@@ -76,13 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const filter = returnFilter.value;
 
         return activeLoans.filter(loan => {
-            const ready = isReady(loan);
+            const returned = isReturned(loan);
             const overdue = isOverdue(loan);
 
             const matchesFilter =
                 filter === 'ALL' ||
-                (filter === 'READY' && ready) ||
-                (filter === 'IN_USE' && !ready) ||
+                (filter === 'RETURNED' && returned) ||
+                (filter === 'IN_USE' && !returned) ||
                 (filter === 'OVERDUE' && overdue);
 
             const matchesSearch =
@@ -96,23 +83,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getStateBadge(loan) {
-        if (isOverdue(loan)) {
-            return '<span class="status overdue-badge">Overdue</span>';
+        if (isReturned(loan)) {
+            return '<span class="status ready-badge">Returned</span>';
         }
 
-        if (isReady(loan)) {
-            return '<span class="status ready-badge">Ready For Return</span>';
+        if (isOverdue(loan)) {
+            return '<span class="status overdue-badge">Overdue</span>';
         }
 
         return '<span class="status use-badge">Currently In Use</span>';
     }
 
     function getActionButton(loan) {
-        if (isReady(loan)) {
-            return `<button class="cancel-return-btn" data-action="cancel" data-loan-id="${loan.loanId}">Cancel Ready</button>`;
+        if (isReturned(loan)) {
+            return '<span class="muted-text">Awaiting manager check-in</span>';
         }
 
-        return `<button class="return-btn" data-action="ready" data-loan-id="${loan.loanId}">Mark Ready</button>`;
+        return `<button class="return-btn" data-action="return" data-loan-id="${loan.loanId}">Return Asset</button>`;
     }
 
     function renderLoans() {
@@ -141,15 +128,21 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    function setReadyState(loanId, ready) {
-        const ids = getReadyLoanIds();
-        const stringId = String(loanId);
-        const nextIds = ready
-            ? [...new Set([...ids, stringId])]
-            : ids.filter(id => id !== stringId);
+    async function returnAsset(loanId) {
+        try {
+            const response = await fetch(`/loans/${encodeURIComponent(loanId)}/return`, {
+                method: 'PUT'
+            });
 
-        saveReadyLoanIds(nextIds);
-        renderLoans();
+            if (!response.ok) {
+                throw new Error('Could not return this asset.');
+            }
+
+            await loadBorrowedAssets();
+        } catch (error) {
+            console.error(error);
+            returnBody.innerHTML = `<tr><td colspan="6" class="empty-state">${error.message}</td></tr>`;
+        }
     }
 
     async function loadBorrowedAssets() {
@@ -169,9 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const loans = await response.json();
-            activeLoans = loans.filter(loan =>
-                String(loan.status || '').toUpperCase() === 'APPROVED' && !loan.returnDate
-            );
+            activeLoans = loans.filter(loan => {
+                const status = String(loan.status || '').toUpperCase();
+                return status === 'APPROVED' || status === 'RETURNED';
+            });
 
             renderLoans();
         } catch (error) {
@@ -186,8 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = event.target.closest('button[data-loan-id]');
         if (!button) return;
 
-        const ready = button.dataset.action === 'ready';
-        setReadyState(button.dataset.loanId, ready);
+        if (button.dataset.action === 'return') {
+            returnAsset(button.dataset.loanId);
+        }
     });
 
     returnSearch.addEventListener('input', renderLoans);

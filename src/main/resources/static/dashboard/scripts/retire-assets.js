@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = window.location.origin;
 
 // Store data
 let allAssets = [];
@@ -260,11 +260,16 @@ function renderAssets() {
         filtered = tempFiltered;
     }
 
+    function isEligibleForRetirement(asset) {
+        var condition = String(asset.condition || '').toUpperCase();
+        return asset.status === 'AVAILABLE' && (condition === 'POOR' || condition === 'DAMAGED');
+    }
+
     // Apply tab filter
     if (currentTab === 'eligible') {
         var tempFiltered = [];
         for (var k = 0; k < filtered.length; k++) {
-            if (filtered[k].status === 'AVAILABLE') {
+            if (isEligibleForRetirement(filtered[k])) {
                 tempFiltered.push(filtered[k]);
             }
         }
@@ -325,7 +330,7 @@ function renderAssets() {
         }
 
         var actionHtml = '';
-        if (asset.status === 'AVAILABLE') {
+        if (asset.status === 'AVAILABLE' && (asset.condition === 'POOR' || asset.condition === 'DAMAGED')) {
             actionHtml = '<button class="btn-retire" data-asset-id="' + asset.assetId + '" data-asset-title="' + (asset.title || 'N/A') + '">Retire</button>';
         } else if (asset.status === 'RETIRED') {
             actionHtml = '<button class="btn-restore" data-asset-id="' + asset.assetId + '" data-asset-title="' + (asset.title || 'N/A') + '">Restore</button>';
@@ -412,10 +417,10 @@ function populateRetireForm() {
         return;
     }
 
-    // Only show available assets for retirement
+    // Only poor or damaged available assets are eligible for retirement
     for (var i = 0; i < allAssets.length; i++) {
         var asset = allAssets[i];
-        if (asset.status === 'AVAILABLE') {
+        if (asset.status === 'AVAILABLE' && (asset.condition === 'POOR' || asset.condition === 'DAMAGED')) {
             var option = document.createElement('option');
             option.value = asset.assetId;
             option.textContent = (asset.title || 'N/A') + ' (' + (asset.serialNumber || 'No SN') + ')';

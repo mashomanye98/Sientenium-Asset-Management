@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         availableAssets: document.getElementById('availableAssetsCount'),
         pendingRequests: document.getElementById('pendingRequestsCount'),
         activeLoans: document.getElementById('activeLoansCount'),
-        dueSoon: document.getElementById('dueSoonCount'),
+        returnedAssets: document.getElementById('dueSoonCount'),
         loanRequestsBadge: document.getElementById('loanRequestsBadge')
     };
 
@@ -72,6 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function isDueSoon(loan) {
         const days = daysUntil(loan.dueDate);
         return days !== null && days >= 0 && days <= 7;
+    }
+
+    function isReturnedLoan(loan) {
+        return String(loan.status || '').toUpperCase() === 'RETURNED' || Boolean(loan.returnDate);
     }
 
     function updateProfile() {
@@ -183,12 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateLoanSections() {
         const activeLoans = allLoans.filter(isApprovedActiveLoan);
         const pendingLoans = allLoans.filter(isPendingLoan);
-        const dueSoonLoans = activeLoans.filter(isDueSoon);
+        const returnedLoans = allLoans.filter(isReturnedLoan);
 
         counts.pendingRequests.textContent = pendingLoans.length;
         counts.loanRequestsBadge.textContent = pendingLoans.length;
         counts.activeLoans.textContent = activeLoans.length;
-        counts.dueSoon.textContent = dueSoonLoans.length;
+        counts.returnedAssets.textContent = returnedLoans.length;
 
         renderActiveLoans(activeLoans);
         renderNotifications(activeLoans, pendingLoans);

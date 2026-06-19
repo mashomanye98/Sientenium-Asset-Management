@@ -67,9 +67,22 @@ function formatDate(dateStr) {
 
 async function fetchAwaitingCheckInLoans() {
     try {
-        const approvedLoans = await apiRequest('/loans/approved');
-        awaitingCheckInLoans = approvedLoans.filter(loan =>
-            String(loan.status || '').toUpperCase() === 'APPROVED' && !loan.returnDate
+        const loans = await apiRequest('/loans');
+        const returnedLoans = loans.filter(loan =>
+            String(loan.status || '').toUpperCase() === 'RETURNED' || loan.returnDate
+        );
+        const loansWithAssets = await Promise.all(returnedLoans.map(async loan => {
+            try {
+                const asset = await apiRequest(`/api/assets/${loan.assetId}`);
+                return { ...loan, asset };
+            } catch (error) {
+                console.warn(`Could not load asset ${loan.assetId} for check-in`, error);
+                return { ...loan, asset: null };
+            }
+        }));
+
+        awaitingCheckInLoans = loansWithAssets.filter(loan =>
+            String(loan.asset?.status || '').toUpperCase() === 'LOANED'
         );
         return awaitingCheckInLoans;
     } catch (error) {
@@ -79,16 +92,17 @@ async function fetchAwaitingCheckInLoans() {
     }
 }
 
-async function checkInAsset(loanId, assetId) {
+async function checkInAsset(loanId, assetId, condition) {
+    if (!condition) {
+        showToast('Select the returned asset condition before check-in.', 'error');
+        return;
+    }
+
     if (!confirm('Are you sure you want to process this return?')) {
         return;
     }
 
     try {
-        await apiRequest(`/loans/${loanId}/return`, {
-            method: 'PUT'
-        });
-
         const asset = await apiRequest(`/api/assets/${assetId}`);
         const requestData = {
             title: asset.title,
@@ -97,7 +111,7 @@ async function checkInAsset(loanId, assetId) {
             acquisitionDate: asset.acquisitionDate,
             cost: asset.cost,
             location: asset.location,
-            condition: asset.condition,
+            condition,
             photoPath: asset.photoPath,
             status: 'AVAILABLE'
         };
@@ -107,7 +121,10 @@ async function checkInAsset(loanId, assetId) {
             body: JSON.stringify(requestData)
         });
 
-        showToast('Asset checked in successfully.', 'success');
+        const retirementMessage = ['POOR', 'DAMAGED'].includes(condition)
+            ? ' Asset is now eligible for retirement.'
+            : '';
+        showToast(`Asset checked in successfully.${retirementMessage}`, 'success');
         await loadData();
     } catch (error) {
         console.error('Error checking in asset:', error);
@@ -137,7 +154,7 @@ function renderAwaitingCheckInLoans() {
     document.getElementById('overdue-count').textContent = overdueCount;
 
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No assets awaiting check-in</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No returned assets awaiting check-in</td></tr>';
         return;
     }
 
@@ -159,9 +176,18 @@ function renderAwaitingCheckInLoans() {
             <td>${loan.userDepartment || 'N/A'}</td>
             <td>${formatDate(loan.dueDate)} ${isOverdue ? `<span style="color: #dc2626; font-weight: 600;">(${daysOverdue}d overdue)</span>` : ''}</td>
             <td>
-                <span class="status-badge ${isOverdue ? 'status-overdue' : 'status-active'}">
-                    ${isOverdue ? 'Overdue' : 'Awaiting Check-In'}
+                <span class="status-badge status-active">
+                    Returned
                 </span>
+            </td>
+            <td>
+                <select class="condition-select" data-loan-id="${loan.loanId}">
+                    <option value="NEW" ${loan.asset?.condition === 'NEW' ? 'selected' : ''}>NEW</option>
+                    <option value="GOOD" ${!loan.asset?.condition || loan.asset?.condition === 'GOOD' ? 'selected' : ''}>GOOD</option>
+                    <option value="FAIR" ${loan.asset?.condition === 'FAIR' ? 'selected' : ''}>FAIR</option>
+                    <option value="POOR" ${loan.asset?.condition === 'POOR' ? 'selected' : ''}>POOR</option>
+                    <option value="DAMAGED" ${loan.asset?.condition === 'DAMAGED' ? 'selected' : ''}>DAMAGED</option>
+                </select>
             </td>
             <td>
                 <button class="btn-checkin" data-loan-id="${loan.loanId}" data-asset-id="${loan.assetId}">
@@ -174,21 +200,22 @@ function renderAwaitingCheckInLoans() {
 
     document.querySelectorAll('.btn-checkin').forEach(btn => {
         btn.addEventListener('click', () => {
-            checkInAsset(parseInt(btn.dataset.loanId), parseInt(btn.dataset.assetId));
+            const conditionSelect = document.querySelector(`.condition-select[data-loan-id="${btn.dataset.loanId}"]`);
+            checkInAsset(parseInt(btn.dataset.loanId), parseInt(btn.dataset.assetId), conditionSelect?.value);
         });
     });
 }
 
 async function loadData() {
     const tbody = document.getElementById('checked-out-tbody');
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Loading assets awaiting check-in...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="loading">Loading assets awaiting check-in...</td></tr>';
 
     try {
         await fetchAwaitingCheckInLoans();
         renderAwaitingCheckInLoans();
     } catch (error) {
         console.error('Error loading data:', error);
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Failed to load assets awaiting check-in</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Failed to load assets awaiting check-in</td></tr>';
         showToast('Failed to load data: ' + error.message, 'error');
     }
 }

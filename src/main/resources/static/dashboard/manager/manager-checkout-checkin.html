@@ -113,6 +113,13 @@
             border: 1px solid #ddd;
             background: white;
         }
+        .condition-select {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            min-width: 120px;
+        }
         .search-input {
             padding: 10px 16px;
             border-radius: 10px;
@@ -210,7 +217,7 @@
 
         <!-- Notice -->
         <div class="notice-box" id="notice-box">
-            <i class="fa-solid fa-info-circle"></i> <strong>Manager Note:</strong> Approved loan requests are checked out automatically. Use this page to process assets that are awaiting check-in. Overdue items are highlighted in red.
+            <i class="fa-solid fa-info-circle"></i> <strong>Manager Note:</strong> Returned assets appear here for final check-in. Set the returned condition before check-in. Poor or damaged assets become eligible for retirement.
         </div>
 
         <!-- Stats Overview -->
@@ -239,7 +246,7 @@
         <section class="card">
             <div class="card-header">
                 <h2>Assets Awaiting Check-In</h2>
-                <span style="color: var(--muted); font-size: 0.8rem;">Click Check-In to process returns</span>
+                <span style="color: var(--muted); font-size: 0.8rem;">Set condition, then check in returned assets</span>
             </div>
             <div class="table-wrapper">
                 <table id="checkout-table">
@@ -251,12 +258,13 @@
                         <th>Department</th>
                         <th>Due Date</th>
                         <th>Status</th>
+                        <th>Condition</th>
                         <th>Action</th>
                     </tr>
                     </thead>
                     <tbody id="checked-out-tbody">
                     <tr>
-                        <td colspan="7" class="loading">Loading assets awaiting check-in...</td>
+                        <td colspan="8" class="loading">Loading assets awaiting check-in...</td>
                     </tr>
                     </tbody>
                 </table>
