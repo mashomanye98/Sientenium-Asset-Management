@@ -22,6 +22,8 @@ public class User {
     @Column(nullable = false)
     private String fullName;
 
+
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -37,6 +39,8 @@ public class User {
 
     @Column(nullable = false)
     private boolean active = true;
+
+
 
     public User() {
     }
