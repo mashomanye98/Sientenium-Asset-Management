@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!--
+    Admin users page for displaying pending signup requests.
+    Includes approve/reject actions and email notifications.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sientenium | User Requests</title>
+    <link rel="stylesheet" href="../styling/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <aside class="sidebar">
+        <div>
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
+                </div>
+                <h3>System Administrator</h3>
+                <p>Sientenium</p>
+                <span>ADMIN</span>
+            </div>
+            <nav>
+                <a href="admin-dashboard.html">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="active">
+                    <i class="fa-solid fa-users"></i>
+                    Users
+                </a>
+                <a href="assets-admin.html">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    Assets
+                </a>
+                <a href="#">
+                    <i class="fa-solid fa-hand-holding"></i>
+                    Loan Requests
+                    <span class="badge">8</span>
+                </a>
+                <a href="#">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    Active Loans
+                </a>
+                <a href="#">
+                    <i class="fa-solid fa-chart-column"></i>
+                    Reports
+                </a>
+                <a href="#">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    Audit Logs
+                </a>
+            </nav>
+        </div>
+        <button id="logout-btn" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div>
+                <h1>User Account Requests</h1>
+                <p>Review and approve new user registrations before they join the system.</p>
+            </div>
+        </div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Pending Account Requests</h2>
+            </div>
+            <div id="alertContainer"></div>
+            <table id="pendingRequests">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Requested At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="7" class="empty-state">Loading pending requests...</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Approved User Accounts</h2>
+            </div>
+            <table id="activeUsers">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="6" class="empty-state">Loading approved users...</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+<script src="../../scripts/users.js"></script>
+</body>
+</html>

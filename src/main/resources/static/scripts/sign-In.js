@@ -32,19 +32,19 @@ function redirectToDashboard(role) {
         case "ROLE_ADMIN":
 
             window.location.href =
-                "dashboard/admin-dashboard.html";
+                "dashboard/admin/admin-dashboard.html";
             break;
 
         case "ROLE_MANAGER":
 
             window.location.href =
-                "dashboard/manager-dashboard.html";
+                "dashboard/manager/manager-dashboard.html";
             break;
 
         case "ROLE_STAFF":
 
             window.location.href =
-                "dashboard/staff-dashboard.html";
+                "dashboard/staff/staff-dashboard.html";
             break;
 
         default:

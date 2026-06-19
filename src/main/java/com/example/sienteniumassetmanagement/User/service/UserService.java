@@ -2,10 +2,7 @@ package com.example.sienteniumassetmanagement.User.service;
 
 import java.util.List;
 
-import com.example.sienteniumassetmanagement.User.dto.AuthResponse;
-import com.example.sienteniumassetmanagement.User.dto.LoginRequest;
-import com.example.sienteniumassetmanagement.User.dto.RegisterRequest;
-import com.example.sienteniumassetmanagement.User.dto.UserSummaryResponse;
+import com.example.sienteniumassetmanagement.User.dto.*;
 import com.example.sienteniumassetmanagement.User.entity.Role;
 import com.example.sienteniumassetmanagement.User.entity.User;
 import com.example.sienteniumassetmanagement.User.repository.UserRepository;
@@ -49,14 +46,62 @@ public class UserService {
     }
 
     public List<UserSummaryResponse> getAllUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findByActiveTrue().stream()
                 .map(user -> new UserSummaryResponse(
                         user.getId(),
                         user.getFullName(),
                         user.getEmail(),
                         user.getDepartment(),
-                        user.getRole().name()))
+                        user.getRole().name(),
+                        user.isActive()))
                 .toList();
+    }
+
+    public UserSummaryResponse updateUser(Long userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (request.getFullName() != null && !request.getFullName().isBlank()) {
+            user.setFullName(request.getFullName().trim());
+        }
+
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            String normalizedEmail = request.getEmail().trim().toLowerCase();
+            if (userRepository.existsByEmailAndIdNot(normalizedEmail, userId)) {
+                throw new IllegalArgumentException("Email already in use by another account");
+            }
+            user.setEmail(normalizedEmail);
+        }
+
+        if (request.getDepartment() != null && !request.getDepartment().isBlank()) {
+            user.setDepartment(request.getDepartment().trim());
+        }
+
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            user.setRole(Role.valueOf(request.getRole().trim()));
+        }
+
+        userRepository.save(user);
+
+        return new UserSummaryResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getDepartment(),
+                user.getRole().name(),
+                user.isActive());
+    }
+
+    public void deactivateUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!user.isActive()) {
+            throw new IllegalStateException("User is already deactivated");
+        }
+
+        user.setActive(false);
+        userRepository.save(user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -71,7 +116,12 @@ public class UserService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return new AuthResponse("Login successful", user.getEmail(), user.getRole().name());
+        return new AuthResponse(
+                "Login successful",
+                user.getEmail(),
+                user.getRole().name(),
+                user.getId(),
+                user.getDepartment());
     }
 
     private Role mapDepartmentToRole(String department) {

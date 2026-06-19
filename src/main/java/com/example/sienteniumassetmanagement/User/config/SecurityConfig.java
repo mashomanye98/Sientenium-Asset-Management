@@ -117,6 +117,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
+                                "/api/auth/pending/**",
+                                "/api/auth/users/**",
                                 "/api/upload/**",      // ← to be removed
                                 "/api/audit-logs/**",
                                 "/api/assets/**",      // ← add this

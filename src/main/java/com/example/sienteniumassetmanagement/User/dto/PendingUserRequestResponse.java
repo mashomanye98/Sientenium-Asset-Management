@@ -1,23 +1,31 @@
 package com.example.sienteniumassetmanagement.User.dto;
 
-public class UserSummaryResponse {
+import com.example.sienteniumassetmanagement.User.entity.RequestStatus;
+
+/**
+ * DTO returned to the frontend for each pending signup request.
+ */
+public class PendingUserRequestResponse {
+
     private Long id;
     private String fullName;
     private String email;
     private String department;
     private String role;
-    private boolean active;
+    private RequestStatus status;
+    private java.time.LocalDateTime requestedAt;
 
-    public UserSummaryResponse() {
+    public PendingUserRequestResponse() {
     }
 
-    public UserSummaryResponse(Long id, String fullName, String email, String department, String role, boolean active) {
+    public PendingUserRequestResponse(Long id, String fullName, String email, String department, String role, RequestStatus status, java.time.LocalDateTime requestedAt) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
         this.department = department;
         this.role = role;
-        this.active = active;
+        this.status = status;
+        this.requestedAt = requestedAt;
     }
 
     public Long getId() { return id; }
@@ -30,6 +38,8 @@ public class UserSummaryResponse {
     public void setDepartment(String department) { this.department = department; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public RequestStatus getStatus() { return status; }
+    public void setStatus(RequestStatus status) { this.status = status; }
+    public java.time.LocalDateTime getRequestedAt() { return requestedAt; }
+    public void setRequestedAt(java.time.LocalDateTime requestedAt) { this.requestedAt = requestedAt; }
 }

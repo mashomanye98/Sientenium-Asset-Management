@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Assets</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../styling/dashboard.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- ================= Sidebar ================= -->
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="images/profile.jpg" alt="Profile">
+                </div>
+
+                <h3>John Doe</h3>
+                <p>Staff Member</p>
+            </div>
+
+            <nav>
+
+                <a href="staff-dashboard.html">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+
+                <a href="available-assets.html">
+                    <i class="fa-solid fa-laptop"></i>
+                    Available Assets
+                </a>
+
+                <a href="my-loans.html">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                    My Loans
+                </a>
+
+                <a href="#" class="active">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Return Assets
+                </a>
+
+            </nav>
+
+        </div>
+
+        <button class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+
+    </aside>
+
+    <!-- ================= Main Content ================= -->
+    <main class="main-content">
+
+        <!-- Top Header -->
+        <div class="top-bar">
+
+            <div>
+                <h1>Return Assets</h1>
+                <p>Manage and return borrowed assets.</p>
+            </div>
+
+        </div>
+
+        <!-- ================= Summary Cards ================= -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="icon blue">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+
+                <div>
+                    <h3>8</h3>
+                    <p>Borrowed Assets</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon green">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <div>
+                    <h3>3</h3>
+                    <p>Ready For Return</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon indigo">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div>
+                    <h3>5</h3>
+                    <p>Currently In Use</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= Borrowed Assets Table ================= -->
+
+        <section class="card">
+
+            <div class="card-header">
+                <h2>My Borrowed Assets</h2>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-box">
+
+                <input type="text"
+                       placeholder="Search asset by title, category or serial number">
+
+                <button>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+
+            </div>
+
+            <table>
+
+                <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Category</th>
+                    <th>Serial Number</th>
+                    <th>Location</th>
+                    <th>Condition</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr>
+                    <td>HP Laptop</td>
+                    <td>IT Equipment</td>
+                    <td>SN-009999</td>
+                    <td>Server Room</td>
+                    <td>
+                        <span class="status application">
+                            GOOD
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="return-btn">
+                            Return Asset
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Dell Monitor</td>
+                    <td>IT Equipment</td>
+                    <td>SN-008765</td>
+                    <td>Finance Office</td>
+                    <td>
+                        <span class="status proposal">
+                            FAIR
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="return-btn">
+                            Return Asset
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Projector</td>
+                    <td>Electronics</td>
+                    <td>SN-001111</td>
+                    <td>Meeting Room</td>
+                    <td>
+                        <span class="status application">
+                            GOOD
+                        </span>
+                    </td>
+
+                    <td>
+                        <button class="return-btn">
+                            Return Asset
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- ================= Return Instructions ================= -->
+
+        <section class="card">
+
+            <div class="card-header">
+                <h2>Return Instructions</h2>
+            </div>
+
+            <ul class="document-list">
+                <li>
+                    Ensure the asset is in its original condition.
+                </li>
+
+                <li>
+                    Include all accessories supplied with the asset.
+                </li>
+
+                <li>
+                    Report any damages before returning.
+                </li>
+
+                <li>
+                    Submit the return request using the button provided.
+                </li>
+            </ul>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>
