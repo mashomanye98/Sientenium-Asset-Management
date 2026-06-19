@@ -121,6 +121,7 @@ public class UserService {
                 user.getEmail(),
                 user.getRole().name(),
                 user.getId(),
+                user.getFullName(),
                 user.getDepartment());
     }
 

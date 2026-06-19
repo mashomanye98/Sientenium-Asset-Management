@@ -5,6 +5,7 @@ public class AuthResponse {
     private String email;
     private String role;
     private Long id;
+    private String fullName;
     private String department;
 
     public AuthResponse(String message, String email, String role) {
@@ -21,6 +22,15 @@ public class AuthResponse {
         this.department = department;
     }
 
+    public AuthResponse(String message, String email, String role, Long id, String fullName, String department) {
+        this.message = message;
+        this.email = email;
+        this.role = role;
+        this.id = id;
+        this.fullName = fullName;
+        this.department = department;
+    }
+
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
     public String getEmail() { return email; }
@@ -29,6 +39,8 @@ public class AuthResponse {
     public void setRole(String role) { this.role = role; }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
 }

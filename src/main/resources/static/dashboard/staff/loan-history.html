@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Return Assets</title>
+    <title>Loan History</title>
     <link rel="stylesheet" href="../styling/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        .return-toolbar {
+        .history-tools {
             display: flex;
             gap: 14px;
+            align-items: center;
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
 
-        .return-search,
-        .return-filter {
+        .history-search,
+        .history-filter {
             border: 1px solid #dcdce4;
             border-radius: 12px;
             padding: 12px 14px;
@@ -25,7 +26,7 @@
             outline: none;
         }
 
-        .return-search {
+        .history-search {
             min-width: 260px;
             flex: 1;
         }
@@ -34,36 +35,22 @@
             overflow-x: auto;
         }
 
-        .return-btn,
-        .cancel-return-btn {
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            padding: 10px 14px;
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        .return-btn {
-            background: var(--primary);
-            color: white;
+        .status-approved {
+            background: #dbeafe;
+            color: #1d4ed8;
         }
 
-        .cancel-return-btn {
-            background: #f4f6fb;
-            color: var(--secondary);
-        }
-
-        .ready-badge {
+        .status-returned {
             background: #dff7ea;
             color: #0f8c58;
         }
 
-        .use-badge {
-            background: #e8eef8;
-            color: var(--primary);
-        }
-
-        .overdue-badge {
+        .status-rejected {
             background: #fee2e2;
             color: #991b1b;
         }
@@ -73,24 +60,14 @@
             font-size: .82rem;
         }
 
-        .return-note {
-            display: grid;
-            gap: 10px;
-        }
-
-        .return-note li {
-            color: var(--text);
-            margin-left: 18px;
-        }
-
         @media (max-width: 760px) {
             .top-bar {
                 align-items: flex-start;
                 flex-direction: column;
             }
 
-            .return-search,
-            .return-filter {
+            .history-search,
+            .history-filter {
                 width: 100%;
             }
         }
@@ -123,13 +100,13 @@
                     <i class="fa-solid fa-hand-holding"></i>
                     Loan Requests
                 </a>
-                <a href="loan-history.html">
+                <a href="loan-history.html" class="active">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     Loan History
                 </a>
-                <a href="return-assets.html" class="active">
+                <a href="return-assets.html">
                     <i class="fa-solid fa-rotate-left"></i>
-                    Return Assets
+                    Return Asset
                 </a>
             </nav>
         </div>
@@ -143,8 +120,8 @@
     <main class="main-content">
         <div class="top-bar">
             <div>
-                <h1>Return Assets</h1>
-                <p>Prepare borrowed assets for manager check-in.</p>
+                <h1>Loan History</h1>
+                <p>View every asset borrowed from your profile.</p>
             </div>
             <button id="refreshBtn" class="new-document-btn">
                 <i class="fa-solid fa-rotate-right"></i>
@@ -155,21 +132,11 @@
         <section class="stats-grid">
             <div class="stat-card">
                 <div class="icon blue">
-                    <i class="fa-solid fa-box-open"></i>
+                    <i class="fa-solid fa-list"></i>
                 </div>
                 <div>
-                    <h3 id="borrowedCount">0</h3>
-                    <p>Borrowed Assets</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="icon green">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <div>
-                    <h3 id="readyCount">0</h3>
-                    <p>Ready For Return</p>
+                    <h3 id="totalLoans">0</h3>
+                    <p>Total Loans</p>
                 </div>
             </div>
 
@@ -178,24 +145,45 @@
                     <i class="fa-solid fa-laptop"></i>
                 </div>
                 <div>
-                    <h3 id="inUseCount">0</h3>
-                    <p>Currently In Use</p>
+                    <h3 id="activeLoans">0</h3>
+                    <p>Active Loans</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <h3 id="returnedLoans">0</h3>
+                    <p>Returned</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon purple">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+                <div>
+                    <h3 id="pendingLoans">0</h3>
+                    <p>Pending Requests</p>
                 </div>
             </div>
         </section>
 
         <section class="card">
             <div class="card-header">
-                <h2>My Borrowed Assets</h2>
+                <h2>Borrowed Assets</h2>
             </div>
 
-            <div class="return-toolbar">
-                <input id="returnSearch" class="return-search" type="text" placeholder="Search by asset, category, or loan id">
-                <select id="returnFilter" class="return-filter">
-                    <option value="ALL">All Borrowed Assets</option>
-                    <option value="READY">Ready For Return</option>
-                    <option value="IN_USE">Currently In Use</option>
-                    <option value="OVERDUE">Overdue</option>
+            <div class="history-tools">
+                <input id="historySearch" class="history-search" type="text" placeholder="Search by asset, category, or status">
+                <select id="statusFilter" class="history-filter">
+                    <option value="ALL">All Statuses</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Active</option>
+                    <option value="RETURNED">Returned</option>
+                    <option value="REJECTED">Rejected</option>
                 </select>
             </div>
 
@@ -205,34 +193,24 @@
                     <tr>
                         <th>Asset</th>
                         <th>Category</th>
+                        <th>Requested</th>
                         <th>Checked Out</th>
                         <th>Due Date</th>
-                        <th>Return State</th>
-                        <th>Action</th>
+                        <th>Returned</th>
+                        <th>Status</th>
                     </tr>
                     </thead>
-                    <tbody id="returnBody">
+                    <tbody id="historyBody">
                     <tr>
-                        <td colspan="6" class="empty-state">Loading borrowed assets...</td>
+                        <td colspan="7" class="empty-state">Loading loan history...</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </section>
-
-        <section class="card">
-            <div class="card-header">
-                <h2>Return Checklist</h2>
-            </div>
-            <ul class="return-note">
-                <li>Mark an asset ready only when it is physically ready to hand in.</li>
-                <li>Include chargers, cables, cases, and any accessories issued with it.</li>
-                <li>The asset stays checked out until a manager completes check-in.</li>
-            </ul>
-        </section>
     </main>
 </div>
 
-<script src="/dashboard/scripts/return-assets.js"></script>
+<script src="/dashboard/scripts/loan-history.js"></script>
 </body>
 </html>

@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Check Out / Check In</title>
-    <link rel="stylesheet" href="styling/dashboard.css">
+    <title>Manager - Asset Check-In</title>
+    <link rel="stylesheet" href="../styling/dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .warning-row {
             background-color: #fef2f2;
         }
-        .btn-checkout, .btn-checkin {
+        .btn-checkin {
             background: #3b82f6;
             color: white;
             border: none;
@@ -23,59 +23,13 @@
             margin-right: 5px;
             transition: all 0.2s;
         }
-        .btn-checkout:hover {
-            background: #2563eb;
-        }
         .btn-checkin {
             background: #8b5cf6;
         }
         .btn-checkin:hover {
             background: #7c3aed;
         }
-        .btn-checkout:disabled, .btn-checkin:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: var(--text);
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-family: 'Inter', sans-serif;
-        }
-        .form-row {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .form-row .form-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-        .btn-primary:disabled {
+        .btn-checkin:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
@@ -214,7 +168,7 @@
                 </a>
                 <a href="manager-checkout-checkin.html" class="active">
                     <i class="fa-solid fa-right-left"></i>
-                    Asset Check-Out / Check-In
+                    Asset Check-In
                 </a>
                 <a href="manager-overdue-loans.html">
                     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -245,7 +199,7 @@
     <main class="main-content">
 
         <div class="top-bar">
-            <h1>Asset Check-Out / Check-In</h1>
+            <h1>Asset Check-In</h1>
             <div class="filter-group">
                 <input type="text" id="search-input" placeholder="Search by asset or borrower..." class="search-input">
                 <button id="refresh-btn" class="refresh-btn">
@@ -256,26 +210,17 @@
 
         <!-- Notice -->
         <div class="notice-box" id="notice-box">
-            <i class="fa-solid fa-info-circle"></i> <strong>Manager Note:</strong> Use this page to check assets out to employees and process returns. Overdue items are highlighted in red.
+            <i class="fa-solid fa-info-circle"></i> <strong>Manager Note:</strong> Approved loan requests are checked out automatically. Use this page to process assets that are awaiting check-in. Overdue items are highlighted in red.
         </div>
 
         <!-- Stats Overview -->
         <section class="stats-grid">
             <div class="stat-card">
-                <div class="icon green">
-                    <i class="fa-solid fa-box"></i>
-                </div>
-                <div>
-                    <span>Available Assets</span>
-                    <h3 id="stat-available">0 Assets</h3>
-                </div>
-            </div>
-            <div class="stat-card">
                 <div class="icon blue">
-                    <i class="fa-solid fa-arrow-right"></i>
+                    <i class="fa-solid fa-right-to-bracket"></i>
                 </div>
                 <div>
-                    <span>Checked Out</span>
+                    <span>Awaiting Check-In</span>
                     <h3 id="stat-checkedout">0 Loans</h3>
                 </div>
             </div>
@@ -290,10 +235,10 @@
             </div>
         </section>
 
-        <!-- Checked Out Assets Table -->
+        <!-- Assets Awaiting Check-In Table -->
         <section class="card">
             <div class="card-header">
-                <h2>Currently Checked Out Assets</h2>
+                <h2>Assets Awaiting Check-In</h2>
                 <span style="color: var(--muted); font-size: 0.8rem;">Click Check-In to process returns</span>
             </div>
             <div class="table-wrapper">
@@ -311,75 +256,17 @@
                     </thead>
                     <tbody id="checked-out-tbody">
                     <tr>
-                        <td colspan="7" class="loading">Loading checked out assets...</td>
+                        <td colspan="7" class="loading">Loading assets awaiting check-in...</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
-
-        <!-- Available Assets Table -->
-        <section class="card">
-            <div class="card-header">
-                <h2>Available Assets</h2>
-                <span style="color: var(--muted); font-size: 0.8rem;">Click Check-Out to loan an asset</span>
-            </div>
-            <div class="table-wrapper">
-                <table id="available-table">
-                    <thead>
-                    <tr>
-                        <th>Asset Name</th>
-                        <th>Asset Tag</th>
-                        <th>Category</th>
-                        <th>Condition</th>
-                        <th>Location</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody id="available-tbody">
-                    <tr>
-                        <td colspan="6" class="loading">Loading available assets...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Quick Check Out Form -->
-        <section class="card">
-            <div class="card-header">
-                <h2>Quick Check Out Form</h2>
-                <span style="color: var(--muted); font-size: 0.8rem;">Select an available asset and borrower</span>
-            </div>
-            <form id="checkout-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Select Asset <span style="color: red;">*</span></label>
-                        <select id="checkout-asset" required>
-                            <option value="">-- Select an asset --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Borrower (User ID) <span style="color: red;">*</span></label>
-                        <input type="number" id="checkout-user" placeholder="Enter user ID" required min="1">
-                    </div>
-                    <div class="form-group">
-                        <label>Due Date <span style="color: red;">*</span></label>
-                        <input type="date" id="checkout-due-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="submit" class="btn-primary" id="checkout-submit-btn">Confirm Check Out</button>
-                    </div>
-                </div>
-                <div id="checkout-form-message" style="margin-top: 10px;"></div>
-            </form>
         </section>
 
     </main>
 
 </div>
 
-<script src="scripts/checkout-checkin.js"></script>
+<script src="../scripts/checkout-checkin.js"></script>
 </body>
 </html>

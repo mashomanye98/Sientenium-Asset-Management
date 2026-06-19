@@ -92,6 +92,13 @@ document.addEventListener("DOMContentLoaded", () => {
             button.addEventListener('click', () => {
                 const assetId = button.dataset.assetId;
                 if (!assetId) return;
+
+                const selectedAsset = assets.find(asset => String(asset.assetId) === String(assetId));
+                if (selectedAsset) {
+                    // Keep the clicked asset available for the next page.
+                    sessionStorage.setItem('selectedLoanAsset', JSON.stringify(selectedAsset));
+                }
+
                 window.location.href = `loan-request.html?assetId=${encodeURIComponent(assetId)}`;
             });
         });
@@ -100,6 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function applyFilters() {
         renderAssets(getFilteredAssets());
     }
+
+    window.applyFilters = applyFilters;
 
     window.filterLocation = function (btn, loc) {
         if (activeLocation === loc) {
@@ -127,5 +136,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     searchInput.addEventListener('input', applyFilters);
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            window.location.href = '../../signIn.html';
+        });
+    }
+
     fetchAssets();
 });

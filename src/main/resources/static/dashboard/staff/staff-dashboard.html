@@ -35,7 +35,7 @@ Version     : 1.0
                     <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
                 </div>
 
-                <h3>Thabo Monei</h3>
+                <h3 id="profileName">Staff Member</h3>
 
                 <!-- Role is important for RBAC (role-based access control) -->
                 <p>Staff</p>
@@ -56,7 +56,17 @@ Version     : 1.0
                 <a href="loan-request.html">
                     <i class="fa-solid fa-hand-holding"></i>
                     Loan Requests
-                    <span class="badge">4</span>
+                    <span class="badge" id="loanRequestsBadge">0</span>
+                </a>
+
+                <a href="loan-history.html">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    Loan History
+                </a>
+
+                <a href="return-assets.html">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Return Assets
                 </a>
 
             </nav>
@@ -85,9 +95,9 @@ Version     : 1.0
                 </p>
             </div>
 
-            <button class="new-document-btn">
-                Request Asset
-            </button>
+        <button class="new-document-btn" id="requestAssetBtn">
+            Request Asset
+        </button>
 
         </div>
 
@@ -101,7 +111,7 @@ Version     : 1.0
                 </div>
 
                 <div>
-                    <h3>245</h3>
+                    <h3 id="availableAssetsCount">0</h3>
                     <p>Available Assets</p>
                 </div>
 
@@ -114,7 +124,7 @@ Version     : 1.0
                 </div>
 
                 <div>
-                    <h3>4</h3>
+                    <h3 id="pendingRequestsCount">0</h3>
                     <p>Pending Requests</p>
                 </div>
 
@@ -127,7 +137,7 @@ Version     : 1.0
                 </div>
 
                 <div>
-                    <h3>2</h3>
+                    <h3 id="activeLoansCount">0</h3>
                     <p>Active Loans</p>
                 </div>
 
@@ -140,7 +150,7 @@ Version     : 1.0
                 </div>
 
                 <div>
-                    <h3>1</h3>
+                    <h3 id="dueSoonCount">0</h3>
                     <p>Due Soon</p>
                 </div>
 
@@ -153,7 +163,7 @@ Version     : 1.0
 
             <div class="card-header">
                 <h2>Available Assets</h2>
-                <a href="#">View All</a>
+                <a href="#" id="viewAllAssetsLink">View All</a>
             </div>
 
             <table>
@@ -168,32 +178,10 @@ Version     : 1.0
                 </tr>
                 </thead>
 
-                <tbody>
-
+                <tbody id="availableAssetsBody">
                 <tr>
-                    <td>Dell Latitude 5420</td>
-                    <td>Laptop</td>
-                    <td>IT Store</td>
-                    <td>Excellent</td>
-                    <td>
-                        <span class="status application">
-                            Available
-                        </span>
-                    </td>
+                    <td colspan="5" class="empty-state">Loading available assets...</td>
                 </tr>
-
-                <tr>
-                    <td>Canon Projector</td>
-                    <td>Projector</td>
-                    <td>Boardroom</td>
-                    <td>Good</td>
-                    <td>
-                        <span class="status application">
-                            Available
-                        </span>
-                    </td>
-                </tr>
-
                 </tbody>
 
             </table>
@@ -220,18 +208,10 @@ Version     : 1.0
                     </tr>
                     </thead>
 
-                    <tbody>
-
+                    <tbody id="activeLoansBody">
                     <tr>
-                        <td>Dell Latitude 5420</td>
-                        <td>15 June 2026</td>
-                        <td>
-                            <span class="status proposal">
-                                Active
-                            </span>
-                        </td>
+                        <td colspan="3" class="empty-state">Loading active loans...</td>
                     </tr>
-
                     </tbody>
 
                 </table>
@@ -245,43 +225,8 @@ Version     : 1.0
                     <h2>Notifications</h2>
                 </div>
 
-                <div class="activity">
-
-                    <div class="activity-icon success">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-
-                    <div class="activity-content">
-                        <h4>Loan Approved</h4>
-                        <p>Your projector request was approved.</p>
-                    </div>
-
-                </div>
-
-                <div class="activity">
-
-                    <div class="activity-icon danger">
-                        <i class="fa-solid fa-clock"></i>
-                    </div>
-
-                    <div class="activity-content">
-                        <h4>Asset Due Soon</h4>
-                        <p>Your laptop is due in 2 days.</p>
-                    </div>
-
-                </div>
-
-                <div class="activity">
-
-                    <div class="activity-icon success">
-                        <i class="fa-solid fa-box"></i>
-                    </div>
-
-                    <div class="activity-content">
-                        <h4>Asset Returned</h4>
-                        <p>Projector returned successfully.</p>
-                    </div>
-
+                <div id="notificationsList">
+                    <div class="empty-state">Loading system alerts...</div>
                 </div>
 
             </div>
@@ -292,5 +237,6 @@ Version     : 1.0
 
 </div>
 
+<script src="/dashboard/scripts/staff-dashboard.js"></script>
 </body>
 </html>

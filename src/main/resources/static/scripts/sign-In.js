@@ -178,7 +178,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         email: data.email,
 
-                        role: data.role
+                        role: data.role,
+
+                        id: data.id,
+
+                        fullName: data.fullName,
+
+                        department: data.department
 
                     })
                 );
