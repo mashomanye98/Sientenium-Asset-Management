@@ -43,4 +43,6 @@ public class AssetRequestDTO {
     private String photoPath;
 
     private String status;
+
+    private Long createdByUserId;
 }

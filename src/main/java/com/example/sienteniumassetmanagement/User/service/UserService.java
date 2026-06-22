@@ -6,6 +6,8 @@ import com.example.sienteniumassetmanagement.User.dto.*;
 import com.example.sienteniumassetmanagement.User.entity.Role;
 import com.example.sienteniumassetmanagement.User.entity.User;
 import com.example.sienteniumassetmanagement.User.repository.UserRepository;
+import com.example.sienteniumassetmanagement.auditlog.AuditLog;
+import com.example.sienteniumassetmanagement.auditlog.AuditLogService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,12 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final AuditLogService auditLogService;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager, AuditLogService auditLogService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.auditLogService = auditLogService;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -41,6 +45,15 @@ public class UserService {
         user.setRole(role);
 
         userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+        // Record: new user registered directly
+        auditLogService.recordAction(
+                savedUser.getId(),
+                AuditLog.EntityType.USER,
+                savedUser.getId(),
+                AuditLog.Action.CREATE
+        );
 
         return new AuthResponse("User registered successfully", user.getEmail(), user.getRole().name());
     }
@@ -82,6 +95,15 @@ public class UserService {
         }
 
         userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // Record: user profile updated
+        auditLogService.recordAction(
+                savedUser.getId(),
+                AuditLog.EntityType.USER,
+                savedUser.getId(),
+                AuditLog.Action.UPDATE
+        );
 
         return new UserSummaryResponse(
                 user.getId(),
@@ -102,6 +124,13 @@ public class UserService {
 
         user.setActive(false);
         userRepository.save(user);
+        // Record: user deactivated by admin
+        auditLogService.recordAction(
+                userId,
+                AuditLog.EntityType.USER,
+                userId,
+                AuditLog.Action.DEACTIVATE
+        );
     }
 
     public AuthResponse login(LoginRequest request) {
