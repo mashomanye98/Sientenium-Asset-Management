@@ -68,7 +68,7 @@ nav a{
     margin-bottom:8px;
     text-decoration:none;
     color:var(--text);
-    border-radius:12px;
+    border-radius:1px;
     transition:.25s;
 }
 
@@ -139,7 +139,7 @@ nav a.active{
 .stat-card{
     background:white;
     padding:24px;
-    border-radius:16px;
+    border-radius:1px;
     display:flex;
     gap:16px;
     align-items:center;
@@ -159,6 +159,8 @@ nav a.active{
 .blue{background:#3B82F6;}
 .indigo{background:#6366F1;}
 .green{background:#10B981;}
+.orange{background:#F59E0B;}
+.red{background:#EF4444;}
 
 .card{
     background:white;
@@ -292,7 +294,7 @@ td{
 
 .modal-container {
     background: white;
-    border-radius: 24px;
+    border-radius: 1px;
     overflow: hidden;
     width: min(95%, 720px);
     max-width: 720px;

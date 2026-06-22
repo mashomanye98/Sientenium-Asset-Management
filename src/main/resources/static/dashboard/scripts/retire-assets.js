@@ -403,7 +403,10 @@ function updateStats() {
     document.getElementById('stat-retired').textContent = retired + ' Assets';
 
     // Update sidebar badge
-    document.getElementById('pending-count').textContent = available;
+    var pendingCount = document.getElementById('pending-count');
+    if (pendingCount) {
+        pendingCount.textContent = available;
+    }
 }
 
 // Populate retire form dropdown
@@ -523,7 +526,7 @@ function setupEventListeners() {
     document.getElementById('logout-btn').addEventListener('click', function() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
-        window.location.href = '../signIn.html';
+        window.location.href = '../../signIn.html';
     });
 
     document.getElementById('retire-asset').addEventListener('change', function() {
@@ -537,8 +540,9 @@ function setupEventListeners() {
 
 // Update user name
 function updateUserInfo() {
-    var userName = localStorage.getItem('userName') || 'Johannes Motsemme';
-    document.getElementById('user-name').textContent = userName;
+    var userNameElement = document.getElementById('user-name');
+    var userName = localStorage.getItem('userName') || userNameElement.textContent || 'System Administrator';
+    userNameElement.textContent = userName;
 }
 
 // Initialize
