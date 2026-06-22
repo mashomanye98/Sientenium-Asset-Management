@@ -125,7 +125,7 @@
   .filter-bar select {
     height: 34px;
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    border-radius: 1px var(--radius-md);
     padding: 0 10px;
     font-size: 13px;
     font-family: inherit;
@@ -146,7 +146,7 @@
   .table-wrap {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: 1px var(--radius-lg);
     overflow: hidden;
   }
 
@@ -206,7 +206,7 @@
   .summary-pill {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    border-radius: 1px  var(--radius-md);
     padding: 8px 14px;
     font-size: 13px;
     color: var(--text-secondary);

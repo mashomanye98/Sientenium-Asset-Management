@@ -140,7 +140,7 @@ body{
   transform: translateX(-50%);
   min-width: 250px;
   padding: 15px 20px;
-  border-radius: 8px;
+  border-radius: 1px;
   color: #fff;
   font-weight: 600;
   font-size: 14px;
@@ -216,7 +216,7 @@ body{
 .input-group input{
     width:100%;
     padding:12px 12px 12px 40px; /* 🔥 space for icon */
-    border-radius:25px;
+    border-radius:2px;
     border:1px solid #ddd;
     outline:none;
     transition:0.3s;
@@ -253,7 +253,7 @@ body{
     width:100%;
     padding:12px;
     border:none;
-    border-radius:25px;
+    border-radius:2px;
     background:#747E90;
     color:white;
     font-weight:bold;

@@ -68,7 +68,7 @@ nav a{
     margin-bottom:8px;
     text-decoration:none;
     color:var(--text);
-    border-radius:12px;
+    border-radius:1px;
     transition:.25s;
 }
 
@@ -125,7 +125,7 @@ nav a.active{
     background:var(--primary);
     color:white;
     padding:14px 22px;
-    border-radius:10px;
+    border-radius:1px;
     cursor:pointer;
 }
 
@@ -139,7 +139,7 @@ nav a.active{
 .stat-card{
     background:white;
     padding:24px;
-    border-radius:16px;
+    border-radius:1px;
     display:flex;
     gap:16px;
     align-items:center;
@@ -159,10 +159,11 @@ nav a.active{
 .blue{background:#3B82F6;}
 .indigo{background:#6366F1;}
 .green{background:#10B981;}
+.red{background:#EF4444;}
 
 .card{
     background:white;
-    border-radius:18px;
+    border-radius:1px;
     padding:25px;
     margin-bottom:30px;
     box-shadow:0 10px 30px rgba(0,0,0,.04);
@@ -202,7 +203,7 @@ td{
 
 .alert {
     padding: 16px 18px;
-    border-radius: 14px;
+    border-radius:1px;
     margin-bottom: 20px;
     color: white;
     font-weight: 600;
@@ -219,7 +220,7 @@ td{
 .action-btn{
     border:none;
     padding:.65rem 1rem;
-    border-radius:10px;
+    border-radius:1px;
     cursor:pointer;
     font-size:.9rem;
     font-weight:600;
@@ -292,7 +293,7 @@ td{
 
 .modal-container {
     background: white;
-    border-radius: 24px;
+    border-radius: 1px;
     overflow: hidden;
     width: min(95%, 720px);
     max-width: 720px;
@@ -320,7 +321,7 @@ td{
 .modal-container .modal-body img {
     width: 100%;
     height: auto;
-    border-radius: 18px;
+    border-radius: 2x;
     max-height: 70vh;
 }
 

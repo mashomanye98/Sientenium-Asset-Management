@@ -196,7 +196,7 @@ function formatDate(dateStr) {
 
 // Update user name
 function updateUserInfo() {
-    const userName = localStorage.getItem('userName') || 'Johannes Motsemme';
+    const userName = localStorage.getItem('userName') || 'System Administrator';
     document.getElementById('user-name').textContent = userName;
 }
 
@@ -270,16 +270,21 @@ function updateStats() {
     document.getElementById('stat-rejected').textContent = `${rejected} Request${rejected !== 1 ? 's' : ''}`;
 
     document.getElementById('total-count').textContent = `Total: ${allLoans.length} requests`;
-    document.getElementById('pending-count').textContent = pending;
+    const pendingCount = document.getElementById('pending-count');
+    if (pendingCount) {
+        pendingCount.textContent = pending;
+    }
 
     // Update summary list
     const summaryList = document.getElementById('summary-list');
-    summaryList.innerHTML = `
-        <li><i class="fa-regular fa-clock"></i> Pending: ${pending} requests</li>
-        <li><i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Approved: ${approved}</li>
-        <li><i class="fa-solid fa-times-circle" style="color: #ef4444;"></i> Rejected: ${rejected}</li>
-        <li><i class="fa-solid fa-arrow-rotate-left" style="color: #4f46e5;"></i> Returned: ${returned}</li>
-    `;
+    if (summaryList) {
+        summaryList.innerHTML = `
+            <li><i class="fa-regular fa-clock"></i> Pending: ${pending} requests</li>
+            <li><i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Approved: ${approved}</li>
+            <li><i class="fa-solid fa-times-circle" style="color: #ef4444;"></i> Rejected: ${rejected}</li>
+            <li><i class="fa-solid fa-arrow-rotate-left" style="color: #4f46e5;"></i> Returned: ${returned}</li>
+        `;
+    }
 }
 
 // Update UI
@@ -309,7 +314,7 @@ function setupEventListeners() {
     document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
-        window.location.href = 'login.html';
+        window.location.href = '../../signIn.html';
     });
 }
 
