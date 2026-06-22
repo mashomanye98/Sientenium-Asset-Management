@@ -11,6 +11,8 @@ import com.example.sienteniumassetmanagement.User.entity.Role;
 import com.example.sienteniumassetmanagement.User.entity.User;
 import com.example.sienteniumassetmanagement.User.repository.PendingUserRequestRepository;
 import com.example.sienteniumassetmanagement.User.repository.UserRepository;
+import com.example.sienteniumassetmanagement.auditlog.AuditLog;
+import com.example.sienteniumassetmanagement.auditlog.AuditLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,14 +33,15 @@ public class PendingUserRequestService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 //    private final EmailService emailService;
-//
+    private final AuditLogService auditLogService;
     public PendingUserRequestService(PendingUserRequestRepository pendingRequestRepository,
                                      UserRepository userRepository,
-                                     PasswordEncoder passwordEncoder)
+                                     PasswordEncoder passwordEncoder, AuditLogService auditLogService)
     {
         this.pendingRequestRepository = pendingRequestRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditLogService = auditLogService;
     }
 
     public PendingUserRequestResponse createRequest(RegisterRequest request) {
@@ -59,6 +62,15 @@ public class PendingUserRequestService {
         pendingRequest.setRequestedAt(LocalDateTime.now());
 
         pendingRequestRepository.save(pendingRequest);
+
+        // Record: new user registration request submitted
+        // We use 0L as userId since the user doesn't exist yet
+        auditLogService.recordAction(
+                0L,
+                AuditLog.EntityType.USER,
+                pendingRequest.getId(),
+                AuditLog.Action.REQUEST
+        );
 
         return buildResponse(pendingRequest);
     }
@@ -91,7 +103,7 @@ public class PendingUserRequestService {
         user.setDepartment(pendingRequest.getDepartment());
         user.setRole(pendingRequest.getRole());
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
 //        try {
 //            emailService.sendAccountActivationEmail(user);
@@ -101,6 +113,15 @@ public class PendingUserRequestService {
 
         pendingRequest.setStatus(RequestStatus.APPROVED);
         pendingRequestRepository.save(pendingRequest);
+
+        // Record: admin approved a user registration
+        // CORRECT
+        auditLogService.recordAction(
+                savedUser.getId(),
+                AuditLog.EntityType.USER,
+                savedUser.getId(),
+                AuditLog.Action.APPROVE
+        );
 
         return buildResponse(pendingRequest);
     }
@@ -116,6 +137,16 @@ public class PendingUserRequestService {
 
         pendingRequest.setStatus(RequestStatus.REJECTED);
         pendingRequestRepository.save(pendingRequest);
+
+        // Record: admin rejected a user registration
+        // Use 0L since the user was never created
+        auditLogService.recordAction(
+                0L,
+                AuditLog.EntityType.USER,
+                requestId,
+                AuditLog.Action.REJECT
+        );
+
 
         return buildResponse(pendingRequest);
     }

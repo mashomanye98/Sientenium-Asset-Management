@@ -4,6 +4,8 @@ import com.example.sienteniumassetmanagement.User.entity.User;
 import com.example.sienteniumassetmanagement.User.repository.UserRepository;
 import com.example.sienteniumassetmanagement.asset.Asset;
 import com.example.sienteniumassetmanagement.asset.AssetRepository;
+import com.example.sienteniumassetmanagement.auditlog.AuditLog;
+import com.example.sienteniumassetmanagement.auditlog.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
     @Transactional
     public LoanResponseDTO createLoan(LoanRequestDTO requestDTO) {
@@ -47,6 +50,18 @@ public class LoanService {
         }
 
         Loan savedLoan = loanRepository.save(loan);
+
+
+
+
+        // Record: staff member requested a loan
+        auditLogService.recordAction(
+                requestDTO.getUserId(),
+                AuditLog.EntityType.LOAN,
+                savedLoan.getLoanId(),
+                AuditLog.Action.REQUEST
+        );
+
         return convertToDTO(savedLoan);
     }
 
@@ -57,6 +72,15 @@ public class LoanService {
 
         loan.approve(LocalDate.now(), loan.getDueDate());
         Loan updatedLoan = loanRepository.save(loan);
+
+        // Record: admin/manager approved the loan
+        auditLogService.recordAction(
+                loan.getUserId(),
+                AuditLog.EntityType.LOAN,
+                loanId,
+                AuditLog.Action.APPROVE
+        );
+
         return convertToDTO(updatedLoan);
     }
 
@@ -67,6 +91,15 @@ public class LoanService {
 
         loan.reject();
         Loan updatedLoan = loanRepository.save(loan);
+
+        // Record: admin/manager rejected the loan
+        auditLogService.recordAction(
+                loan.getUserId(),
+                AuditLog.EntityType.LOAN,
+                loanId,
+                AuditLog.Action.REJECT
+        );
+
         return convertToDTO(updatedLoan);
     }
 
@@ -78,6 +111,16 @@ public class LoanService {
 
         loan.returnLoan(LocalDate.now());
         Loan updatedLoan = loanRepository.save(loan);
+
+
+        // Record: asset returned
+        auditLogService.recordAction(
+                loan.getUserId(),
+                AuditLog.EntityType.LOAN,
+                loanId,
+                AuditLog.Action.CHECK_IN
+        );
+
         return convertToDTO(updatedLoan);
     }
 
@@ -135,6 +178,18 @@ public class LoanService {
 
     @Transactional
     public void deleteLoan(Long loanId) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new RuntimeException("Loan not found"));
+        //loanRepository.deleteById(loanId);
+
+        // Record: loan deleted
+        auditLogService.recordAction(
+                loan.getUserId(),
+                AuditLog.EntityType.LOAN,
+                loanId,
+                AuditLog.Action.DELETE
+        );
+
         loanRepository.deleteById(loanId);
     }
 
