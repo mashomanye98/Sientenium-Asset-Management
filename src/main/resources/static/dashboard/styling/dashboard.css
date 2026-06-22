@@ -68,7 +68,7 @@ nav a{
     margin-bottom:8px;
     text-decoration:none;
     color:var(--text);
-    border-radius:1px;
+    border-radius:12px;
     transition:.25s;
 }
 
@@ -125,7 +125,7 @@ nav a.active{
     background:var(--primary);
     color:white;
     padding:14px 22px;
-    border-radius:1px;
+    border-radius:10px;
     cursor:pointer;
 }
 
@@ -139,7 +139,7 @@ nav a.active{
 .stat-card{
     background:white;
     padding:24px;
-    border-radius:1px;
+    border-radius:16px;
     display:flex;
     gap:16px;
     align-items:center;
@@ -159,11 +159,10 @@ nav a.active{
 .blue{background:#3B82F6;}
 .indigo{background:#6366F1;}
 .green{background:#10B981;}
-.red{background:#EF4444;}
 
 .card{
     background:white;
-    border-radius:1px;
+    border-radius:18px;
     padding:25px;
     margin-bottom:30px;
     box-shadow:0 10px 30px rgba(0,0,0,.04);
@@ -203,7 +202,7 @@ td{
 
 .alert {
     padding: 16px 18px;
-    border-radius:1px;
+    border-radius: 14px;
     margin-bottom: 20px;
     color: white;
     font-weight: 600;
@@ -220,7 +219,7 @@ td{
 .action-btn{
     border:none;
     padding:.65rem 1rem;
-    border-radius:1px;
+    border-radius:10px;
     cursor:pointer;
     font-size:.9rem;
     font-weight:600;
@@ -293,7 +292,7 @@ td{
 
 .modal-container {
     background: white;
-    border-radius: 1px;
+    border-radius: 24px;
     overflow: hidden;
     width: min(95%, 720px);
     max-width: 720px;
@@ -321,7 +320,7 @@ td{
 .modal-container .modal-body img {
     width: 100%;
     height: auto;
-    border-radius: 2x;
+    border-radius: 18px;
     max-height: 70vh;
 }
 
@@ -408,4 +407,47 @@ td{
     .stats-grid{
         grid-template-columns:1fr;
     }
+}
+/* Toast notifications */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+.toast-success {
+    background-color: #10b981;
+}
+.toast-error {
+    background-color: #ef4444;
+}
+.toast-info {
+    background-color: #3b82f6;
+}
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Empty state for tables */
+.empty-state {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+}
+
+/* Danger status */
+.status.danger {
+    background: #fee2e2;
+    color: #dc2626;
 }
