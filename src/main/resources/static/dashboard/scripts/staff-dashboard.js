@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const availableAssetsBody = document.getElementById('availableAssetsBody');
     const activeLoansBody = document.getElementById('activeLoansBody');
+    const recentLoanRequestsBody = document.getElementById('recentLoanRequestsBody');
     const notificationsList = document.getElementById('notificationsList');
 
     let availableAssets = [];
@@ -78,6 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(loan.status || '').toUpperCase() === 'RETURNED' || Boolean(loan.returnDate);
     }
 
+    function cleanStatus(status) {
+        return String(status || 'UNKNOWN').toUpperCase();
+    }
+
+    function statusLabel(status) {
+        if (status === 'APPROVED') return 'Active';
+        return status.charAt(0) + status.slice(1).toLowerCase();
+    }
+
+    function statusClass(status) {
+        return `status status-${status.toLowerCase()}`;
+    }
+
     function updateProfile() {
         if (currentUser.fullName) {
             profileName.textContent = currentUser.fullName;
@@ -119,6 +133,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td><span class="status proposal">Active</span></td>
                 </tr>
             `).join('');
+    }
+
+    function renderRecentLoanRequests() {
+        if (!recentLoanRequestsBody) return;
+
+        if (!allLoans.length) {
+            recentLoanRequestsBody.innerHTML = '<tr><td colspan="4" class="empty-state">No loan requests submitted yet.</td></tr>';
+            return;
+        }
+
+        const recentLoans = [...allLoans]
+            .sort((a, b) => new Date(b.requestDate || 0) - new Date(a.requestDate || 0))
+            .slice(0, 5);
+
+        recentLoanRequestsBody.innerHTML = recentLoans.map(loan => {
+            const status = cleanStatus(loan.status);
+
+            return `
+                <tr>
+                    <td>${escapeHtml(loan.assetName || 'N/A')}</td>
+                    <td>${formatDate(loan.requestDate)}</td>
+                    <td>${formatDate(loan.dueDate)}</td>
+                    <td><span class="${statusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function buildSystemAlerts(activeLoans, pendingLoans) {
@@ -195,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         counts.returnedAssets.textContent = returnedLoans.length;
 
         renderActiveLoans(activeLoans);
+        renderRecentLoanRequests();
         renderNotifications(activeLoans, pendingLoans);
     }
 
@@ -214,6 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadLoans() {
         activeLoansBody.innerHTML = '<tr><td colspan="3" class="empty-state">Loading active loans...</td></tr>';
+        if (recentLoanRequestsBody) {
+            recentLoanRequestsBody.innerHTML = '<tr><td colspan="4" class="empty-state">Loading loan requests...</td></tr>';
+        }
         notificationsList.innerHTML = '<div class="empty-state">Loading system alerts...</div>';
 
         const endpoint = currentUser.id ? `/loans/user/${encodeURIComponent(currentUser.id)}` : '/loans';
@@ -235,6 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             availableAssetsBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
             activeLoansBody.innerHTML = `<tr><td colspan="3" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+            if (recentLoanRequestsBody) {
+                recentLoanRequestsBody.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+            }
             notificationsList.innerHTML = `<div class="empty-state">${escapeHtml(error.message)}</div>`;
         }
     }

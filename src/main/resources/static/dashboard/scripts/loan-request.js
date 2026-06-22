@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("loanRequestForm");
     const alertBox = document.getElementById("loanAlert");
+    const loanRequestsBody = document.getElementById("loanRequestsBody");
+    const refreshRequestsBtn = document.getElementById("refreshRequestsBtn");
 
     const fields = {
         assetId: document.getElementById("assetId"),
@@ -23,24 +25,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let selectedAsset = null;
     let currentUser = null;
+    let userLoans = [];
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function cleanStatus(status) {
+        return String(status || "UNKNOWN").toUpperCase();
+    }
+
+    function statusLabel(status) {
+        if (status === "APPROVED") return "Active";
+        return status.charAt(0) + status.slice(1).toLowerCase();
+    }
+
+    function statusClass(status) {
+        return `status status-${status.toLowerCase()}`;
+    }
+
+    function formatDate(value) {
+        if (!value) return "N/A";
+
+        return new Date(value).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+    }
 
     async function updatePendingRequestsBadge() {
         const badge = document.getElementById("loanRequestsBadge");
-        if (!badge || !currentUser?.id) return;
+        if (!badge) return;
 
-        try {
-            const response = await fetch(`/loans/user/${encodeURIComponent(currentUser.id)}`);
-            if (!response.ok) return;
-
-            const loans = await response.json();
-            const pendingCount = loans.filter(loan =>
-                String(loan.status || "").toUpperCase() === "PENDING"
-            ).length;
-
-            badge.textContent = pendingCount;
-        } catch (error) {
-            console.error("Could not update pending requests badge", error);
-        }
+        const pendingCount = userLoans.filter(loan => cleanStatus(loan.status) === "PENDING").length;
+        badge.textContent = pendingCount;
     }
 
     function showMessage(message, type = "error") {
@@ -122,6 +146,62 @@ document.addEventListener("DOMContentLoaded", () => {
         return users.find(user => user.email === email) || null;
     }
 
+    function renderLoanRequestsTable() {
+        if (!loanRequestsBody) return;
+
+        if (!currentUser?.id) {
+            loanRequestsBody.innerHTML = '<tr><td colspan="5" class="empty-state">Please sign in again to view your loan requests.</td></tr>';
+            return;
+        }
+
+        if (!userLoans.length) {
+            loanRequestsBody.innerHTML = '<tr><td colspan="5" class="empty-state">No loan requests submitted yet.</td></tr>';
+            return;
+        }
+
+        const sortedLoans = [...userLoans].sort((a, b) => new Date(b.requestDate || 0) - new Date(a.requestDate || 0));
+
+        loanRequestsBody.innerHTML = sortedLoans.map(loan => {
+            const status = cleanStatus(loan.status);
+
+            return `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(loan.assetName || "N/A")}</strong>
+                        <div class="muted-text">Loan ID: ${escapeHtml(loan.loanId || "N/A")}</div>
+                    </td>
+                    <td>${escapeHtml(loan.assetCategory || "N/A")}</td>
+                    <td>${formatDate(loan.requestDate)}</td>
+                    <td>${formatDate(loan.dueDate)}</td>
+                    <td><span class="${statusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    async function loadUserLoanRequests() {
+        if (!loanRequestsBody || !currentUser?.id) {
+            renderLoanRequestsTable();
+            return;
+        }
+
+        loanRequestsBody.innerHTML = '<tr><td colspan="5" class="empty-state">Loading loan requests...</td></tr>';
+
+        try {
+            const response = await fetch(`/loans/user/${encodeURIComponent(currentUser.id)}`);
+            if (!response.ok) {
+                throw new Error("Could not load your loan requests.");
+            }
+
+            userLoans = await response.json();
+            renderLoanRequestsTable();
+            await updatePendingRequestsBadge();
+        } catch (error) {
+            console.error(error);
+            loanRequestsBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+        }
+    }
+
     async function fillUserDetails() {
         currentUser = getCurrentUser();
 
@@ -143,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
             profileName.textContent = currentUser.fullName;
         }
 
-        await updatePendingRequestsBadge();
+        await loadUserLoanRequests();
     }
 
     function fillAssetDetails(asset) {
@@ -239,6 +319,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             showMessage("Loan request submitted successfully.", "success");
             sessionStorage.removeItem("selectedLoanAsset");
+            fields.notes.value = "";
+            fields.dueDate.value = getDefaultReturnDate();
+            await loadUserLoanRequests();
         } catch (error) {
             showMessage(error.message);
         }
@@ -248,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
         await fillUserDetails();
         await loadSelectedAsset();
         form.addEventListener("submit", submitLoanRequest);
+        refreshRequestsBtn?.addEventListener("click", loadUserLoanRequests);
     }
 
     startPage();

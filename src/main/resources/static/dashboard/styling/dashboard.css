@@ -164,7 +164,7 @@ nav a.active{
 
 .card{
     background:white;
-    border-radius:18px;
+    border-radius:1px;
     padding:25px;
     margin-bottom:30px;
     box-shadow:0 10px 30px rgba(0,0,0,.04);
@@ -452,4 +452,24 @@ td{
 .status.danger {
     background: #fee2e2;
     color: #dc2626;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-approved {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-returned {
+    background: #dff7ea;
+    color: #0f8c58;
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
 }

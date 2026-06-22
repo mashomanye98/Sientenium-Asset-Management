@@ -167,6 +167,35 @@
             border: 1px solid #86efac;
         }
 
+        .requests-table-wrap {
+            overflow-x: auto;
+        }
+
+        .muted-text {
+            color: var(--muted);
+            font-size: .82rem;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-returned {
+            background: #dff7ea;
+            color: #0f8c58;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         @media (max-width: 1200px) {
             .loan-request-layout {
                 grid-template-columns: 1fr;
@@ -309,6 +338,34 @@
                 </div>
             </section>
         </div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>My Loan Requests</h2>
+                <button class="secondary-button" id="refreshRequestsBtn" type="button">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    Refresh
+                </button>
+            </div>
+            <div class="requests-table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Category</th>
+                        <th>Requested</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody id="loanRequestsBody">
+                    <tr>
+                        <td colspan="5" class="empty-state">Loading loan requests...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 </div>
 
