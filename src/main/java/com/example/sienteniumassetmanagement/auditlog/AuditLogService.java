@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuditLogService {
 
+    private static final Long SYSTEM_USER_ID = 1L;
+
     private final AuditLogRepository auditLogRepository;
 
     @Transactional
@@ -53,7 +55,7 @@ public class AuditLogService {
                                             Long entityId,
                                             AuditLog.Action action) {
         AuditLog auditLog = AuditLog.builder()
-                .userId(userId)
+                .userId(resolveUserId(userId))
                 .entityType(entityType)
                 .entityId(entityId)
                 .action(action)
@@ -64,11 +66,15 @@ public class AuditLogService {
 
     private AuditLog mapToEntity(AuditLogRequestDTO requestDTO) {
         return AuditLog.builder()
-                .userId(requestDTO.getUserId())
+                .userId(resolveUserId(requestDTO.getUserId()))
                 .entityType(AuditLog.EntityType.valueOf(requestDTO.getEntityType().toUpperCase()))
                 .entityId(requestDTO.getEntityId())
                 .action(AuditLog.Action.valueOf(requestDTO.getAction().toUpperCase().replace("-", "_")))
                 .build();
+    }
+
+    private Long resolveUserId(Long userId) {
+        return userId != null ? userId : SYSTEM_USER_ID;
     }
 
     private AuditLogResponseDTO mapToResponse(AuditLog auditLog) {
