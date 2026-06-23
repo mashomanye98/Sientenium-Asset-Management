@@ -283,8 +283,11 @@ function setupEventListeners() {
 
 // Update user name
 function updateUserInfo() {
-    const userName = localStorage.getItem('userName') || 'Johannes Motsemme';
-    document.getElementById('user-name').textContent = userName;
+    const userName = localStorage.getItem('userName') || 'Manager';
+    const nameEl = document.getElementById('user-name') || document.getElementById('profileName');
+    if (nameEl) {
+        nameEl.textContent = userName;
+    }
 }
 
 // Initialize

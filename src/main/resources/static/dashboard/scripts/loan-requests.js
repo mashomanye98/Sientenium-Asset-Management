@@ -197,7 +197,18 @@ function formatDate(dateStr) {
 // Update user name
 function updateUserInfo() {
     const userName = localStorage.getItem('userName') || 'System Administrator';
-    document.getElementById('user-name').textContent = userName;
+
+    // Try to find the profile name element
+    const nameEl = document.getElementById('user-name') ||
+                   document.getElementById('profileName') ||
+                   document.querySelector('.profile h3');
+
+    if (nameEl) {
+        nameEl.textContent = userName;
+        console.log('Profile name updated to:', userName);
+    } else {
+        console.warn('Profile name element not found in HTML');
+    }
 }
 
 // Render loans table with filters

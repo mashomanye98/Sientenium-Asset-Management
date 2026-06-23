@@ -540,9 +540,11 @@ function setupEventListeners() {
 
 // Update user name
 function updateUserInfo() {
-    var userNameElement = document.getElementById('user-name');
-    var userName = localStorage.getItem('userName') || userNameElement.textContent || 'System Administrator';
-    userNameElement.textContent = userName;
+    const userName = localStorage.getItem('userName') || 'System Administrator';
+    const nameEl = document.getElementById('user-name') || document.getElementById('profileName');
+    if (nameEl) {
+        nameEl.textContent = userName;
+    }
 }
 
 // Initialize

@@ -327,7 +327,7 @@ function setupEventListeners() {
 
 function updateUserInfo() {
     const userName = localStorage.getItem('userName') || 'Johannes Motsemme';
-    const nameEl = document.getElementById('user-name');
+    const nameEl = document.getElementById('user-name') || document.getElementById('profileName');
     if (nameEl) {
         nameEl.textContent = userName;
     }
