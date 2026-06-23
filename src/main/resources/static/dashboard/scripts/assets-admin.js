@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const assetLocation = document.getElementById("assetLocation");
     const assetCondition = document.getElementById("assetCondition");
     const assetPhotoPath = document.getElementById("assetPhotoPath");
+    const assetPhotoPreview = document.getElementById("assetPhotoPreview");
+    const photoPreviewContainer = document.getElementById("photoPreviewContainer");
     const uploadPhotoBtn = document.getElementById("uploadPhotoBtn");
     const assetPhotoFile = document.getElementById("assetPhotoFile");
     const uploadPhotoName = document.getElementById("uploadPhotoName");
@@ -43,14 +45,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const sampleAssets = [
         {
-            title: "Samsung Galaxy S24",
+            title: "ACER PROJECTOR X1120",
             category: "IT_EQUIPMENT",
             serialNumber: "SN-PH-001",
             acquisitionDate: "2024-06-01",
             cost: 8500.00,
-            location: "Reception Desk",
+            location: "Johannesburg",
             condition: "NEW",
-            photoPath: null
+            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/projector/e/k/j/-original-imahd2h7vyrnm6dh.jpeg?q=70"
         },
         {
             title: "Dell Latitude 5540",
@@ -58,9 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-LT-001",
             acquisitionDate: "2024-01-15",
             cost: 18000.00,
-            location: "IT Room",
+            location: "Cape Town",
             condition: "GOOD",
-            photoPath: null
+            photoPath: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=300&q=80"
         },
         {
             title: "HP LaserJet Pro M404",
@@ -68,9 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-PR-001",
             acquisitionDate: "2023-11-10",
             cost: 5500.00,
-            location: "Finance Department",
+            location: "Durban",
             condition: "GOOD",
-            photoPath: null
+            photoPath: "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&w=300&q=80"
         },
         {
             title: "Lenovo ThinkCentre M70s",
@@ -78,9 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-DT-001",
             acquisitionDate: "2023-08-20",
             cost: 12000.00,
-            location: "HR Department",
+            location: "Johannesburg",
             condition: "FAIR",
-            photoPath: null
+            photoPath: "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=300&q=80"
         },
         {
             title: "Epson EB-X51 Projector",
@@ -88,9 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-PJ-001",
             acquisitionDate: "2024-03-05",
             cost: 9500.00,
-            location: "Boardroom",
-            condition: "GOOD",
-            photoPath: null
+            location: "Cape Town",
+            condition: "NEW",
+            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/300/300/ng-fkpublic-ui-user-fbbe/projector/2/w/u/eb-w51-wxga-3lcd-projector-each-2-wxga-epson-original-imahafedv8gmwzr3.jpeg"
         },
         {
             title: "Ergonomic Office Chair",
@@ -98,9 +100,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-FC-001",
             acquisitionDate: "2023-05-10",
             cost: 3500.00,
-            location: "HR Department",
+            location: "Durban",
             condition: "GOOD",
-            photoPath: null
+            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/office-study-chair/v/j/n/-original-imah7tkvhgxufegs.jpeg?q=70"
         },
         {
             title: "Conference Table 10-Seater",
@@ -108,9 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-FC-002",
             acquisitionDate: "2022-11-20",
             cost: 15000.00,
-            location: "Boardroom",
+            location: "Johannesburg",
             condition: "GOOD",
-            photoPath: null
+            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/office-study-chair/h/d/c/mdf-medium-density-fiber-11-320-tc-q736-3-2-818d-rimmisk-original-imah5bubzpgat8r5.jpeg?q=70"
         },
         {
             title: "Reception Front Desk",
@@ -118,9 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-FC-003",
             acquisitionDate: "2022-08-15",
             cost: 8000.00,
-            location: "Reception Desk",
+            location: "Cape Town",
             condition: "FAIR",
-            photoPath: null
+            photoPath: "https://www.makro.co.za/kc-furn-modern-reception-desk-contemporary-front-counter-wood-marble-finish-office-table/p/itm68c99fdf2ee40?pid=OSTH57HKJNGYRUEC&srsltid=AfmBOopddcutRMxkc-rBei5f4xosbmSRV_wHXzX6d95tKi3xX_uhdCWa"
         },
         {
             title: "4-Drawer Filing Cabinet",
@@ -128,9 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-FC-004",
             acquisitionDate: "2023-01-08",
             cost: 2500.00,
-            location: "Finance Department",
+            location: "Durban",
             condition: "GOOD",
-            photoPath: null
+            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/cabinet-drawer/f/u/g/-original-imah4s8yjmwnfhje.jpeg?q=70"
         }
     ];
 
@@ -149,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
         assetCondition.value = "NEW";
         assetPhotoPath.value = "";
         assetPhotoFile.value = "";
-        uploadPhotoName.textContent = "No file selected";
+        setUploadedPhotoLabel(null, null);
     }
 
     function setUploadedPhotoLabel(url, fileName) {
@@ -159,6 +161,14 @@ document.addEventListener("DOMContentLoaded", () => {
             uploadPhotoName.textContent = url.split("/").pop();
         } else {
             uploadPhotoName.textContent = "No file selected";
+        }
+
+        if (url) {
+            assetPhotoPreview.src = url;
+            photoPreviewContainer.style.display = "block";
+        } else {
+            assetPhotoPreview.src = "";
+            photoPreviewContainer.style.display = "none";
         }
     }
 
@@ -220,14 +230,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!list || list.length === 0) {
             assetTableBody.innerHTML = `
-                <tr><td colspan="5" class="empty-state">No assets found. Try creating one.</td></tr>
+                <tr><td colspan="6" class="empty-state">No assets found. Try creating one.</td></tr>
             `;
             return;
         }
 
         list.forEach(asset => {
             const row = document.createElement("tr");
+            const photoUrl = asset.photoPath || "https://via.placeholder.com/40?text=No+Img";
             row.innerHTML = `
+                <td><img src="${photoUrl}" alt="Asset" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;"></td>
                 <td>#${asset.assetId}</td>
                 <td>${asset.title || "-"}</td>
                 <td>${asset.category || "-"}</td>
@@ -275,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function fetchAssets() {
-        assetTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Loading assets...</td></tr>`;
+        assetTableBody.innerHTML = `<tr><td colspan="6" class="empty-state">Loading assets...</td></tr>`;
         try {
             const response = await fetch(apiBase);
             if (!response.ok) throw new Error("Could not load assets.");
@@ -283,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
             renderAssets(assets);
             updateStats(assets);
         } catch (error) {
-            assetTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">Unable to load assets.</td></tr>`;
+            assetTableBody.innerHTML = `<tr><td colspan="6" class="empty-state">Unable to load assets.</td></tr>`;
             showAlert(error.message || "Unable to load assets.", "error");
         }
     }
@@ -372,8 +384,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function seedSampleAssets() {
+        if (!confirm("This will clear all existing assets and seed new sample data with city-based locations. Continue?")) {
+            return;
+        }
+
         try {
             seedAssetsBtn.disabled = true;
+            showAlert("Cleaning up old data...");
+
+            // 1. Delete all existing assets first to avoid duplicates and old data (Boardroom/Finance)
+            const currentAssets = [...assets];
+            for (const asset of currentAssets) {
+                await fetch(`${apiBase}/${asset.assetId}`, { method: "DELETE" });
+            }
+
+            showAlert("Seeding fresh sample assets...");
+
+            // 2. Seed the new ones
             const promises = sampleAssets.map(asset =>
                 fetch(apiBase, {
                     method: "POST",
@@ -387,7 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             );
             await Promise.all(promises);
-            showAlert("Sample assets seeded successfully.");
+            showAlert("Sample assets seeded successfully with city locations.");
             await fetchAssets();
         } catch (error) {
             showAlert(error.message || "Failed to seed sample assets.", "error");

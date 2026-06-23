@@ -30,15 +30,17 @@ public class PendingUserRequestService {
     private final PendingUserRequestRepository pendingRequestRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-//    private final EmailService emailService;
-//
+    private final EmailService emailService;
+
     public PendingUserRequestService(PendingUserRequestRepository pendingRequestRepository,
                                      UserRepository userRepository,
-                                     PasswordEncoder passwordEncoder)
+                                     PasswordEncoder passwordEncoder,
+                                     EmailService emailService)
     {
         this.pendingRequestRepository = pendingRequestRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public PendingUserRequestResponse createRequest(RegisterRequest request) {
@@ -59,6 +61,12 @@ public class PendingUserRequestService {
         pendingRequest.setRequestedAt(LocalDateTime.now());
 
         pendingRequestRepository.save(pendingRequest);
+
+        try {
+            emailService.sendRegistrationReceivedEmail(pendingRequest.getEmail(), pendingRequest.getFullName());
+        } catch (Exception ex) {
+            logger.warn("Registration received email could not be sent to {}.", pendingRequest.getEmail(), ex);
+        }
 
         return buildResponse(pendingRequest);
     }
@@ -93,11 +101,11 @@ public class PendingUserRequestService {
 
         userRepository.save(user);
 
-//        try {
-//            emailService.sendAccountActivationEmail(user);
-//        } catch (Exception ex) {
-//            logger.warn("Account activation email could not be sent to {}.", user.getEmail(), ex);
-//        }
+        try {
+            emailService.sendApprovalEmail(user.getEmail(), user.getFullName());
+        } catch (Exception ex) {
+            logger.warn("Account activation email could not be sent to {}.", user.getEmail(), ex);
+        }
 
         pendingRequest.setStatus(RequestStatus.APPROVED);
         pendingRequestRepository.save(pendingRequest);
@@ -116,6 +124,12 @@ public class PendingUserRequestService {
 
         pendingRequest.setStatus(RequestStatus.REJECTED);
         pendingRequestRepository.save(pendingRequest);
+
+        try {
+            emailService.sendRejectionEmail(pendingRequest.getEmail(), pendingRequest.getFullName());
+        } catch (Exception ex) {
+            logger.warn("Rejection email could not be sent to {}.", pendingRequest.getEmail(), ex);
+        }
 
         return buildResponse(pendingRequest);
     }

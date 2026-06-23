@@ -129,16 +129,17 @@
             position:absolute;
             top:12px;
             left:12px;
-            width:36px;height:36px;
+            padding:6px 10px;
             background:var(--primary);
             border-radius:8px;
             display:flex;align-items:center;justify-content:center;
             color:white;
-            font-size:.65rem;
+            font-size:.7rem;
             font-weight:700;
             text-align:center;
             line-height:1.2;
             z-index:2;
+            text-transform:uppercase;
         }
 
         .discount-badge{
@@ -154,25 +155,6 @@
             z-index:2;
         }
 
-        /* WISHLIST */
-        .wishlist-btn{
-            position:absolute;
-            top:12px;
-            right:12px;
-            width:32px;height:32px;
-            border-radius:50%;
-            background:white;
-            border:1.5px solid #e4e8f0;
-            display:flex;align-items:center;justify-content:center;
-            cursor:pointer;
-            color:var(--muted);
-            font-size:.85rem;
-            z-index:2;
-            transition:.2s;
-        }
-
-        .wishlist-btn:hover{color:#EF4444;border-color:#EF4444;}
-        .wishlist-btn.active{color:#EF4444;border-color:#EF4444;}
 
         /* PRODUCT IMAGE */
         .product-img-wrap{
@@ -244,18 +226,6 @@
             color:var(--primary);
         }
 
-        .availability{
-            font-size:.8rem;
-            color:#059669;
-            margin-bottom:8px;
-        }
-
-        .in-stock{
-            display:flex;
-            align-items:center;
-            gap:4px;
-        }
-
         .delivery-row{
             font-size:.8rem;
             color:var(--text);
@@ -263,22 +233,6 @@
             display:flex;
             align-items:center;
             gap:4px;
-        }
-
-        .rating-row{
-            display:flex;
-            gap:4px;
-            margin-bottom:10px;
-            flex-wrap:wrap;
-        }
-
-        .loc-chip{
-            background:#eef2fb;
-            color:var(--primary);
-            padding:4px 10px;
-            border-radius:20px;
-            font-size:.75rem;
-            font-weight:500;
         }
 
         .add-btn{
@@ -345,15 +299,6 @@
             text-decoration:line-through;
         }
 
-        .availability{
-            font-size:.8rem;
-            font-weight:600;
-            margin-bottom:6px;
-        }
-
-        .in-stock{color:#10B981;}
-        .ships{color:var(--muted);}
-
         .delivery-row{
             display:flex;
             align-items:center;
@@ -364,40 +309,6 @@
         }
 
         .delivery-row i{font-size:.75rem;}
-
-        /* LOCATION CHIPS */
-        .location-chips{
-            display:flex;
-            gap:5px;
-            flex-wrap:wrap;
-            margin-bottom:10px;
-        }
-
-        .loc-chip{
-            padding:3px 9px;
-            border-radius:50px;
-            border:1.5px solid #dce3ef;
-            font-size:.72rem;
-            font-weight:600;
-            color:var(--text);
-        }
-
-        /* RATING */
-        .rating-row{
-            display:flex;
-            align-items:center;
-            gap:5px;
-            font-size:.8rem;
-            color:var(--muted);
-            margin-bottom:14px;
-        }
-
-        .rating-row i{color:#F59E0B;font-size:.8rem;}
-
-        .rating-row .score{
-            font-weight:700;
-            color:var(--secondary);
-        }
 
         /* ADD TO CART */
         .add-btn{
@@ -488,7 +399,7 @@
 
     <main class="main-content">
         <div class="filter-bar">
-        <span class="filter-bar-label"><i class="fas fa-bolt" style="color:var(--primary);margin-right:6px"></i>Get It Fast: Filter By In Stock Near You</span>
+        <span class="filter-bar-label"><i class="fas fa-bolt" style="color:var(--primary);margin-right:6px"></i>Get It Fast Near You</span>
         <div class="filter-chips">
             <button class="filter-chip" onclick="filterLocation(this,'Cape Town')">Cape Town</button>
             <button class="filter-chip" onclick="filterLocation(this,'Johannesburg')">Johannesburg</button>

@@ -154,8 +154,14 @@ document.addEventListener("DOMContentLoaded", () => {
         fields.dueDate.min = toDateInputValue(new Date());
         fields.dueDate.value = getDefaultReturnDate();
 
+        // Location normalization for old data (Boardroom/Finance)
+        let displayLocation = asset.location || "Unknown";
+        if (displayLocation === "Boardroom" || displayLocation.includes("Finance")) {
+            displayLocation = "Johannesburg";
+        }
+
         preview.title.textContent = asset.title || "Untitled Asset";
-        preview.location.textContent = asset.location || "Unknown";
+        preview.location.textContent = displayLocation;
         preview.condition.textContent = asset.condition || "Unknown";
         preview.cost.textContent = formatMoney(asset.cost);
         preview.status.textContent = asset.status || "Unknown";

@@ -99,7 +99,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/signIn.html",
-                                "/signUp.html"
+                                "/signUp.html",
+                                "/forgot-password.html",
+                                "/reset-password.html"
                         ).permitAll()
 
                         /*
@@ -130,6 +132,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password",
                                 "/api/auth/pending/**",
                                 "/api/auth/users/**",
                                 "/api/upload/**",      // ← to be removed

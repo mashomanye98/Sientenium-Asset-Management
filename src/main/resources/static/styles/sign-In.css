@@ -246,6 +246,13 @@ body{
     color:#ff5a3c;
     margin-bottom:20px;
     cursor:pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.forgot:hover {
+    text-decoration: underline;
+    color: #e04a2c;
 }
 
 /* BUTTON */
@@ -273,69 +280,7 @@ body{
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.divider{
-    display:flex;
-    align-items:center;
-    margin:20px 0;
-    font-size:12px;
-    color:#888;
-}
-
-.divider::before,
-.divider::after{
-    content:"";
-    flex:1;
-    height:1px;
-    background:#ddd;
-}
-
-.divider span{
-    margin:0 10px;
-}
-
-.social-login{
-    display:flex;
-    gap:10px;
-}
-.social-btn{
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-
-    padding:10px;
-    border-radius:25px;
-    border:1px solid #ddd;
-    background:#fff;
-
-    cursor:pointer;
-    font-size:13px;
-    transition:0.3s;
-}
-
-.social-btn.google i{
-    color:#0e5ed5;
-}
-
-.social-btn.google:hover{
-    border-color:#3030ed;
-    background:#f5f5f5;
-}
-
-.social-btn.apple i{
-    color:#000;
-}
-
-.social-btn.apple:hover{
-    border-color:#5f5f5f;
-    background:#f5f5f5;
-}
-
-.social-btn:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(72, 125, 230, 0.1);
-}
+/* REMOVED SOCIAL LOGIN STYLES */
 
 .footer{
     display:flex;
