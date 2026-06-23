@@ -41,12 +41,12 @@ public class AssetController {
         return ResponseEntity.noContent().build();
     }
 
-    // HARD DELETE - permanently removes asset from the database
-    @DeleteMapping("/{id}/permanent")
-    public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
-        assetService.deleteAsset(id);
-        return ResponseEntity.noContent().build();
-    }
+//    // HARD DELETE - permanently removes asset from the database
+//    @DeleteMapping("/{id}/permanent")
+//    public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
+//        assetService.deleteAsset(id);
+//        return ResponseEntity.noContent().build();
+//    }
 
     // SEARCH
 

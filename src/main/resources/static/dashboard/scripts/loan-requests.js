@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = window.location.origin;
 
 // Store all loans for filtering
 let allLoans = [];
@@ -196,8 +196,18 @@ function formatDate(dateStr) {
 
 // Update user name
 function updateUserInfo() {
-    const userName = localStorage.getItem('userName') || 'Johannes Motsemme';
-    document.getElementById('user-name').textContent = userName;
+    let currentUser = {};
+    try {
+        currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || {};
+    } catch (error) {
+        currentUser = {};
+    }
+
+    const userName = currentUser.fullName || localStorage.getItem('userName') || 'System Administrator';
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+        userNameElement.textContent = userName;
+    }
 }
 
 // Render loans table with filters
@@ -270,16 +280,21 @@ function updateStats() {
     document.getElementById('stat-rejected').textContent = `${rejected} Request${rejected !== 1 ? 's' : ''}`;
 
     document.getElementById('total-count').textContent = `Total: ${allLoans.length} requests`;
-    document.getElementById('pending-count').textContent = pending;
+    const pendingCount = document.getElementById('pending-count');
+    if (pendingCount) {
+        pendingCount.textContent = pending;
+    }
 
     // Update summary list
     const summaryList = document.getElementById('summary-list');
-    summaryList.innerHTML = `
-        <li><i class="fa-regular fa-clock"></i> Pending: ${pending} requests</li>
-        <li><i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Approved: ${approved}</li>
-        <li><i class="fa-solid fa-times-circle" style="color: #ef4444;"></i> Rejected: ${rejected}</li>
-        <li><i class="fa-solid fa-arrow-rotate-left" style="color: #4f46e5;"></i> Returned: ${returned}</li>
-    `;
+    if (summaryList) {
+        summaryList.innerHTML = `
+            <li><i class="fa-regular fa-clock"></i> Pending: ${pending} requests</li>
+            <li><i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Approved: ${approved}</li>
+            <li><i class="fa-solid fa-times-circle" style="color: #ef4444;"></i> Rejected: ${rejected}</li>
+            <li><i class="fa-solid fa-arrow-rotate-left" style="color: #4f46e5;"></i> Returned: ${returned}</li>
+        `;
+    }
 }
 
 // Update UI
@@ -307,9 +322,10 @@ function setupEventListeners() {
     document.getElementById('search-input').addEventListener('input', renderLoansTable);
     document.getElementById('refresh-btn').addEventListener('click', loadData);
     document.getElementById('logout-btn').addEventListener('click', () => {
+        sessionStorage.removeItem('currentUser');
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
-        window.location.href = 'login.html';
+        window.location.href = '../../signIn.html';
     });
 }
 

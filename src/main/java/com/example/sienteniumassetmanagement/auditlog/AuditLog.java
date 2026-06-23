@@ -54,11 +54,11 @@ public class AuditLog {
     private LocalDateTime timestamp;
 
     public enum EntityType {
-        ASSET, LOAN
+        ASSET, LOAN, USER
     }
 
     public enum Action {
-        CREATE, UPDATE, DELETE, CHECK_OUT, CHECK_IN
+        CREATE, UPDATE, DELETE, CHECK_OUT, CHECK_IN, APPROVE, REJECT, REQUEST, RETIRE, DEACTIVATE
     }
 }
 

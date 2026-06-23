@@ -158,8 +158,7 @@
                 <div class="profile-image">
                     <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
                 </div>
-                <h3 id="user-name">Johannes Motsemme</h3>
-                <p>Manager</p>
+                <p id="user-name">Manager</p>
                 <span>Asset Management System</span>
             </div>
 
@@ -170,30 +169,26 @@
                 </a>
                 <a href="manager-loan-requests.html">
                     <i class="fa-regular fa-file-lines"></i>
-                    Loan Requests Approval
-                    <span class="badge" id="pending-count">0</span>
+                    Loan Requests
                 </a>
                 <a href="manager-checkout-checkin.html" class="active">
                     <i class="fa-solid fa-right-left"></i>
                     Asset Check-In
+                    <span class="badge" id="overdue-count">0</span>
                 </a>
                 <a href="manager-overdue-loans.html">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     Overdue Loans
-                    <span class="badge" id="overdue-count">0</span>
                 </a>
                 <a href="manager-retire-assets.html">
                     <i class="fa-solid fa-box-archive"></i>
                     Retire Assets
                 </a>
-                <a href="#">
+                <a href="manager-report.html" class="nav-link">
                     <i class="fa-solid fa-chart-line"></i>
                     Reports & Insights
                 </a>
-                <a href="#">
-                    <i class="fa-solid fa-gear"></i>
-                    Settings
-                </a>
+
             </nav>
         </div>
         <button id="logout-btn" class="logout-btn">
@@ -215,11 +210,6 @@
             </div>
         </div>
 
-        <!-- Notice -->
-        <div class="notice-box" id="notice-box">
-            <i class="fa-solid fa-info-circle"></i> <strong>Manager Note:</strong> Returned assets appear here for final check-in. Set the returned condition before check-in. Poor or damaged assets become eligible for retirement.
-        </div>
-
         <!-- Stats Overview -->
         <section class="stats-grid">
             <div class="stat-card">
@@ -228,7 +218,7 @@
                 </div>
                 <div>
                     <span>Awaiting Check-In</span>
-                    <h3 id="stat-checkedout">0 Loans</h3>
+                    <h3 id="stat-checkedout">0 Assets</h3>
                 </div>
             </div>
             <div class="stat-card">

@@ -1,5 +1,7 @@
 /*Hlongwane Sinenhlanhla*/
 package com.example.sienteniumassetmanagement.asset;
+import com.example.sienteniumassetmanagement.auditlog.AuditLog;
+import com.example.sienteniumassetmanagement.auditlog.AuditLogService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,23 @@ public class AssetService {
     @Autowired
     private AssetRepository assetRepository;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     // CREATE
     public AssetResponseDTO createAsset(AssetRequestDTO dto) {
         Asset asset = mapToEntity(dto);
         asset.setStatus(Asset.AssetStatus.AVAILABLE); // default status
         Asset saved = assetRepository.save(asset);
+
+        // Record audit log
+        auditLogService.recordAction(
+                dto.getCreatedByUserId(),           // who did it
+                AuditLog.EntityType.ASSET,
+                saved.getAssetId(),
+                AuditLog.Action.CREATE
+        );
+
         return mapToResponse(saved);
     }
 
@@ -55,7 +69,16 @@ public class AssetService {
             asset.setStatus(Asset.AssetStatus.valueOf(dto.getStatus()));
         }
 
-        return mapToResponse(assetRepository.save(asset));
+        Asset saved = assetRepository.save(asset);
+        // Record audit log
+        auditLogService.recordAction(
+                dto.getCreatedByUserId(),
+                AuditLog.EntityType.ASSET,
+                saved.getAssetId(),
+                AuditLog.Action.UPDATE
+        );
+
+        return mapToResponse(saved);
     }
 
     // DELETE (retire)
@@ -64,7 +87,11 @@ public class AssetService {
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
         asset.setStatus(Asset.AssetStatus.RETIRED);
         assetRepository.save(asset);
+
+        // Record audit log — use a system userId e.g. 1L for now
+        auditLogService.recordAction(1L, AuditLog.EntityType.ASSET, id, AuditLog.Action.RETIRE);
     }
+
 
     // Mapper helpers
     private Asset mapToEntity(AssetRequestDTO dto) {
@@ -140,13 +167,13 @@ public class AssetService {
                 .collect(Collectors.toList());
     }
 
-    // HARD DELETE - permanently removes the asset from the database
-    public void deleteAsset(Long id) {
-        if (!assetRepository.existsById(id)) {
-            throw new RuntimeException("Asset not found");
-        }
-        assetRepository.deleteById(id);
-    }
+//    // HARD DELETE - permanently removes the asset from the database
+//    public void deleteAsset(Long id) {
+//        if (!assetRepository.existsById(id)) {
+//            throw new RuntimeException("Asset not found");
+//        }
+//        assetRepository.deleteById(id);
+//    }
 
     @Transactional
     public AssetResponseDTO updateAssetStatus(Long id, String status) {

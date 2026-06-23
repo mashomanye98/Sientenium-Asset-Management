@@ -57,15 +57,15 @@
                     Users
                 </a>
 
-                <a href="../manager/manager-loan-requests.html">
+                <a href="admin-loan-requests.html">
                     <i class="fa-solid fa-hand-holding"></i>
                     Loan Requests
-                    <span class="badge">8</span>
+
                 </a>
 
-                <a href="#">
-                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
-                    Active Loans
+                <a href="admin-retire-assets.html">
+                    <i class="fa-solid fa-box-archive"></i>
+                    Retire Assets
                 </a>
 
                 <a href="admin-report.html" class="nav-link">
@@ -105,7 +105,7 @@
                 </p>
             </div>
 
-            <button class="new-document-btn">
+            <button class="new-document-btn" onclick="window.location.href='assets-admin.html'">
                 <i class="fa-solid fa-plus"></i>
                 Add Asset
             </button>
@@ -166,7 +166,7 @@
 
             <div class="card-header">
                 <h2>Pending Loan Requests</h2>
-                <a href="#">View All</a>
+                <a href="admin-loan-requests.html">View All</a>
             </div>
 
             <table>
@@ -193,9 +193,9 @@
                         </span>
                     </td>
                     <td>
-                        <span class="review-link">
+                        <a class="review-link" href="admin-loan-requests.html">
                             Review
-                        </span>
+                        </a>
                     </td>
                 </tr>
 
@@ -209,9 +209,9 @@
                         </span>
                     </td>
                     <td>
-                        <span class="review-link">
+                        <a class="review-link" href="admin-loan-requests.html">
                             Review
-                        </span>
+                        </a>
                     </td>
                 </tr>
 
