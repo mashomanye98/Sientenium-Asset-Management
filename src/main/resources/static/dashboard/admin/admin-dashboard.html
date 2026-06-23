@@ -17,254 +17,110 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
-<body>
+<body data-admin-page="dashboard">
 
 <div class="dashboard">
+    <aside class="sidebar" data-admin-sidebar></aside>
 
-    <!-- ==========================
-         SIDEBAR
-    =========================== -->
-    <aside class="sidebar">
-
-        <div>
-
-            <div class="profile">
-
-                <div class="profile-image">
-                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
-                </div>
-
-                <h3>System Administrator</h3>
-                <p>Sientenium</p>
-                <span>ADMIN</span>
-
-            </div>
-
-            <nav>
-
-                <a href="#" class="active">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-
-                <a href="assets-admin.html">
-                    <i class="fa-solid fa-boxes-stacked"></i>
-                    Assets
-                </a>
-
-                <a href="users.html">
-                    <i class="fa-solid fa-users"></i>
-                    Users
-                </a>
-
-                <a href="admin-loan-requests.html">
-                    <i class="fa-solid fa-hand-holding"></i>
-                    Loan Requests
-
-                </a>
-
-                <a href="admin-retire-assets.html">
-                    <i class="fa-solid fa-box-archive"></i>
-                    Retire Assets
-                </a>
-
-                <a href="admin-report.html" class="nav-link">
-                    <span class="nav-icon">📈</span>
-                    Reports & Insights
-                </a>
-
-
-                <a href="../audit-log.html">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    Audit Logs
-                </a>
-
-            </nav>
-
-        </div>
-
-        <button class="logout-btn">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Logout
-        </button>
-
-    </aside>
-
-    <!-- ==========================
-         MAIN CONTENT
-    =========================== -->
     <main class="main-content">
-
-        <!-- Header -->
         <div class="top-bar">
-
             <div>
                 <h1>Admin Dashboard</h1>
-                <p>
-                    Manage assets, users, requests and reports.
-                </p>
+                <p>Live overview of assets, requests, and the admin workspace.</p>
             </div>
 
-            <button class="new-document-btn" onclick="window.location.href='assets-admin.html'">
+            <button class="new-document-btn" onclick="window.location.href='/dashboard/admin/assets-admin.html'">
                 <i class="fa-solid fa-plus"></i>
                 Add Asset
             </button>
-
         </div>
 
-        <!-- Statistics -->
         <section class="stats-grid">
-
             <div class="stat-card">
                 <div class="icon purple">
-                    <i class="fa-solid fa-box"></i>
+                    <i class="fa-solid fa-boxes-stacked"></i>
                 </div>
-
                 <div>
-                    <h3>245</h3>
+                    <h3 id="totalAssetsCount">0</h3>
                     <p>Total Assets</p>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="icon blue">
-                    <i class="fa-solid fa-check"></i>
+                    <i class="fa-solid fa-circle-check"></i>
                 </div>
-
                 <div>
-                    <h3>187</h3>
+                    <h3 id="availableAssetsCount">0</h3>
                     <p>Available Assets</p>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="icon indigo">
-                    <i class="fa-solid fa-users"></i>
+                    <i class="fa-solid fa-file-signature"></i>
                 </div>
-
                 <div>
-                    <h3>52</h3>
-                    <p>System Users</p>
+                    <h3 id="pendingRequestsCount">0</h3>
+                    <p>Pending Requests</p>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="icon green">
-                    <i class="fa-solid fa-file-signature"></i>
+                    <i class="fa-solid fa-clipboard-check"></i>
                 </div>
-
                 <div>
-                    <h3>8</h3>
-                    <p>Pending Requests</p>
+                    <h3 id="activeLoansCount">0</h3>
+                    <p>Active Loans</p>
                 </div>
             </div>
-
         </section>
 
-        <!-- Loan Requests -->
         <section class="card">
-
             <div class="card-header">
-                <h2>Pending Loan Requests</h2>
-                <a href="admin-loan-requests.html">View All</a>
+                <div>
+                    <h2>Pending Staff Loan Requests</h2>
+                    <div class="section-note">Two most recent requests submitted by staff members.</div>
+                </div>
+                <a href="/dashboard/admin/admin-loan-requests.html">View All</a>
             </div>
 
-            <table>
-
-                <thead>
-                <tr>
-                    <th>Borrower</th>
-                    <th>Asset</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-
-                <tbody>
-
-                <tr>
-                    <td>John Smith</td>
-                    <td>Dell Latitude 5420</td>
-                    <td>08 June 2026</td>
-                    <td>
-                        <span class="status proposal">
-                            Pending
-                        </span>
-                    </td>
-                    <td>
-                        <a class="review-link" href="admin-loan-requests.html">
-                            Review
-                        </a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Sarah Jones</td>
-                    <td>Epson Projector</td>
-                    <td>08 June 2026</td>
-                    <td>
-                        <span class="status proposal">
-                            Pending
-                        </span>
-                    </td>
-                    <td>
-                        <a class="review-link" href="admin-loan-requests.html">
-                            Review
-                        </a>
-                    </td>
-                </tr>
-
-                </tbody>
-
-            </table>
-
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Asset</th>
+                        <th>Request Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="recent-staff-loans-body">
+                    <tr>
+                        <td colspan="5" class="empty-state">Loading recent requests...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
-        <!-- Bottom Section -->
-        <div class="bottom-grid">
-
-            <!-- User Management -->
-            <div class="card">
-
-                <div class="card-header">
-                    <h2>User Management</h2>
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h2>Quick Links</h2>
+                    <div class="section-note">Fast access to the admin pages used most often.</div>
                 </div>
-
-                <ul class="document-list">
-
-                    <li>
-                        <i class="fa-solid fa-user-plus"></i>
-                        Create New User
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-user-pen"></i>
-                        Update User Details
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-user-shield"></i>
-                        Assign Roles
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-user-lock"></i>
-                        Disable Accounts
-                    </li>
-
-                </ul>
-
+                <span class="card-subtitle">Core admin routes</span>
             </div>
 
-            <!-- Notifications -->
-
-
-        </div>
-
+            <div class="quick-links-grid" id="quick-links-grid"></div>
+        </section>
     </main>
-
 </div>
 
+<script src="../scripts/admin-sidebar.js"></script>
+<script src="../scripts/admin-dashboard.js"></script>
 </body>
 </html>

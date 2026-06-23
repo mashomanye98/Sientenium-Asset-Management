@@ -530,13 +530,6 @@ function setupEventListeners() {
         })(tabBtns[i]);
     }
 
-    document.getElementById('logout-btn').addEventListener('click', function() {
-        sessionStorage.removeItem('currentUser');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
-        window.location.href = '../../signIn.html';
-    });
-
     document.getElementById('retire-asset').addEventListener('change', function() {
         document.getElementById('retire-form-message').innerHTML = '';
     });
