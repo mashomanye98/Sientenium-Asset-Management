@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = window.location.origin;
 
 // Store all loans for filtering
 let allLoans = [];
@@ -196,8 +196,18 @@ function formatDate(dateStr) {
 
 // Update user name
 function updateUserInfo() {
-    const userName = localStorage.getItem('userName') || 'System Administrator';
-    document.getElementById('user-name').textContent = userName;
+    let currentUser = {};
+    try {
+        currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || {};
+    } catch (error) {
+        currentUser = {};
+    }
+
+    const userName = currentUser.fullName || localStorage.getItem('userName') || 'System Administrator';
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+        userNameElement.textContent = userName;
+    }
 }
 
 // Render loans table with filters
@@ -312,6 +322,7 @@ function setupEventListeners() {
     document.getElementById('search-input').addEventListener('input', renderLoansTable);
     document.getElementById('refresh-btn').addEventListener('click', loadData);
     document.getElementById('logout-btn').addEventListener('click', () => {
+        sessionStorage.removeItem('currentUser');
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
         window.location.href = '../../signIn.html';

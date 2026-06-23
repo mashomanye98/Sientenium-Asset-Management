@@ -65,12 +65,52 @@ function formatDate(dateStr) {
     });
 }
 
+function isReturnedLoan(loan) {
+    return String(loan.status || '').toUpperCase() === 'RETURNED' || Boolean(loan.returnDate);
+}
+
+function getLoanSortTime(loan) {
+    const dates = [loan.returnDate, loan.dueDate, loan.checkoutDate, loan.requestDate];
+    for (const value of dates) {
+        if (!value) continue;
+        const time = new Date(value).getTime();
+        if (!Number.isNaN(time)) {
+            return time;
+        }
+    }
+    return 0;
+}
+
+function getLatestReturnedLoanByAsset(loans) {
+    const loansByAsset = new Map();
+
+    for (const loan of loans) {
+        if (!loan.assetId) continue;
+
+        const assetKey = String(loan.assetId);
+        const existing = loansByAsset.get(assetKey);
+        if (!existing) {
+            loansByAsset.set(assetKey, loan);
+            continue;
+        }
+
+        const existingTime = getLoanSortTime(existing);
+        const loanTime = getLoanSortTime(loan);
+        const existingLoanId = Number(existing.loanId || 0);
+        const loanId = Number(loan.loanId || 0);
+
+        if (loanTime > existingTime || (loanTime === existingTime && loanId > existingLoanId)) {
+            loansByAsset.set(assetKey, loan);
+        }
+    }
+
+    return Array.from(loansByAsset.values());
+}
+
 async function fetchAwaitingCheckInLoans() {
     try {
         const loans = await apiRequest('/loans');
-        const returnedLoans = loans.filter(loan =>
-            String(loan.status || '').toUpperCase() === 'RETURNED' || loan.returnDate
-        );
+        const returnedLoans = getLatestReturnedLoanByAsset(loans.filter(isReturnedLoan));
         const loansWithAssets = await Promise.all(returnedLoans.map(async loan => {
             try {
                 const asset = await apiRequest(`/api/assets/${loan.assetId}`);
@@ -149,9 +189,12 @@ function renderAwaitingCheckInLoans() {
     filtered.sort((a, b) => calculateDaysOverdue(b.dueDate) - calculateDaysOverdue(a.dueDate));
 
     const overdueCount = filtered.filter(loan => calculateDaysOverdue(loan.dueDate) > 0).length;
-    document.getElementById('stat-checkedout').textContent = `${filtered.length} Loans`;
+    document.getElementById('stat-checkedout').textContent = `${filtered.length} Asset${filtered.length === 1 ? '' : 's'}`;
     document.getElementById('stat-overdue').textContent = `${overdueCount} Assets`;
-    document.getElementById('overdue-count').textContent = overdueCount;
+    const overdueCountElement = document.getElementById('overdue-count');
+    if (overdueCountElement) {
+        overdueCountElement.textContent = overdueCount;
+    }
 
     if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No returned assets awaiting check-in</td></tr>';
@@ -225,15 +268,26 @@ function setupEventListeners() {
     document.getElementById('search-input').addEventListener('input', renderAwaitingCheckInLoans);
 
     document.getElementById('logout-btn').addEventListener('click', () => {
+        sessionStorage.removeItem('currentUser');
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
-        window.location.href = '../signIn.html';
+        window.location.href = '../../signIn.html';
     });
 }
 
 function updateUserInfo() {
-    const userName = localStorage.getItem('userName') || 'Johannes Motsemme';
-    document.getElementById('user-name').textContent = userName;
+    let currentUser = {};
+    try {
+        currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || {};
+    } catch (error) {
+        currentUser = {};
+    }
+
+    const userName = currentUser.fullName || localStorage.getItem('userName') || 'Manager';
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+        userNameElement.textContent = userName;
+    }
 }
 
 function init() {
