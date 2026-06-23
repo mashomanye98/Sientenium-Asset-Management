@@ -107,15 +107,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        availableAssetsBody.innerHTML = visibleAssets.map(asset => `
-            <tr>
-                <td>${escapeHtml(asset.title || 'Untitled Asset')}</td>
-                <td>${escapeHtml(asset.category || 'N/A')}</td>
-                <td>${escapeHtml(asset.location || 'Unknown')}</td>
-                <td>${escapeHtml(asset.condition || 'Unknown')}</td>
-                <td><span class="status application">${escapeHtml(asset.status || 'AVAILABLE')}</span></td>
-            </tr>
-        `).join('');
+        availableAssetsBody.innerHTML = visibleAssets.map(asset => {
+            // Location normalization for old data (Boardroom/Finance)
+            let displayLocation = asset.location || 'Unknown';
+            if (displayLocation === 'Boardroom' || displayLocation.includes('Finance')) {
+                displayLocation = 'Johannesburg';
+            }
+            
+            return `
+                <tr>
+                    <td>${escapeHtml(asset.title || 'Untitled Asset')}</td>
+                    <td>${escapeHtml(asset.category || 'N/A')}</td>
+                    <td>${escapeHtml(displayLocation)}</td>
+                    <td>${escapeHtml(asset.condition || 'Unknown')}</td>
+                    <td><span class="status application">${escapeHtml(asset.status || 'AVAILABLE')}</span></td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function renderActiveLoans(activeLoans) {

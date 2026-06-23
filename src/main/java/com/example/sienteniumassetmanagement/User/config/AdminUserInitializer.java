@@ -39,19 +39,25 @@ public class AdminUserInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (!userRepository.existsByRole(Role.ROLE_ADMIN)) {
-            User admin = new User();
-            admin.setFullName(defaultAdminFullName);
-            admin.setEmail(defaultAdminEmail);
-            admin.setPassword(passwordEncoder.encode(defaultAdminPassword));
-            admin.setDepartment(defaultAdminDepartment);
-            admin.setRole(Role.ROLE_ADMIN);
-            admin.setActive(true);
-
-            userRepository.save(admin);
-            logger.info("Default admin user created: {}", defaultAdminEmail);
-        } else {
-            logger.info("Admin user already exists. Skipping default admin creation.");
-        }
+        userRepository.findByEmail(defaultAdminEmail).ifPresentOrElse(
+            existingAdmin -> {
+                existingAdmin.setPassword(passwordEncoder.encode(defaultAdminPassword));
+                existingAdmin.setRole(Role.ROLE_ADMIN);
+                existingAdmin.setActive(true);
+                userRepository.save(existingAdmin);
+                logger.info("Admin user updated with default credentials: {}", defaultAdminEmail);
+            },
+            () -> {
+                User admin = new User();
+                admin.setFullName(defaultAdminFullName);
+                admin.setEmail(defaultAdminEmail);
+                admin.setPassword(passwordEncoder.encode(defaultAdminPassword));
+                admin.setDepartment(defaultAdminDepartment);
+                admin.setRole(Role.ROLE_ADMIN);
+                admin.setActive(true);
+                userRepository.save(admin);
+                logger.info("Default admin user created: {}", defaultAdminEmail);
+            }
+        );
     }
 }

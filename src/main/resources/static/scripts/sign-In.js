@@ -75,6 +75,28 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    // =======================================
+    // PASSWORD TOGGLE
+    // =======================================
+    const togglePassword = document.querySelectorAll(".toggle-password");
+
+    togglePassword.forEach(icon => {
+        icon.addEventListener("click", function() {
+            const targetId = this.getAttribute("data-target");
+            const passwordInput = document.getElementById(targetId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                this.classList.remove("fa-eye");
+                this.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                this.classList.remove("fa-eye-slash");
+                this.classList.add("fa-eye");
+            }
+        });
+    });
+
     // Listen for login request
     signinForm.addEventListener(
         "submit",
@@ -101,22 +123,18 @@ document.addEventListener("DOMContentLoaded", () => {
             // ===========================
 
             if (!email) {
-
                 showAlert(
                     "Please enter your email.",
                     "error"
                 );
-
                 return;
             }
 
             if (!password) {
-
                 showAlert(
                     "Please enter your password.",
                     "error"
                 );
-
                 return;
             }
 
@@ -158,13 +176,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 // ===========================
 
                 if (!response.ok) {
-
                     showAlert(
-                        data.message ||
-                        "Invalid email or password.",
+                        data.message || data.error || "Invalid email or password.",
                         "error"
                     );
-
                     return;
                 }
 
@@ -210,14 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
             catch (error) {
-
-                console.error(
-                    "Login Error:",
-                    error
-                );
-
+                console.error("Login Error:", error);
                 showAlert(
-                    "Account Already Exists.",
+                    "A connection error occurred. Please try again later.",
                     "error"
                 );
             }

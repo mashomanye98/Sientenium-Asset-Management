@@ -1,24 +1,13 @@
 package com.example.sienteniumassetmanagement.User.controller;
 
-import com.example.sienteniumassetmanagement.User.dto.AuthResponse;
-import com.example.sienteniumassetmanagement.User.dto.LoginRequest;
-import com.example.sienteniumassetmanagement.User.dto.PendingUserRequestResponse;
-import com.example.sienteniumassetmanagement.User.dto.RegisterRequest;
-import com.example.sienteniumassetmanagement.User.dto.UserSummaryResponse;
+import com.example.sienteniumassetmanagement.User.dto.*;
+import com.example.sienteniumassetmanagement.User.service.EmailService;
 import com.example.sienteniumassetmanagement.User.service.PendingUserRequestService;
 import com.example.sienteniumassetmanagement.User.service.UserService;
-import com.example.sienteniumassetmanagement.User.dto.UserUpdateRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Authentication controller for registration, login, and user request approval flows.
@@ -32,11 +21,14 @@ public class AuthController {
 
     private final UserService userService;
     private final PendingUserRequestService pendingUserRequestService;
+    private final EmailService emailService;
 
     public AuthController(UserService userService,
-                          PendingUserRequestService pendingUserRequestService) {
+                          PendingUserRequestService pendingUserRequestService,
+                          EmailService emailService) {
         this.userService = userService;
         this.pendingUserRequestService = pendingUserRequestService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/register")
@@ -64,6 +56,40 @@ public class AuthController {
             @PathVariable Long userId,
             @Valid @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(userService.updateUser(userId, request));
+    }
+
+    /**
+     * Forgot Password endpoint.
+     * We accept an email address, generate a secure token,
+     * and send the user a friendly email with a reset link.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        String token = userService.createPasswordResetTokenForUser(request.getEmail());
+
+        // Personalize the email to make it feel human
+        String fullName = userService.getUserFullNameByEmail(request.getEmail());
+        emailService.sendPasswordResetEmail(request.getEmail(), fullName, token);
+
+        return ResponseEntity.ok(new AuthResponse(
+                "If your email exists in our system, we've sent you a password reset link.",
+                request.getEmail(),
+                null
+        ));
+    }
+
+    /**
+     * Reset Password endpoint.
+     * We verify the token and update the user's password.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        userService.resetPassword(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok(new AuthResponse(
+                "Your password has been updated successfully. You can now sign in.",
+                null,
+                null
+        ));
     }
 
     @DeleteMapping("/users/{userId}")
