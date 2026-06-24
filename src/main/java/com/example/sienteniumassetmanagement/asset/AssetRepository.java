@@ -1,11 +1,14 @@
 package com.example.sienteniumassetmanagement.asset;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, Long> {
@@ -30,6 +33,10 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
 
     // Filter by condition
     List<Asset> findByCondition(Asset.AssetCondition condition);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select a from Asset a where a.assetId = :assetId")
+    Optional<Asset> findByIdForUpdate(@Param("assetId") Long assetId);
 
     // Assets currently on loan to a user (active loans only)
 //    @Query("SELECT l.asset FROM Loan l WHERE l.user.userId = :userId AND l.status = 'approved' AND l.returnDate IS NULL")

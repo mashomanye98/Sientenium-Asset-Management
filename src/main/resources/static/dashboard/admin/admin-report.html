@@ -149,6 +149,53 @@
 
             <hr class="section-divider">
 
+            <div class="report-section" id="overdueSection">
+                <div class="section-header">
+                    <div class="section-title-block">
+                        <h2>Overdue Loans</h2>
+                        <p>Approved loans past their due date that still require return and check-in follow-up.</p>
+                    </div>
+                    <div class="section-actions">
+                        <span class="record-count" id="overdueCount">- records</span>
+                        <button class="btn-export" onclick="exportCSV('overdue')">Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="summary-row" id="overdueSummary"></div>
+
+                <div class="filter-bar">
+                    <input type="text" id="overdueSearch" placeholder="Search by asset, user, or loan id..." oninput="renderOverdueLoans()">
+                    <span class="filter-label">Days overdue:</span>
+                    <select id="overdueDaysFilter" onchange="renderOverdueLoans()">
+                        <option value="">All</option>
+                        <option value="7">7+ days</option>
+                        <option value="30">30+ days</option>
+                    </select>
+                </div>
+
+                <div class="table-wrap">
+                    <table id="overdueTable">
+                        <thead>
+                        <tr>
+                            <th>Loan ID</th>
+                            <th>Asset</th>
+                            <th>User</th>
+                            <th>Department</th>
+                            <th>Due date</th>
+                            <th>Overdue</th>
+                            <th>Status</th>
+                            <th>Checked out</th>
+                        </tr>
+                        </thead>
+                        <tbody id="overdueBody">
+                        <tr><td colspan="8" class="empty-state">Loading overdue loans...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
             <div class="report-section" id="userSection">
                 <div class="section-header">
                     <div class="section-title-block">

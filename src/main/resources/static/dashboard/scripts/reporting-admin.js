@@ -3,6 +3,7 @@ const API_BASE = window.location.origin;
 let allAssets = [];
 let allLoans = [];
 let allUsers = [];
+let allOverdueLoans = [];
 
 function fmt(value) {
     if (!value) return '-';
@@ -145,6 +146,77 @@ function buildLoanSummary() {
         pill('Rejected', rejected) + pill('Returned', returned);
 }
 
+function calculateDaysOverdue(dueDate) {
+    if (!dueDate) return 0;
+    const due = new Date(dueDate);
+    const today = new Date();
+    due.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((today - due) / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
+}
+
+function renderOverdueLoans() {
+    const tbody = document.getElementById('overdueBody');
+    if (!tbody) return;
+
+    const search = document.getElementById('overdueSearch')?.value?.toLowerCase() || '';
+    const minDays = Number(document.getElementById('overdueDaysFilter')?.value || 0);
+
+    const filtered = allOverdueLoans.filter(loan => {
+        const assetTitle = (loan.assetTitle || loan.assetName || loan.asset?.title || '').toLowerCase();
+        const userName = (loan.userName || loan.user?.name || '').toLowerCase();
+        const daysOverdue = calculateDaysOverdue(loan.dueDate);
+        const matchesSearch = !search ||
+            assetTitle.includes(search) ||
+            userName.includes(search) ||
+            String(loan.loanId || '').includes(search);
+        const matchesDays = !minDays || daysOverdue >= minDays;
+        return matchesSearch && matchesDays;
+    }).sort((a, b) => calculateDaysOverdue(b.dueDate) - calculateDaysOverdue(a.dueDate));
+
+    const countEl = document.getElementById('overdueCount');
+    if (countEl) countEl.textContent = filtered.length + ' records';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No overdue loans match the current filters.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(loan => {
+        const assetTitle = loan.assetTitle || loan.assetName || loan.asset?.title || loan.assetId || '-';
+        const userName = loan.userName || loan.user?.name || loan.userId || '-';
+        const daysOverdue = calculateDaysOverdue(loan.dueDate);
+        return '<tr>' +
+            '<td class="mono">' + (loan.loanId || '-') + '</td>' +
+            '<td><strong>' + assetTitle + '</strong><br><span class="mono">Asset #' + (loan.assetId || '-') + '</span></td>' +
+            '<td>' + userName + '<br><span class="mono">User #' + (loan.userId || '-') + '</span></td>' +
+            '<td>' + (loan.userDepartment || '-') + '</td>' +
+            '<td class="mono">' + fmtDate(loan.dueDate) + '</td>' +
+            '<td>' + badge(daysOverdue + ' days') + '</td>' +
+            '<td>' + badge(loan.status) + '</td>' +
+            '<td class="mono">' + fmt(loan.checkoutDate) + '</td>' +
+            '</tr>';
+    }).join('');
+}
+
+function buildOverdueSummary() {
+    const summary = document.getElementById('overdueSummary');
+    if (!summary) return;
+
+    const total = allOverdueLoans.length;
+    const over7 = allOverdueLoans.filter(loan => calculateDaysOverdue(loan.dueDate) >= 7).length;
+    const over30 = allOverdueLoans.filter(loan => calculateDaysOverdue(loan.dueDate) >= 30).length;
+    const mostOverdue = allOverdueLoans.reduce((max, loan) => {
+        if (!max) return loan;
+        return calculateDaysOverdue(loan.dueDate) > calculateDaysOverdue(max.dueDate) ? loan : max;
+    }, null);
+    const maxDays = mostOverdue ? calculateDaysOverdue(mostOverdue.dueDate) : 0;
+
+    summary.innerHTML = pill('Total overdue', total) + pill('7+ days', over7) +
+        pill('30+ days', over30) + pill('Most overdue', maxDays + ' days');
+}
+
 function renderUsers() {
     const tbody = document.getElementById('userBody');
     if (!tbody) return;
@@ -214,6 +286,18 @@ function exportCSV(type) {
             loan.userName || loan.user?.name || loan.userId,
             loan.status, loan.requestDate, loan.checkoutDate, loan.dueDate, loan.returnDate
         ]);
+    } else if (type === 'overdue') {
+        headers = ['Loan ID', 'Asset', 'User', 'Department', 'Due Date', 'Days Overdue', 'Status', 'Checked Out'];
+        rows = allOverdueLoans.map(loan => [
+            loan.loanId,
+            loan.assetTitle || loan.assetName || loan.asset?.title || loan.assetId,
+            loan.userName || loan.user?.name || loan.userId,
+            loan.userDepartment,
+            loan.dueDate,
+            calculateDaysOverdue(loan.dueDate),
+            loan.status,
+            loan.checkoutDate
+        ]);
     } else {
         headers = ['#', 'Name', 'Email', 'Role', 'Department'];
         rows = allUsers.map((user, index) => [
@@ -269,6 +353,19 @@ async function fetchAll() {
         } catch (error) {
             document.getElementById('loanBody').innerHTML =
                 '<tr><td colspan="8" class="empty-state">Could not load loans. Check the API is running.</td></tr>';
+        }
+    }
+
+    if (document.getElementById('overdueBody')) {
+        expected++;
+        try {
+            allOverdueLoans = await fetchJson('/loans/overdue');
+            buildOverdueSummary();
+            renderOverdueLoans();
+            ok++;
+        } catch (error) {
+            document.getElementById('overdueBody').innerHTML =
+                '<tr><td colspan="8" class="empty-state">Could not load overdue loans. Check the API is running.</td></tr>';
         }
     }
 
