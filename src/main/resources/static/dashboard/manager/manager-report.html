@@ -4,9 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Full Report — Sientenium Asset Management</title>
+    <link rel="stylesheet" href="../styling/dashboard.css">
     <link rel="stylesheet" href="../styling/reporting.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
+
+<div class="dashboard">
+
+<aside class="sidebar">
+    <div>
+        <div class="profile">
+            <div class="profile-image">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
+            </div>
+            <p>Manager</p>
+            <span>Asset Management System</span>
+        </div>
+
+        <nav>
+            <a href="manager-dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </a>
+            <a href="manager-loan-requests.html">
+                <i class="fa-regular fa-file-lines"></i>
+                Loan Requests
+            </a>
+            <a href="manager-checkout-checkin.html">
+                <i class="fa-solid fa-right-left"></i>
+                Asset Check-In
+            </a>
+            <a href="manager-overdue-loans.html">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Overdue Loans
+            </a>
+            <a href="manager-retire-assets.html">
+                <i class="fa-solid fa-box-archive"></i>
+                Retire Assets
+            </a>
+            <a href="manager-report.html" class="active">
+                <i class="fa-solid fa-chart-line"></i>
+                Reports & Insights
+            </a>
+        </nav>
+    </div>
+
+    <button id="logout-btn" class="logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Log Out
+    </button>
+</aside>
+
+<main class="main-content report-main">
 
 <div class="topbar">
     <div class="topbar-left">
@@ -22,7 +72,7 @@
     </div>
 </div>
 
-<main>
+<div class="page-shell">
 
     <div class="page-heading">
         <h1>Manager System report</h1>
@@ -146,8 +196,60 @@
 
     <hr class="section-divider">
 
+    <!-- ==================== OVERDUE LOANS ==================== -->
+    <div class="report-section" id="overdueSection">
+        <div class="section-header">
+            <div class="section-title-block">
+                <h2>Overdue Loans</h2>
+                <p>Approved loans past their due date that still require return and check-in follow-up.</p>
+            </div>
+            <div class="section-actions">
+                <span class="record-count" id="overdueCount">- records</span>
+                <button class="btn-export" onclick="exportCSV('overdue')">Export CSV</button>
+            </div>
+        </div>
+
+        <div class="summary-row" id="overdueSummary"></div>
+
+        <div class="filter-bar">
+            <input type="text" id="overdueSearch" placeholder="Search by asset, user, or loan id..." oninput="renderOverdueLoans()">
+            <span class="filter-label">Days overdue:</span>
+            <select id="overdueDaysFilter" onchange="renderOverdueLoans()">
+                <option value="">All</option>
+                <option value="7">7+ days</option>
+                <option value="30">30+ days</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table id="overdueTable">
+                <thead>
+                <tr>
+                    <th>Loan ID</th>
+                    <th>Asset</th>
+                    <th>User</th>
+                    <th>Department</th>
+                    <th>Due date</th>
+                    <th>Overdue</th>
+                    <th>Status</th>
+                    <th>Checked out</th>
+                </tr>
+                </thead>
+                <tbody id="overdueBody">
+                <tr><td colspan="8" class="empty-state">Loading overdue loans...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+</div>
 </main>
 
+</div>
+
 <script src="../scripts/reporting-admin.js"></script>
+<script src="../scripts/manager-profile.js"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/loans")
+@RequestMapping({"/loans", "/api/loans"})
 @RequiredArgsConstructor
 public class LoanController {
 

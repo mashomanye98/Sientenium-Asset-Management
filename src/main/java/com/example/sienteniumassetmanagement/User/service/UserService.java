@@ -111,6 +111,13 @@ public class UserService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        if (!user.isActive()) {
+            throw new IllegalStateException("This account has been deactivated. Please contact an administrator.");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -118,9 +125,6 @@ public class UserService {
         if (!authentication.isAuthenticated()) {
             throw new IllegalArgumentException("Invalid email or password");
         }
-
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return new AuthResponse(
                 "Login successful",

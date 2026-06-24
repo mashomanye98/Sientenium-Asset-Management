@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = window.location.origin;
 
 // Store all overdue loans
 let allOverdueLoans = [];

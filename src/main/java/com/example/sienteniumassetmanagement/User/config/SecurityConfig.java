@@ -121,7 +121,6 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/photo/**",
                                "/",
-                               // "/api/upload/**",
                                 "/assets/**",
                                 "/loans/**"
                         ).permitAll()
@@ -139,6 +138,7 @@ public class SecurityConfig {
                                 "/api/upload/**",      // ← to be removed
                                 "/api/audit-logs/**",
                                 "/api/assets/**",      // ← add this
+                                "/api/loans/**",
                                 "/swagger-ui/**",      // ← add this
                                 "/v3/api-docs/**",
                                 "/error", // ← add this

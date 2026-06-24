@@ -18,9 +18,8 @@ body{
 /* MAIN CONTAINER */
 .container{
     width:100%;
-    max-width:1200px;   /* prevents full stretch */
-    min-height:800px; /* flexibility */
-    height:auto;
+    max-width:1000px;
+    height:600px;
     display:flex;
     border-radius:20px;
     overflow:hidden;
@@ -327,11 +326,5 @@ body{
 
     .right-panel{
         padding:40px 0;
-    }
-}
-/* Desktop scaling for larger screens */
-@media(min-width: 1200px){
-    .container{
-        transform: scale(0.95);
     }
 }

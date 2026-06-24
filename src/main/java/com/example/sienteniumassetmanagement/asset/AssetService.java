@@ -26,7 +26,7 @@ public class AssetService {
 
         // Record audit log
         auditLogService.recordAction(
-                dto.getCreatedByUserId(),           // who did it
+                dto.getCreatedByUserId(),
                 AuditLog.EntityType.ASSET,
                 saved.getAssetId(),
                 AuditLog.Action.CREATE

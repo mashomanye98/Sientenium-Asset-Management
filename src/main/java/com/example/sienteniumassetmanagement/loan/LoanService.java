@@ -70,7 +70,17 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
 
+        Asset asset = assetRepository.findByIdForUpdate(loan.getAssetId())
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+
+        if (asset.getStatus() != Asset.AssetStatus.AVAILABLE) {
+            throw new IllegalStateException("Cannot approve this request because the asset is no longer available.");
+        }
+
         loan.approve(LocalDate.now(), loan.getDueDate());
+        asset.setStatus(Asset.AssetStatus.LOANED);
+
+        assetRepository.save(asset);
         Loan updatedLoan = loanRepository.save(loan);
 
         // Record: admin/manager approved the loan
