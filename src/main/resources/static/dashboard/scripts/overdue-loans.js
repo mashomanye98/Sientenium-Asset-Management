@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL =window.location.origin;
 
 // Store all overdue loans
 let allOverdueLoans = [];
@@ -169,9 +169,7 @@ async function renderOverdueTable() {
                         `<button class="btn-return" data-loan-id="${loan.loanId}">Process Return</button>` :
                         `<span style="color: var(--muted); font-size: 0.75rem;">Already returned</span>`
                     }
-                    <button class="btn-email" data-user-id="${loan.userId}" data-user-name="${loan.userName}">
-                        <i class="fa-regular fa-envelope"></i> Email
-                    </button>
+
                 </div>
             </td>
         `;
@@ -250,35 +248,6 @@ function setupEventListeners() {
         window.location.href = '../signIn.html';
     });
 
-    // Quick actions
-    document.getElementById('send-reminders').addEventListener('click', () => {
-        const activeCount = allOverdueLoans.filter(l => l.status === 'APPROVED').length;
-        if (activeCount === 0) {
-            showToast('No active overdue loans to remind', 'info');
-            return;
-        }
-        showToast(`Sending reminders to ${activeCount} borrowers...`, 'info');
-    });
-
-    document.getElementById('export-overdue').addEventListener('click', () => {
-        if (allOverdueLoans.length === 0) {
-            showToast('No overdue loans to export', 'info');
-            return;
-        }
-        let csv = 'Loan ID,Asset,Borrower,Due Date,Days Overdue,Status\n';
-        allOverdueLoans.forEach(loan => {
-            const days = calculateDaysOverdue(loan.dueDate);
-            csv += `${loan.loanId},${loan.assetName || 'N/A'},${loan.userName || 'N/A'},${formatDate(loan.dueDate)},${days},${loan.status}\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `overdue-loans-${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        showToast('Export successful!', 'success');
-    });
 }
 
 // Update user name
