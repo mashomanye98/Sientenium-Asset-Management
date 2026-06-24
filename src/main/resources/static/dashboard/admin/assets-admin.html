@@ -479,9 +479,9 @@
         }
     </style>
 </head>
-<body>
+<body data-admin-page="assets">
 <div class="dashboard">
-
+    <aside class="sidebar" data-admin-sidebar></aside>
 
     <!-- MAIN PANEL -->
     <main class="main-content">
@@ -538,10 +538,10 @@
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                    <tr><th>Asset ID</th><th>Asset Name</th><th>Category</th><th>Status</th><th>Actions</th></tr>
+                    <tr><th>Photo</th><th>Asset ID</th><th>Asset Name</th><th>Category</th><th>Status</th><th>Actions</th></tr>
                     </thead>
                     <tbody id="assetTableBody">
-                    <tr><td colspan="5" class="empty-state">Loading assets...</td></tr>
+                    <tr><td colspan="6" class="empty-state">Loading assets...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -584,7 +584,7 @@
                 </div>
                 <div class="form-group">
                     <label>Location</label>
-                    <input type="text" id="assetLocation" placeholder="e.g., IT Room">
+                    <input type="text" id="assetLocation" placeholder="e.g., Johannesburg">
                 </div>
                 <div class="form-group">
                     <label>Condition</label>
@@ -596,7 +596,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Upload Photo</label>
+                    <label>Asset Photo</label>
+                    <div id="photoPreviewContainer" style="margin-bottom: 12px; display: none; text-align: center; background: #f8fafc; padding: 10px; border-radius: 14px; border: 1px dashed #cbd5e1;">
+                        <img id="assetPhotoPreview" src="" alt="Asset Photo" style="max-width: 100%; max-height: 200px; border-radius: 10px; object-fit: contain;">
+                    </div>
                     <div class="upload-row" style="display:flex; gap:12px; align-items:center;">
                         <button type="button" class="btn-secondary" id="uploadPhotoBtn">Upload photo</button>
                         <span id="uploadPhotoName" style="color: var(--muted); font-size: 0.9rem;">No file selected</span>
@@ -630,6 +633,7 @@
     </div>
 </div>
 
+<script src="../scripts/admin-sidebar.js"></script>
 <script src="../scripts/assets-admin.js"></script>
 </body>
 </html>

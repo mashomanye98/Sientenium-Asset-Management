@@ -3,194 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Report — Sientenium Asset Management</title>
+    <title>Sientenium | Admin Report</title>
+    <link rel="stylesheet" href="../styling/dashboard.css">
     <link rel="stylesheet" href="../styling/reporting.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body data-admin-page="reports">
 
-<div class="topbar">
-    <div class="topbar-left">
-        <div class="topbar-logo">SA</div>
-        <div>
-            <div class="topbar-title">Sientenium Asset Management</div>
-            <div class="topbar-sub">Full system report</div>
+<div class="dashboard">
+    <aside class="sidebar" data-admin-sidebar></aside>
+
+    <main class="main-content report-main">
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="topbar-logo">SA</div>
+                <div>
+                    <div class="topbar-title">Sientenium Asset Management</div>
+                    <div class="topbar-sub">Full system report</div>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span class="api-dot" id="apiDot"></span>
+                <span class="api-label" id="apiLabel">Connecting...</span>
+            </div>
         </div>
-    </div>
-    <div class="topbar-right">
-        <span class="api-dot" id="apiDot"></span>
-        <span class="api-label" id="apiLabel">Connecting…</span>
-    </div>
+
+        <div class="page-shell">
+            <div class="page-heading">
+                <h1>Admin System report</h1>
+                <p>Complete statement of all assets, loans, and users. Use filters to narrow down results and export any section to CSV.</p>
+            </div>
+
+            <div class="generated-at" id="generatedAt"></div>
+
+            <div class="report-section" id="assetSection">
+                <div class="section-header">
+                    <div class="section-title-block">
+                        <h2>Assets</h2>
+                        <p>Full inventory of all registered assets including status and location.</p>
+                    </div>
+                    <div class="section-actions">
+                        <span class="record-count" id="assetCount">- records</span>
+                        <button class="btn-export" onclick="exportCSV('assets')">Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="summary-row" id="assetSummary"></div>
+
+                <div class="filter-bar">
+                    <input type="text" id="assetSearch" placeholder="Search by title or serial number..." oninput="renderAssets()">
+                    <span class="filter-label">Status:</span>
+                    <select id="assetStatusFilter" onchange="renderAssets()">
+                        <option value="">All</option>
+                        <option value="AVAILABLE">Available</option>
+                        <option value="LOANED">Loaned</option>
+                        <option value="RETIRED">Retired</option>
+                    </select>
+                    <span class="filter-label">Category:</span>
+                    <select id="assetCategoryFilter" onchange="renderAssets()">
+                        <option value="">All</option>
+                        <option value="IT_EQUIPMENT">IT Equipment</option>
+                        <option value="FURNITURE">Furniture</option>
+                    </select>
+                    <span class="filter-label">Condition:</span>
+                    <select id="assetConditionFilter" onchange="renderAssets()">
+                        <option value="">All</option>
+                        <option value="NEW">New</option>
+                        <option value="GOOD">Good</option>
+                        <option value="FAIR">Fair</option>
+                        <option value="POOR">Poor</option>
+                        <option value="DAMAGED">Damaged</option>
+                    </select>
+                </div>
+
+                <div class="table-wrap">
+                    <table id="assetTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Serial No.</th>
+                            <th>Category</th>
+                            <th>Condition</th>
+                            <th>Status</th>
+                            <th>Location</th>
+                            <th>Cost (R)</th>
+                            <th>Acquired</th>
+                        </tr>
+                        </thead>
+                        <tbody id="assetBody">
+                        <tr><td colspan="9" class="empty-state">Loading assets...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="report-section" id="loanSection">
+                <div class="section-header">
+                    <div class="section-title-block">
+                        <h2>Loans</h2>
+                        <p>Full record of all asset loan transactions including dates and current status.</p>
+                    </div>
+                    <div class="section-actions">
+                        <span class="record-count" id="loanCount">- records</span>
+                        <button class="btn-export" onclick="exportCSV('loans')">Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="summary-row" id="loanSummary"></div>
+
+                <div class="filter-bar">
+                    <input type="text" id="loanSearch" placeholder="Search by asset title or user name..." oninput="renderLoans()">
+                    <span class="filter-label">Status:</span>
+                    <select id="loanStatusFilter" onchange="renderLoans()">
+                        <option value="">All</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="returned">Returned</option>
+                    </select>
+                </div>
+
+                <div class="table-wrap">
+                    <table id="loanTable">
+                        <thead>
+                        <tr>
+                            <th>Loan ID</th>
+                            <th>Asset</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Requested</th>
+                            <th>Checked out</th>
+                            <th>Due date</th>
+                            <th>Returned</th>
+                        </tr>
+                        </thead>
+                        <tbody id="loanBody">
+                        <tr><td colspan="8" class="empty-state">Loading loans...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="report-section" id="userSection">
+                <div class="section-header">
+                    <div class="section-title-block">
+                        <h2>Users</h2>
+                        <p>All registered system users with roles and account status.</p>
+                    </div>
+                    <div class="section-actions">
+                        <span class="record-count" id="userCount">- records</span>
+                        <button class="btn-export" onclick="exportCSV('users')">Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="summary-row" id="userSummary"></div>
+
+                <div class="filter-bar">
+                    <input type="text" id="userSearch" placeholder="Search by name or email..." oninput="renderUsers()">
+                    <span class="filter-label">Role:</span>
+                    <select id="userRoleFilter" onchange="renderUsers()">
+                        <option value="">All</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="MANAGER">Manager</option>
+                        <option value="STAFF">Staff</option>
+                    </select>
+                </div>
+
+                <div class="table-wrap">
+                    <table id="userTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="userBody">
+                        <tr><td colspan="6" class="empty-state">Loading users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 
-<main>
-
-    <div class="page-heading">
-        <h1>Admin System report</h1>
-        <p>Complete statement of all assets, loans, and users. Use filters to narrow down results and export any section to CSV.</p>
-    </div>
-
-    <!-- ==================== ASSETS ==================== -->
-    <div class="report-section" id="assetSection">
-        <div class="section-header">
-            <div class="section-title-block">
-                <h2>Assets</h2>
-                <p>Full inventory of all registered assets including status and location.</p>
-            </div>
-            <div class="section-actions">
-                <span class="record-count" id="assetCount">— records</span>
-                <button class="btn-export" onclick="exportCSV('assets')">⬇ Export CSV</button>
-            </div>
-        </div>
-
-        <div class="summary-row" id="assetSummary"></div>
-
-        <div class="filter-bar">
-            <input type="text" id="assetSearch" placeholder="Search by title or serial number…" oninput="renderAssets()">
-            <span class="filter-label">Status:</span>
-            <select id="assetStatusFilter" onchange="renderAssets()">
-                <option value="">All</option>
-                <option value="AVAILABLE">Available</option>
-                <option value="LOANED">Loaned</option>
-                <option value="RETIRED">Retired</option>
-            </select>
-            <span class="filter-label">Category:</span>
-            <select id="assetCategoryFilter" onchange="renderAssets()">
-                <option value="">All</option>
-                <option value="IT_EQUIPMENT">IT Equipment</option>
-                <option value="FURNITURE">Furniture</option>
-            </select>
-            <span class="filter-label">Condition:</span>
-            <select id="assetConditionFilter" onchange="renderAssets()">
-                <option value="">All</option>
-                <option value="NEW">New</option>
-                <option value="GOOD">Good</option>
-                <option value="FAIR">Fair</option>
-                <option value="POOR">Poor</option>
-                <option value="DAMAGED">Damaged</option>
-            </select>
-        </div>
-
-        <div class="table-wrap">
-            <table id="assetTable">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Title</th>
-                    <th>Serial No.</th>
-                    <th>Category</th>
-                    <th>Condition</th>
-                    <th>Status</th>
-                    <th>Location</th>
-                    <th>Cost (R)</th>
-                    <th>Acquired</th>
-                </tr>
-                </thead>
-                <tbody id="assetBody">
-                <tr><td colspan="9" class="empty-state">Loading assets…</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <hr class="section-divider">
-
-    <!-- ==================== LOANS ==================== -->
-    <div class="report-section" id="loanSection">
-        <div class="section-header">
-            <div class="section-title-block">
-                <h2>Loans</h2>
-                <p>Full record of all asset loan transactions including dates and current status.</p>
-            </div>
-            <div class="section-actions">
-                <span class="record-count" id="loanCount">— records</span>
-                <button class="btn-export" onclick="exportCSV('loans')">⬇ Export CSV</button>
-            </div>
-        </div>
-
-        <div class="summary-row" id="loanSummary"></div>
-
-        <div class="filter-bar">
-            <input type="text" id="loanSearch" placeholder="Search by asset title or user name…" oninput="renderLoans()">
-            <span class="filter-label">Status:</span>
-            <select id="loanStatusFilter" onchange="renderLoans()">
-                <option value="">All</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="returned">Returned</option>
-            </select>
-        </div>
-
-        <div class="table-wrap">
-            <table id="loanTable">
-                <thead>
-                <tr>
-                    <th>Loan ID</th>
-                    <th>Asset</th>
-                    <th>User</th>
-                    <th>Status</th>
-                    <th>Requested</th>
-                    <th>Checked out</th>
-                    <th>Due date</th>
-                    <th>Returned</th>
-                </tr>
-                </thead>
-                <tbody id="loanBody">
-                <tr><td colspan="8" class="empty-state">Loading loans…</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <hr class="section-divider">
-
-    <!-- ==================== USERS ==================== -->
-    <div class="report-section" id="userSection">
-        <div class="section-header">
-            <div class="section-title-block">
-                <h2>Users</h2>
-                <p>All registered system users with roles and account status.</p>
-            </div>
-            <div class="section-actions">
-                <span class="record-count" id="userCount">— records</span>
-                <button class="btn-export" onclick="exportCSV('users')">⬇ Export CSV</button>
-            </div>
-        </div>
-
-        <div class="summary-row" id="userSummary"></div>
-
-        <div class="filter-bar">
-            <input type="text" id="userSearch" placeholder="Search by name or email…" oninput="renderUsers()">
-            <span class="filter-label">Role:</span>
-            <select id="userRoleFilter" onchange="renderUsers()">
-                <option value="">All</option>
-                <option value="ADMIN">Admin</option>
-                <option value="MANAGER">Manager</option>
-                <option value="STAFF">Staff</option>
-            </select>
-        </div>
-
-        <div class="table-wrap">
-            <table id="userTable">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Department</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                <tbody id="userBody">
-                <tr><td colspan="6" class="empty-state">Loading users…</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-</main>
-
+<script src="../scripts/admin-sidebar.js"></script>
 <script src="../scripts/reporting-admin.js"></script>
 </body>
 </html>

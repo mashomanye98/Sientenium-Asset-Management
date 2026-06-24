@@ -56,18 +56,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const imageUrl = getImageUrl(asset.photoPath);
             const photoCount = imageUrl ? 1 : 0;
             const locations = asset.location ? [asset.location] : [];
-            const locChips = locations.map(loc => `<span class="loc-chip">${loc}</span>`).join('');
-            const availability = `<div class="availability in-stock"><i class="fas fa-circle" style="font-size:.5rem;margin-right:4px"></i>Available in ${asset.location || 'Unknown'}</div>`;
             const title = asset.title || 'Untitled Asset';
             const brand = asset.category || 'General';
             const price = formatCurrency(asset.cost);
             const conditionBadge = asset.condition ? `${asset.condition}` : 'Unknown';
 
+            // Location normalization for old data (Boardroom/Finance)
+            let displayLocation = asset.location || 'Unknown location';
+            if (displayLocation === 'Boardroom' || displayLocation.includes('Finance')) {
+                displayLocation = 'Johannesburg'; // Default fallback for old data
+            }
+
             const cardHtml = `
                 <div class="product-card">
                     <div class="sale-tag">AVAILABLE</div>
                     <div class="discount-badge">${conditionBadge}</div>
-                    <button class="wishlist-btn" onclick="this.classList.toggle('active')"><i class="far fa-heart"></i></button>
                     <div class="product-img-wrap">
                         ${imageUrl ? `<img src="${imageUrl}" alt="${title}" onerror="this.style.display='none'">` : `<div style="font-size:3rem;color:#cdd5e0;"><i class="fas fa-box-open"></i></div>`}
                         <div class="photo-count"><i class="fas fa-camera"></i> ${photoCount}</div>
@@ -78,9 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="price-row">
                             <span class="price">${price}</span>
                         </div>
-                        ${availability}
-                        <div class="delivery-row"><i class="fas fa-map-marker-alt"></i> ${asset.location || 'Unknown location'}</div>
-                        <div class="rating-row">${locChips}</div>
+                        <div class="delivery-row"><i class="fas fa-map-marker-alt"></i> ${displayLocation}</div>
                         <button class="add-btn asset-apply-btn" data-asset-id="${asset.assetId}" type="button">Asset Application</button>
                     </div>
                 </div>`;

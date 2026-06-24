@@ -5,6 +5,16 @@ const API_BASE_URL = window.location.origin;
 let allAssets = [];
 let currentTab = 'eligible';
 
+function normalizeValue(value) {
+    return String(value || '').toUpperCase();
+}
+
+function isEligibleForRetirement(asset) {
+    var status = normalizeValue(asset.status);
+    var condition = normalizeValue(asset.condition);
+    return status === 'AVAILABLE' && (condition === 'POOR' || condition === 'DAMAGED');
+}
+
 // Helper function to show toast notifications
 function showToast(message, type) {
     type = type || 'info';
@@ -114,7 +124,7 @@ async function retireAsset(assetId, reason, notes) {
         }
 
         // Check if asset is loaned
-        if (asset.status === 'LOANED') {
+        if (normalizeValue(asset.status) === 'LOANED') {
             throw new Error('Cannot retire an asset that is currently loaned out. Please check it in first.');
         }
 
@@ -253,16 +263,11 @@ function renderAssets() {
     if (statusFilter !== 'ALL') {
         var tempFiltered = [];
         for (var j = 0; j < filtered.length; j++) {
-            if (filtered[j].status === statusFilter) {
+            if (normalizeValue(filtered[j].status) === statusFilter) {
                 tempFiltered.push(filtered[j]);
             }
         }
         filtered = tempFiltered;
-    }
-
-    function isEligibleForRetirement(asset) {
-        var condition = String(asset.condition || '').toUpperCase();
-        return asset.status === 'AVAILABLE' && (condition === 'POOR' || condition === 'DAMAGED');
     }
 
     // Apply tab filter
@@ -278,7 +283,7 @@ function renderAssets() {
     } else if (currentTab === 'retired') {
         var tempFiltered = [];
         for (var l = 0; l < filtered.length; l++) {
-            if (filtered[l].status === 'RETIRED') {
+            if (normalizeValue(filtered[l].status) === 'RETIRED') {
                 tempFiltered.push(filtered[l]);
             }
         }
@@ -318,21 +323,22 @@ function renderAssets() {
         var asset = filtered[n];
         var row = document.createElement('tr');
 
-        if (asset.status === 'RETIRED') {
+        var assetStatus = normalizeValue(asset.status);
+        if (assetStatus === 'RETIRED') {
             row.className = 'retired-row';
         }
 
         var statusClass = 'status-available';
-        if (asset.status === 'LOANED') {
+        if (assetStatus === 'LOANED') {
             statusClass = 'status-loaned';
-        } else if (asset.status === 'RETIRED') {
+        } else if (assetStatus === 'RETIRED') {
             statusClass = 'status-retired';
         }
 
         var actionHtml = '';
-        if (asset.status === 'AVAILABLE' && (asset.condition === 'POOR' || asset.condition === 'DAMAGED')) {
+        if (isEligibleForRetirement(asset)) {
             actionHtml = '<button class="btn-retire" data-asset-id="' + asset.assetId + '" data-asset-title="' + (asset.title || 'N/A') + '">Retire</button>';
-        } else if (asset.status === 'RETIRED') {
+        } else if (assetStatus === 'RETIRED') {
             actionHtml = '<button class="btn-restore" data-asset-id="' + asset.assetId + '" data-asset-title="' + (asset.title || 'N/A') + '">Restore</button>';
         } else {
             actionHtml = '<span style="color: var(--muted); font-size: 0.75rem;">Cannot retire</span>';
@@ -392,9 +398,10 @@ function updateStats() {
     var retired = 0;
 
     for (var i = 0; i < allAssets.length; i++) {
-        if (allAssets[i].status === 'AVAILABLE') available++;
-        else if (allAssets[i].status === 'LOANED') loaned++;
-        else if (allAssets[i].status === 'RETIRED') retired++;
+        var status = normalizeValue(allAssets[i].status);
+        if (status === 'AVAILABLE') available++;
+        else if (status === 'LOANED') loaned++;
+        else if (status === 'RETIRED') retired++;
     }
 
     document.getElementById('stat-total').textContent = total + ' Assets';
@@ -423,7 +430,7 @@ function populateRetireForm() {
     // Only poor or damaged available assets are eligible for retirement
     for (var i = 0; i < allAssets.length; i++) {
         var asset = allAssets[i];
-        if (asset.status === 'AVAILABLE' && (asset.condition === 'POOR' || asset.condition === 'DAMAGED')) {
+        if (isEligibleForRetirement(asset)) {
             var option = document.createElement('option');
             option.value = asset.assetId;
             option.textContent = (asset.title || 'N/A') + ' (' + (asset.serialNumber || 'No SN') + ')';
@@ -523,12 +530,6 @@ function setupEventListeners() {
         })(tabBtns[i]);
     }
 
-    document.getElementById('logout-btn').addEventListener('click', function() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
-        window.location.href = '../../signIn.html';
-    });
-
     document.getElementById('retire-asset').addEventListener('change', function() {
         document.getElementById('retire-form-message').innerHTML = '';
     });
@@ -541,7 +542,18 @@ function setupEventListeners() {
 // Update user name
 function updateUserInfo() {
     var userNameElement = document.getElementById('user-name');
-    var userName = localStorage.getItem('userName') || userNameElement.textContent || 'System Administrator';
+    if (!userNameElement) {
+        return;
+    }
+
+    var currentUser = {};
+    try {
+        currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || {};
+    } catch (error) {
+        currentUser = {};
+    }
+
+    var userName = currentUser.fullName || localStorage.getItem('userName') || userNameElement.textContent || 'System Administrator';
     userNameElement.textContent = userName;
 }
 

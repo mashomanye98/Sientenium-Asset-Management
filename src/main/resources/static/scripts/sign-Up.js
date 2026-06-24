@@ -21,6 +21,28 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    // ================================
+    // TOGGLE PASSWORD VISIBILITY
+    // ================================
+    const togglePasswordIcons = document.querySelectorAll(".toggle-password");
+
+    togglePasswordIcons.forEach(icon => {
+        icon.addEventListener("click", function() {
+            const targetId = this.getAttribute("data-target");
+            const passwordInput = document.getElementById(targetId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                this.classList.remove("fa-eye");
+                this.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                this.classList.remove("fa-eye-slash");
+                this.classList.add("fa-eye");
+            }
+        });
+    });
+
     // Listen for form submission
     signupForm.addEventListener("submit", async (e) => {
 
@@ -145,8 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
 
                 showAlert(
-                    data.message ||
-                    "Registration failed.",
+                    data.message || data.error || "An error occurred.",
                     "error"
                 );
 
@@ -180,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(error);
 
             showAlert(
-                "Account Already Exists.",
+                "A connection error occurred. Please restart the application and try again.",
                 "error"
             );
         }
