@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = 'http://localhost:8080';
 
 // Store all loans for filtering
 let allLoans = [];
