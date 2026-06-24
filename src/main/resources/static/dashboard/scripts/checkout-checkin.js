@@ -283,7 +283,8 @@ function updateUserInfo() {
         currentUser = {};
     }
 
-    const userName = currentUser.fullName || localStorage.getItem('userName') || 'Manager';
+    const defaultName = document.body?.dataset?.adminPage ? 'System Administrator' : 'Manager';
+    const userName = currentUser.fullName || localStorage.getItem('userName') || defaultName;
     const userNameElement = document.getElementById('user-name');
     if (userNameElement) {
         userNameElement.textContent = userName;

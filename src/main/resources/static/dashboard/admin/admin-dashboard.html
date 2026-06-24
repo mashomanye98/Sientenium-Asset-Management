@@ -17,14 +17,16 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
-<body>
+<body data-admin-page="dashboard">
 
 <div class="dashboard">
+
+    <aside class="sidebar" data-admin-sidebar></aside>
 
     <!-- ==========================
          SIDEBAR
     =========================== -->
-    <aside class="sidebar">
+    <aside class="sidebar" style="display:none;">
 
         <div>
 
@@ -266,5 +268,6 @@
 
 </div>
 
+<script src="../scripts/admin-sidebar.js"></script>
 </body>
 </html>
