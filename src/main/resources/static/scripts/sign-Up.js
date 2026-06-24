@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.location.href =
                     "signIn.html";
 
-            }, 4000);
+            }, 2000);
 
         }
         catch (error) {

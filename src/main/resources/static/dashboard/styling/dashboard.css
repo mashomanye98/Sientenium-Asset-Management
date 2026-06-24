@@ -44,10 +44,9 @@ body{
 }
 
 .profile-image img{
-    width:80px;
-    height:80px;
-    border-radius:50px;
-    border:2px solid var(--primary);
+    width:185px;
+    height:60px;
+    border-radius:10px;
 }
 
 .profile h3{
@@ -107,7 +106,7 @@ nav a.active{
     display:flex;
     align-items:center;
     gap:12px;
-    border-radius:12px;
+    border-radius:1px;
     font-size:.9rem;
     font-weight:500;
 }
@@ -143,7 +142,7 @@ nav a.active{
     background:var(--primary);
     color:white;
     padding:14px 22px;
-    border-radius:10px;
+    border-radius:1px;
     cursor:pointer;
     display:inline-flex;
     align-items:center;
@@ -161,7 +160,7 @@ nav a.active{
 .stat-card{
     background:white;
     padding:24px;
-    border-radius:16px;
+    border-radius:1px;
     display:flex;
     gap:16px;
     align-items:center;
@@ -188,7 +187,7 @@ nav a.active{
 
 .card{
     background:white;
-    border-radius:16px;
+    border-radius:1px;
     padding:25px;
     margin-bottom:30px;
     box-shadow:0 10px 30px rgba(0,0,0,.04);
@@ -241,7 +240,7 @@ td{
 
 .alert {
     padding: 16px 18px;
-    border-radius: 14px;
+    border-radius: 1px;
     margin-bottom: 20px;
     color: white;
     font-weight: 600;
@@ -258,7 +257,7 @@ td{
 .action-btn{
     border:none;
     padding:.65rem 1rem;
-    border-radius:10px;
+    border-radius:1px;
     cursor:pointer;
     font-size:.9rem;
     font-weight:600;
@@ -359,7 +358,7 @@ td{
 .modal-container .modal-body img {
     width: 100%;
     height: auto;
-    border-radius: 18px;
+    border-radius: 1px;
     max-height: 70vh;
 }
 
@@ -434,7 +433,7 @@ td{
     gap:14px;
     padding:16px;
     border:1px solid #edf2f7;
-    border-radius:14px;
+    border-radius:1px;
     text-decoration:none;
     color:var(--text);
     background:#fff;
@@ -527,7 +526,7 @@ td{
     bottom: 20px;
     right: 20px;
     padding: 12px 20px;
-    border-radius: 8px;
+    border-radius: 1px;
     color: white;
     z-index: 1000;
     animation: slideIn 0.3s ease;
