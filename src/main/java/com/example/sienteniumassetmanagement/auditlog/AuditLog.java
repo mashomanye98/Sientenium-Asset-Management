@@ -54,7 +54,7 @@ public class AuditLog {
     private LocalDateTime timestamp;
 
     public enum EntityType {
-        ASSET, LOAN, USER
+        ASSET, LOAN, USER, PENDING_REQUEST
     }
 
     public enum Action {

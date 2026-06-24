@@ -13,10 +13,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
-<body data-admin-page="loan-requests">
+<body>
 
 <div class="dashboard">
-    <aside class="sidebar" data-admin-sidebar></aside>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div>
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
+                </div>
+                <h3 id="user-name">System Administrator</h3>
+                <p>Sientenium</p>
+                <span>ADMIN</span>
+            </div>
+
+            <nav>
+                <a href="admin-dashboard.html">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+                <a href="assets-admin.html">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    Assets
+                </a>
+                <a href="users.html">
+                    <i class="fa-solid fa-users"></i>
+                    Users
+                </a>
+                <a href="admin-loan-requests.html" class="active">
+                    <i class="fa-solid fa-hand-holding"></i>
+                    Loan Requests
+                </a>
+                <a href="admin-retire-assets.html">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    Retire Assets
+                </a>
+                <a href="admin-report.html" class="nav-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Reports & Insights
+                </a>
+                <a href="audit-log.html">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    Audit Logs
+                </a>
+            </nav>
+        </div>
+        <button id="logout-btn" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+    </aside>
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="main-content">
@@ -106,7 +154,7 @@
     </main>
 </div>
 
-<script src="../scripts/admin-sidebar.js"></script>
-<script src="../scripts/loan-requests.js"></script>
+<script src="../scripts/loan-requests.js">
+</script>
 </body>
 </html>
