@@ -78,7 +78,18 @@
   .api-label { font-size: 13px; color: var(--text-secondary); }
 
   /* MAIN */
-  main { max-width: 1200px; margin: 0 auto; padding: 32px; }
+  .report-main {
+    flex: 1;
+    max-width: none;
+    margin: 0;
+    padding: 32px;
+    overflow-x: auto;
+  }
+
+  .page-shell {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
   .page-heading { margin-bottom: 8px; }
   .page-heading h1 { font-size: 22px; font-weight: 600; }
