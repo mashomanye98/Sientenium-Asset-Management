@@ -1,16 +1,7 @@
-// ============================================
-// CHECKOUT-CHECKIN.JS - Manager Check-In Page
-// ============================================
-
-// CONFIGURATION
+// Use the same host and port that served the page.
 const API_BASE_URL = window.location.origin;
 
-// STATE MANAGEMENT
 let awaitingCheckInLoans = [];
-
-// ============================================
-// TOAST NOTIFICATIONS
-// ============================================
 
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
@@ -23,17 +14,9 @@ function showToast(message, type = 'info') {
     }, 4000);
 }
 
-// ============================================
-// AUTHENTICATION
-// ============================================
-
 function getAuthToken() {
     return localStorage.getItem('authToken');
 }
-
-// ============================================
-// API REQUEST
-// ============================================
 
 async function apiRequest(url, options = {}) {
     const headers = {
@@ -63,10 +46,6 @@ async function apiRequest(url, options = {}) {
     return response.json();
 }
 
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
 function calculateDaysOverdue(dueDate) {
     if (!dueDate) return 0;
     const due = new Date(dueDate);
@@ -86,16 +65,52 @@ function formatDate(dateStr) {
     });
 }
 
-// ============================================
-// DATA FETCHING
-// ============================================
+function isReturnedLoan(loan) {
+    return String(loan.status || '').toUpperCase() === 'RETURNED' || Boolean(loan.returnDate);
+}
+
+function getLoanSortTime(loan) {
+    const dates = [loan.returnDate, loan.dueDate, loan.checkoutDate, loan.requestDate];
+    for (const value of dates) {
+        if (!value) continue;
+        const time = new Date(value).getTime();
+        if (!Number.isNaN(time)) {
+            return time;
+        }
+    }
+    return 0;
+}
+
+function getLatestReturnedLoanByAsset(loans) {
+    const loansByAsset = new Map();
+
+    for (const loan of loans) {
+        if (!loan.assetId) continue;
+
+        const assetKey = String(loan.assetId);
+        const existing = loansByAsset.get(assetKey);
+        if (!existing) {
+            loansByAsset.set(assetKey, loan);
+            continue;
+        }
+
+        const existingTime = getLoanSortTime(existing);
+        const loanTime = getLoanSortTime(loan);
+        const existingLoanId = Number(existing.loanId || 0);
+        const loanId = Number(loan.loanId || 0);
+
+        if (loanTime > existingTime || (loanTime === existingTime && loanId > existingLoanId)) {
+            loansByAsset.set(assetKey, loan);
+        }
+    }
+
+    return Array.from(loansByAsset.values());
+}
 
 async function fetchAwaitingCheckInLoans() {
     try {
         const loans = await apiRequest('/loans');
-        const returnedLoans = loans.filter(loan =>
-            String(loan.status || '').toUpperCase() === 'RETURNED' || loan.returnDate
-        );
+        const returnedLoans = getLatestReturnedLoanByAsset(loans.filter(isReturnedLoan));
         const loansWithAssets = await Promise.all(returnedLoans.map(async loan => {
             try {
                 const asset = await apiRequest(`/api/assets/${loan.assetId}`);
@@ -117,10 +132,6 @@ async function fetchAwaitingCheckInLoans() {
     }
 }
 
-// ============================================
-// CHECK-IN OPERATION
-// ============================================
-
 async function checkInAsset(loanId, assetId, condition) {
     if (!condition) {
         showToast('Select the returned asset condition before check-in.', 'error');
@@ -140,7 +151,7 @@ async function checkInAsset(loanId, assetId, condition) {
             acquisitionDate: asset.acquisitionDate,
             cost: asset.cost,
             location: asset.location,
-            condition: condition,
+            condition,
             photoPath: asset.photoPath,
             status: 'AVAILABLE'
         };
@@ -161,23 +172,9 @@ async function checkInAsset(loanId, assetId, condition) {
     }
 }
 
-// ============================================
-// RENDER FUNCTIONS
-// ============================================
-
 function renderAwaitingCheckInLoans() {
     const tbody = document.getElementById('checked-out-tbody');
-    const searchInput = document.getElementById('search-input');
-    const searchTerm = searchInput?.value?.toLowerCase() || '';
-
-    const statCheckedOut = document.getElementById('stat-checkedout');
-    const statOverdue = document.getElementById('stat-overdue');
-    const overdueCountEl = document.getElementById('overdue-count');
-
-    if (!tbody) {
-        console.warn('Element "checked-out-tbody" not found');
-        return;
-    }
+    const searchTerm = document.getElementById('search-input').value.toLowerCase();
 
     let filtered = [...awaitingCheckInLoans];
     if (searchTerm) {
@@ -192,15 +189,11 @@ function renderAwaitingCheckInLoans() {
     filtered.sort((a, b) => calculateDaysOverdue(b.dueDate) - calculateDaysOverdue(a.dueDate));
 
     const overdueCount = filtered.filter(loan => calculateDaysOverdue(loan.dueDate) > 0).length;
-
-    if (statCheckedOut) {
-        statCheckedOut.textContent = `${filtered.length} Loans`;
-    }
-    if (statOverdue) {
-        statOverdue.textContent = `${overdueCount} Assets`;
-    }
-    if (overdueCountEl) {
-        overdueCountEl.textContent = overdueCount;
+    document.getElementById('stat-checkedout').textContent = `${filtered.length} Asset${filtered.length === 1 ? '' : 's'}`;
+    document.getElementById('stat-overdue').textContent = `${overdueCount} Assets`;
+    const overdueCountElement = document.getElementById('overdue-count');
+    if (overdueCountElement) {
+        overdueCountElement.textContent = overdueCount;
     }
 
     if (filtered.length === 0) {
@@ -220,22 +213,11 @@ function renderAwaitingCheckInLoans() {
         }
 
         row.innerHTML = `
-            <td>
-                <strong>${loan.assetName || 'N/A'}</strong>
-                <br>
-                <span style="font-size: 0.75rem; color: var(--muted);">Loan ID: ${loan.loanId || 'N/A'}</span>
-            </td>
+            <td><strong>${loan.assetName || 'N/A'}</strong><br><span style="font-size: 0.75rem; color: var(--muted);">Loan ID: ${loan.loanId || 'N/A'}</span></td>
             <td>${loan.assetId || 'N/A'}</td>
-            <td>
-                <strong>${loan.userName || 'N/A'}</strong>
-                <br>
-                <span style="font-size: 0.75rem; color: var(--muted);">ID: ${loan.userId || 'N/A'}</span>
-            </td>
+            <td><strong>${loan.userName || 'N/A'}</strong><br><span style="font-size: 0.75rem; color: var(--muted);">ID: ${loan.userId || 'N/A'}</span></td>
             <td>${loan.userDepartment || 'N/A'}</td>
-            <td>
-                ${formatDate(loan.dueDate)}
-                ${isOverdue ? `<span style="color: #dc2626; font-weight: 600;">(${daysOverdue}d overdue)</span>` : ''}
-            </td>
+            <td>${formatDate(loan.dueDate)} ${isOverdue ? `<span style="color: #dc2626; font-weight: 600;">(${daysOverdue}d overdue)</span>` : ''}</td>
             <td>
                 <span class="status-badge status-active">
                     Returned
@@ -261,90 +243,58 @@ function renderAwaitingCheckInLoans() {
 
     document.querySelectorAll('.btn-checkin').forEach(btn => {
         btn.addEventListener('click', () => {
-            const loanId = parseInt(btn.dataset.loanId);
-            const assetId = parseInt(btn.dataset.assetId);
-            const conditionSelect = document.querySelector(`.condition-select[data-loan-id="${loanId}"]`);
-            const condition = conditionSelect?.value;
-            if (conditionSelect) {
-                checkInAsset(loanId, assetId, condition);
-            } else {
-                showToast('Please select a condition for the returned asset.', 'error');
-            }
+            const conditionSelect = document.querySelector(`.condition-select[data-loan-id="${btn.dataset.loanId}"]`);
+            checkInAsset(parseInt(btn.dataset.loanId), parseInt(btn.dataset.assetId), conditionSelect?.value);
         });
     });
 }
 
-// ============================================
-// DATA LOADING
-// ============================================
-
 async function loadData() {
     const tbody = document.getElementById('checked-out-tbody');
-
-    if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="8" class="loading">Loading assets awaiting check-in...</td></tr>';
-    }
+    tbody.innerHTML = '<tr><td colspan="8" class="loading">Loading assets awaiting check-in...</td></tr>';
 
     try {
         await fetchAwaitingCheckInLoans();
         renderAwaitingCheckInLoans();
     } catch (error) {
         console.error('Error loading data:', error);
-        if (tbody) {
-            tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Failed to load assets awaiting check-in</td></tr>';
-        }
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Failed to load assets awaiting check-in</td></tr>';
         showToast('Failed to load data: ' + error.message, 'error');
     }
 }
 
-// ============================================
-// EVENT LISTENERS
-// ============================================
-
 function setupEventListeners() {
-    const refreshBtn = document.getElementById('refresh-btn');
-    const searchInput = document.getElementById('search-input');
-    const logoutBtn = document.getElementById('logout-btn');
+    document.getElementById('refresh-btn').addEventListener('click', loadData);
+    document.getElementById('search-input').addEventListener('input', renderAwaitingCheckInLoans);
 
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', loadData);
-    }
-    if (searchInput) {
-        searchInput.addEventListener('input', renderAwaitingCheckInLoans);
-    }
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userName');
-            window.location.href = '../signIn.html';
-        });
-    }
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        sessionStorage.removeItem('currentUser');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userName');
+        window.location.href = '../../signIn.html';
+    });
 }
-
-// ============================================
-// USER PROFILE
-// ============================================
 
 function updateUserInfo() {
-    const userName = localStorage.getItem('userName') || 'Johannes Motsemme';
-    const nameEl = document.getElementById('user-name') || document.getElementById('profileName');
-    if (nameEl) {
-        nameEl.textContent = userName;
+    let currentUser = {};
+    try {
+        currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || {};
+    } catch (error) {
+        currentUser = {};
+    }
+
+    const defaultName = document.body?.dataset?.adminPage ? 'System Administrator' : 'Manager';
+    const userName = currentUser.fullName || localStorage.getItem('userName') || defaultName;
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+        userNameElement.textContent = userName;
     }
 }
-
-// ============================================
-// INITIALIZATION
-// ============================================
 
 function init() {
     updateUserInfo();
     setupEventListeners();
     loadData();
 }
-
-// ============================================
-// START
-// ============================================
 
 document.addEventListener('DOMContentLoaded', init);

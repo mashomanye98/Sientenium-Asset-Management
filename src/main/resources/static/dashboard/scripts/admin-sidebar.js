@@ -4,9 +4,10 @@
         { page: "assets", href: "/dashboard/admin/assets-admin.html", icon: "fa-boxes-stacked", label: "Assets" },
         { page: "users", href: "/dashboard/admin/users.html", icon: "fa-users", label: "Users" },
         { page: "loan-requests", href: "/dashboard/admin/admin-loan-requests.html", icon: "fa-hand-holding", label: "Loan Requests" },
+        { page: "asset-checkin", href: "/dashboard/admin/admin-checkout-checkin.html", icon: "fa-right-left", label: "Asset Check-In" },
         { page: "retire-assets", href: "/dashboard/admin/admin-retire-assets.html", icon: "fa-box-archive", label: "Retire Assets" },
         { page: "reports", href: "/dashboard/admin/admin-report.html", icon: "fa-chart-line", label: "Reports & Insights" },
-        { page: "audit-log", href: "/dashboard/audit-log.html", icon: "fa-clock-rotate-left", label: "Audit Logs" }
+        { page: "audit-log", href: "/dashboard/admin/audit-log.html", icon: "fa-clock-rotate-left", label: "Audit Logs" }
     ];
 
     function getCurrentUser() {
@@ -48,7 +49,7 @@
                     <div class="profile-image">
                         <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
                     </div>
-                    <h3>${escapeHtml(userName)}</h3>
+                    <h3 id="user-name">${escapeHtml(userName)}</h3>
                     <p>Sientenium</p>
                     <span>ADMIN</span>
                 </div>
@@ -63,7 +64,7 @@
                 </nav>
             </div>
 
-            <button type="button" class="logout-btn" data-admin-logout>
+            <button type="button" class="logout-btn" id="logout-btn" data-admin-logout>
                 <i class="fa-solid fa-right-from-bracket"></i>
                 Logout
             </button>

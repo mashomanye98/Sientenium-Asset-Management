@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sientenium | Admin Asset Check-In</title>
+    <link rel="stylesheet" href="../styling/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .warning-row { background-color: #fef2f2; }
+        .btn-checkin {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .btn-checkin:hover { background: #7c3aed; }
+        .btn-checkin:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-active { background: #dcfce7; color: #15803d; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        .toast-success { background-color: #10b981; }
+        .toast-error { background-color: #ef4444; }
+        .toast-info { background-color: #3b82f6; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .loading,
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .condition-select,
+        .search-input {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .condition-select {
+            padding: 8px 10px;
+            min-width: 120px;
+        }
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .refresh-btn:hover { background: #2563eb; }
+        .table-wrapper { overflow-x: auto; }
+        #checkout-table { min-width: 900px; }
+    </style>
+</head>
+<body data-admin-page="asset-checkin">
+
+<div class="dashboard">
+    <aside class="sidebar" data-admin-sidebar></aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div>
+                <h1>Asset Check-In</h1>
+                <p>Process assets returned by staff and make them available again after inspection.</p>
+            </div>
+            <div class="filter-group">
+                <input type="text" id="search-input" placeholder="Search by asset or borrower..." class="search-input">
+                <button id="refresh-btn" class="refresh-btn">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="icon blue">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </div>
+                <div>
+                    <span>Awaiting Check-In</span>
+                    <h3 id="stat-checkedout">0 Assets</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon red">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <span>Overdue</span>
+                    <h3 id="stat-overdue">0 Assets</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Assets Awaiting Check-In</h2>
+                <span style="color: var(--muted); font-size: 0.8rem;">Returned staff assets remain loaned until check-in is completed.</span>
+            </div>
+            <div class="table-wrapper">
+                <table id="checkout-table">
+                    <thead>
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Asset Tag</th>
+                        <th>Borrower</th>
+                        <th>Department</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Condition</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="checked-out-tbody">
+                    <tr>
+                        <td colspan="8" class="loading">Loading assets awaiting check-in...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="../scripts/admin-sidebar.js"></script>
+<script src="../scripts/checkout-checkin.js"></script>
+</body>
+</html>
