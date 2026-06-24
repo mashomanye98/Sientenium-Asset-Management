@@ -137,8 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logout
     document.getElementById('logout-btn')?.addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
         window.location.href = '../../signIn.html';
     });
 

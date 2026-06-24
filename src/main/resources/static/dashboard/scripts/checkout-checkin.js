@@ -14,20 +14,11 @@ function showToast(message, type = 'info') {
     }, 4000);
 }
 
-function getAuthToken() {
-    return localStorage.getItem('authToken');
-}
-
 async function apiRequest(url, options = {}) {
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers
     };
-
-    const token = getAuthToken();
-    if (token) {
-        headers.Authorization = `Bearer ${token}`;
-    }
 
     const response = await fetch(`${API_BASE_URL}${url}`, {
         ...options,
@@ -269,8 +260,6 @@ function setupEventListeners() {
 
     document.getElementById('logout-btn').addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
         window.location.href = '../../signIn.html';
     });
 }

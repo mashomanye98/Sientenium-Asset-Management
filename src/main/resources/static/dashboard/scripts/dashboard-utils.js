@@ -5,9 +5,20 @@
 // API Base URL
 const API_BASE = window.location.origin;
 
-// Get auth token from localStorage
-function getAuthToken() {
-    return localStorage.getItem('authToken');
+// Get current user
+function getCurrentUser() {
+    try {
+        const user = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (!user) {
+            // Redirect to login if no user found in session
+            window.location.href = '../../signIn.html';
+            return {};
+        }
+        return user;
+    } catch (e) {
+        window.location.href = '../../signIn.html';
+        return {};
+    }
 }
 
 // Make API request with headers
@@ -16,11 +27,6 @@ async function apiRequest(url, options = {}) {
         'Content-Type': 'application/json',
         ...options.headers
     };
-
-    const token = getAuthToken();
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
     try {
         const response = await fetch(`${API_BASE}${url}`, {

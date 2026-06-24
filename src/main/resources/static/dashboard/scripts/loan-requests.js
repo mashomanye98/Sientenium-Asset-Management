@@ -16,22 +16,12 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Get auth token from localStorage
-function getAuthToken() {
-    return localStorage.getItem('authToken');
-}
-
 // Make API request with headers
 async function apiRequest(url, options = {}) {
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers
     };
-
-    const token = getAuthToken();
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
     const response = await fetch(`${API_BASE_URL}${url}`, {
         ...options,
@@ -147,7 +137,7 @@ function updateUserInfo() {
         currentUser = {};
     }
 
-    const userName = currentUser.fullName || localStorage.getItem('userName') || 'System Administrator';
+    const userName = currentUser.fullName || 'System Administrator';
     const userNameElement = document.getElementById('user-name');
     if (userNameElement) {
         userNameElement.textContent = userName;
@@ -265,6 +255,10 @@ function setupEventListeners() {
     document.getElementById('status-filter').addEventListener('change', renderLoansTable);
     document.getElementById('search-input').addEventListener('input', renderLoansTable);
     document.getElementById('refresh-btn').addEventListener('click', loadData);
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        sessionStorage.removeItem('currentUser');
+        window.location.href = '../../signIn.html';
+    });
 }
 
 // Initialize

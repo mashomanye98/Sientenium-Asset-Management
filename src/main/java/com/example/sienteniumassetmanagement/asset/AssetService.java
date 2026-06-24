@@ -88,7 +88,7 @@ public class AssetService {
         asset.setStatus(Asset.AssetStatus.RETIRED);
         assetRepository.save(asset);
 
-        // Record audit log — use a system userId e.g. 1L for now
+        // Record audit log — use a system userId for example 1L for now
         auditLogService.recordAction(1L, AuditLog.EntityType.ASSET, id, AuditLog.Action.RETIRE);
     }
 
@@ -167,13 +167,6 @@ public class AssetService {
                 .collect(Collectors.toList());
     }
 
-//    // HARD DELETE - permanently removes the asset from the database
-//    public void deleteAsset(Long id) {
-//        if (!assetRepository.existsById(id)) {
-//            throw new RuntimeException("Asset not found");
-//        }
-//        assetRepository.deleteById(id);
-//    }
 
     @Transactional
     public AssetResponseDTO updateAssetStatus(Long id, String status) {

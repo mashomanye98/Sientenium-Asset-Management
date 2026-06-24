@@ -11,8 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCurrentUser() {
         try {
-            return JSON.parse(sessionStorage.getItem('currentUser')) || {};
+            const user = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!user) {
+                window.location.href = '../../signIn.html';
+                return {};
+            }
+            return user;
         } catch (error) {
+            window.location.href = '../../signIn.html';
             return {};
         }
     }
@@ -136,8 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
         window.location.href = '../../signIn.html';
     });
 

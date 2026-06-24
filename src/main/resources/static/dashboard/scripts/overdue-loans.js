@@ -16,22 +16,12 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Get auth token from localStorage
-function getAuthToken() {
-    return localStorage.getItem('authToken');
-}
-
 // Make API request with headers
 async function apiRequest(url, options = {}) {
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers
     };
-
-    const token = getAuthToken();
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
     const response = await fetch(`${API_BASE_URL}${url}`, {
         ...options,
@@ -245,9 +235,8 @@ function setupEventListeners() {
     document.getElementById('refresh-btn').addEventListener('click', loadData);
 
     document.getElementById('logout-btn').addEventListener('click', () => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
-        window.location.href = '../signIn.html';
+        sessionStorage.removeItem('currentUser');
+        window.location.href = '../../signIn.html';
     });
 
     // Quick actions
@@ -283,7 +272,8 @@ function setupEventListeners() {
 
 // Update user name
 function updateUserInfo() {
-    const userName = localStorage.getItem('userName') || 'Johannes Motsemme';
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+    const userName = currentUser.fullName || 'Johannes Motsemme';
     document.getElementById('user-name').textContent = userName;
 }
 

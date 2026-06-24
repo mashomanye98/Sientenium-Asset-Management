@@ -28,11 +28,6 @@ function showToast(message, type) {
     }, 4000);
 }
 
-// Get auth token from localStorage
-function getAuthToken() {
-    return localStorage.getItem('authToken');
-}
-
 // Make API request with headers
 async function apiRequest(url, options) {
     options = options || {};
@@ -45,11 +40,6 @@ async function apiRequest(url, options) {
         for (var key in options.headers) {
             headers[key] = options.headers[key];
         }
-    }
-
-    var token = getAuthToken();
-    if (token) {
-        headers['Authorization'] = 'Bearer ' + token;
     }
 
     try {
@@ -530,6 +520,10 @@ function setupEventListeners() {
         })(tabBtns[i]);
     }
 
+    document.getElementById('logout-btn').addEventListener('click', function() {
+        sessionStorage.removeItem('currentUser');
+        window.location.href = '../../signIn.html';
+    });
     document.getElementById('retire-asset').addEventListener('change', function() {
         document.getElementById('retire-form-message').innerHTML = '';
     });
@@ -553,7 +547,7 @@ function updateUserInfo() {
         currentUser = {};
     }
 
-    var userName = currentUser.fullName || localStorage.getItem('userName') || userNameElement.textContent || 'System Administrator';
+    var userName = currentUser.fullName || (userNameElement ? userNameElement.textContent : 'System Administrator');
     userNameElement.textContent = userName;
 }
 
