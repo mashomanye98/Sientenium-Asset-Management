@@ -49,6 +49,15 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         // ================================
+        // PREVENT DOUBLE SUBMISSION
+        // ================================
+        const submitBtn = signupForm.querySelector('button[type="submit"]');
+        if (submitBtn.disabled) return;
+        submitBtn.disabled = true;
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.textContent = "Processing...";
+
+        // ================================
         // GET USER INPUTS
         // ================================
 
@@ -84,6 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Please enter your full name.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -92,6 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Please select a department.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -100,6 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Please enter an email address.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -108,6 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Password must be at least 8 characters.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -116,6 +133,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Passwords do not match.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -171,6 +190,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     "error"
                 );
 
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
                 return;
             }
 
@@ -204,6 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 "A connection error occurred. Please restart the application and try again.",
                 "error"
             );
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
         }
 
     });

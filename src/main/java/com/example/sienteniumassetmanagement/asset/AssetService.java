@@ -20,6 +20,12 @@ public class AssetService {
 
     // CREATE
     public AssetResponseDTO createAsset(AssetRequestDTO dto) {
+        // Enforce maximum of 9 assets limit
+        long count = assetRepository.count();
+        if (count >= 9) {
+            throw new IllegalStateException("Maximum limit of 9 assets reached.");
+        }
+
         Asset asset = mapToEntity(dto);
         asset.setStatus(Asset.AssetStatus.AVAILABLE); // default status
         Asset saved = assetRepository.save(asset);

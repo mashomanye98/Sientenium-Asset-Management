@@ -93,46 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
             location: "Cape Town",
             condition: "NEW",
             photoPath: "https://www.makro.co.za/asset/rukmini/fccp/300/300/ng-fkpublic-ui-user-fbbe/projector/2/w/u/eb-w51-wxga-3lcd-projector-each-2-wxga-epson-original-imahafedv8gmwzr3.jpeg"
-        },
-        {
-            title: "Ergonomic Office Chair",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-001",
-            acquisitionDate: "2023-05-10",
-            cost: 3500.00,
-            location: "Durban",
-            condition: "GOOD",
-            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/office-study-chair/v/j/n/-original-imah7tkvhgxufegs.jpeg?q=70"
-        },
-        {
-            title: "Conference Table 10-Seater",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-002",
-            acquisitionDate: "2022-11-20",
-            cost: 15000.00,
-            location: "Johannesburg",
-            condition: "GOOD",
-            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/office-study-chair/h/d/c/mdf-medium-density-fiber-11-320-tc-q736-3-2-818d-rimmisk-original-imah5bubzpgat8r5.jpeg?q=70"
-        },
-        {
-            title: "Reception Front Desk",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-003",
-            acquisitionDate: "2022-08-15",
-            cost: 8000.00,
-            location: "Cape Town",
-            condition: "FAIR",
-            photoPath: "https://www.makro.co.za/kc-furn-modern-reception-desk-contemporary-front-counter-wood-marble-finish-office-table/p/itm68c99fdf2ee40?pid=OSTH57HKJNGYRUEC&srsltid=AfmBOopddcutRMxkc-rBei5f4xosbmSRV_wHXzX6d95tKi3xX_uhdCWa"
-        },
-        {
-            title: "4-Drawer Filing Cabinet",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-004",
-            acquisitionDate: "2023-01-08",
-            cost: 2500.00,
-            location: "Durban",
-            condition: "GOOD",
-            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/cabinet-drawer/f/u/g/-original-imah4s8yjmwnfhje.jpeg?q=70"
         }
     ];
 
@@ -384,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function seedSampleAssets() {
-        if (!confirm("This will clear all existing assets and seed new sample data with city-based locations. Continue?")) {
+        if (!confirm("This will clear all existing assets and seed 5 new sample assets. Continue?")) {
             return;
         }
 
@@ -392,15 +352,15 @@ document.addEventListener("DOMContentLoaded", () => {
             seedAssetsBtn.disabled = true;
             showAlert("Cleaning up old data...");
 
-            // 1. Delete all existing assets first to avoid duplicates and old data (Boardroom/Finance)
+            // 1. Delete all existing assets
             const currentAssets = [...assets];
             for (const asset of currentAssets) {
                 await fetch(`${apiBase}/${asset.assetId}`, { method: "DELETE" });
             }
 
-            showAlert("Seeding fresh sample assets...");
+            showAlert("Seeding 5 sample assets...");
 
-            // 2. Seed the new ones
+            // 2. Seed exactly 5
             const promises = sampleAssets.map(asset =>
                 fetch(apiBase, {
                     method: "POST",
@@ -414,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             );
             await Promise.all(promises);
-            showAlert("Sample assets seeded successfully with city locations.");
+            showAlert("5 sample assets seeded successfully.");
             await fetchAssets();
         } catch (error) {
             showAlert(error.message || "Failed to seed sample assets.", "error");
@@ -424,6 +384,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     createAssetBtn.addEventListener("click", () => {
+        if (assets.length >= 9) {
+            showAlert("Maximum limit of 9 assets reached. You cannot create more assets manually.", "error");
+            return;
+        }
         modalTitle.textContent = "Create Asset";
         clearForm();
         saveAssetBtn.style.display = "inline-block";

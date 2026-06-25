@@ -44,18 +44,20 @@ public class PendingUserRequestService {
     }
 
     public PendingUserRequestResponse createRequest(RegisterRequest request) {
+        String email = (request.getEmail() != null) ? request.getEmail().trim().toLowerCase() : null;
+
         // Prevent duplicate email registration for both active users and pending requests.
-        if (userRepository.existsByEmail(request.getEmail()) || pendingRequestRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(email) || pendingRequestRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already registered or awaiting approval");
         }
 
         Role role = mapDepartmentToRole(request.getDepartment());
 
         PendingUserRequest pendingRequest = new PendingUserRequest();
-        pendingRequest.setFullName(request.getFullName());
-        pendingRequest.setEmail(request.getEmail());
+        pendingRequest.setFullName(request.getFullName().trim());
+        pendingRequest.setEmail(email);
         pendingRequest.setPassword(passwordEncoder.encode(request.getPassword()));
-        pendingRequest.setDepartment(request.getDepartment());
+        pendingRequest.setDepartment(request.getDepartment().trim());
         pendingRequest.setRole(role);
         pendingRequest.setStatus(RequestStatus.PENDING);
         pendingRequest.setRequestedAt(LocalDateTime.now());
