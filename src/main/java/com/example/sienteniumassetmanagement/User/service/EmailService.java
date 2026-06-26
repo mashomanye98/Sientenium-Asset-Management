@@ -18,8 +18,8 @@ public class EmailService {
     @Value("${spring.mail.from:admin.sientenium@gmail.com}")
     private String mailFrom;
 
-    private final String loginUrl = "http://localhost:8081/signIn.html";
-    private final String resetPasswordUrl = "http://localhost:8081/reset-password.html?token=";
+    private final String loginUrl = "http://localhost:8082/signIn.html";
+    private final String resetPasswordUrl = "http://localhost:8082/reset-password.html?token=";
 
     /**
      * This sends a special email to the user with a link they can click to reset their password.

@@ -51,7 +51,7 @@ public class PendingUserRequestService {
             throw new IllegalArgumentException("Email already registered or awaiting approval");
         }
 
-        Role role = mapDepartmentToRole(request.getDepartment());
+        Role role = mapStringToRole(request.getRole());
 
         PendingUserRequest pendingRequest = new PendingUserRequest();
         pendingRequest.setFullName(request.getFullName().trim());
@@ -149,18 +149,18 @@ public class PendingUserRequestService {
         );
     }
 
-    private Role mapDepartmentToRole(String department) {
-        // Map the selected department string to the matching application role.
-        if (department == null) {
+    private Role mapStringToRole(String roleStr) {
+        // Map the selected role string from the UI to the matching application Role enum.
+        if (roleStr == null) {
             return Role.ROLE_STAFF;
         }
 
-        String normalized = department.trim().toLowerCase();
-        if (normalized.contains("admin")) {
-            return Role.ROLE_ADMIN;
-        }
+        String normalized = roleStr.trim().toLowerCase();
         if (normalized.contains("manage")) {
             return Role.ROLE_MANAGER;
+        }
+        if (normalized.contains("admin")) {
+            return Role.ROLE_ADMIN;
         }
         return Role.ROLE_STAFF;
     }

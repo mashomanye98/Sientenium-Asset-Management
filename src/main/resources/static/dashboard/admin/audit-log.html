@@ -6,435 +6,74 @@
     <link rel="stylesheet" href="../styling/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <title>Audit Logs — Sientenium Asset Management</title>
-    <style>
-        :root {
-          --bg: #F5F6F8;
-          --surface: #FFFFFF;
-          --border: #E2E5EA;
-          --text-primary: #1A1D23;
-          --text-secondary: #6B7280;
-          --text-tertiary: #9CA3AF;
-          --accent: #185FA5;
-          --accent-light: #E6F1FB;
-          --radius-md: 8px;
-          --radius-lg: 12px;
-          --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-          --font-mono: "SF Mono", "Consolas", monospace;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-          font-family: var(--font-sans);
-          background: var(--bg);
-          color: var(--text-primary);
-          line-height: 1.5;
-        }
-
-        /* PAGE LAYOUT */
-        .page-wrap {
-          max-width: 1200px;
-          margin: 0;
-        }
-
-        /* PAGE HEADER */
-        .page-header {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          margin-bottom: 24px;
-          flex-wrap: wrap;
-          gap: 12px;
-        }
-
-        .page-header h1 {
-          font-size: 24px;
-          font-weight: 700;
-          margin-bottom: 4px;
-        }
-
-        .page-header p {
-          font-size: 14px;
-          color: var(--text-secondary);
-        }
-
-        .header-actions {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-        }
-
-        /* FILTER BAR */
-        .filter-bar {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-md);
-          padding: 12px 16px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 14px;
-          flex-wrap: wrap;
-        }
-
-        .filter-bar input,
-        .filter-bar select {
-          height: 36px;
-          border: 1px solid var(--border);
-          border-radius: var(--radius-md);
-          padding: 0 12px;
-          font-size: 13px;
-          font-family: inherit;
-          color: var(--text-primary);
-          background: var(--bg);
-        }
-
-        .filter-bar input { min-width: 220px; flex: 1; }
-
-        .filter-bar input:focus,
-        .filter-bar select:focus {
-          outline: none;
-          border-color: var(--accent);
-          box-shadow: 0 0 0 3px var(--accent-light);
-        }
-
-        .filter-label {
-          font-size: 13px;
-          color: var(--text-secondary);
-          white-space: nowrap;
-        }
-
-        /* TABLE */
-        .table-wrap {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-lg);
-          overflow: hidden;
-        }
-
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 13px;
-        }
-
-        thead {
-          background: var(--bg);
-          border-bottom: 1px solid var(--border);
-        }
-
-        th {
-          padding: 11px 16px;
-          text-align: left;
-          font-weight: 600;
-          font-size: 11px;
-          color: var(--text-secondary);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          white-space: nowrap;
-        }
-
-        td {
-          padding: 13px 16px;
-          border-bottom: 1px solid var(--border);
-          vertical-align: middle;
-        }
-
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #FAFBFC; }
-
-        .mono {
-          font-family: var(--font-mono);
-          font-size: 12px;
-        }
-
-        /* ENTITY CELL */
-        .entity-cell {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-
-        .entity-type {
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          color: var(--text-tertiary);
-        }
-
-        .entity-id {
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--text-primary);
-        }
-
-        /* USER CELL */
-        .user-cell {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .user-avatar {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: var(--accent-light);
-          color: var(--accent);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 11px;
-          font-weight: 700;
-          flex-shrink: 0;
-        }
-
-        .user-id {
-          font-size: 13px;
-          color: var(--text-primary);
-        }
-
-        .system-badge {
-          font-size: 11px;
-          color: var(--text-tertiary);
-          font-style: italic;
-        }
-
-        /* DESCRIPTION CELL */
-        .description-cell {
-          font-size: 13px;
-          color: var(--text-primary);
-          max-width: 280px;
-        }
-
-        .description-cell .highlight {
-          font-weight: 600;
-        }
-
-        /* ACTION BADGES */
-        .badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          margin-left: 0;
-          padding: 3px 10px;
-          border-radius: 99px;
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          white-space: nowrap;
-        }
-
-        .badge-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-        }
-
-        .badge-create    { background: #EDFAF5; color: #0F6E56; }
-        .badge-create .badge-dot { background: #0F6E56; }
-
-        .badge-update    { background: #E6F1FB; color: #185FA5; }
-        .badge-update .badge-dot { background: #185FA5; }
-
-        .badge-delete    { background: #FCEBEB; color: #A32D2D; }
-        .badge-delete .badge-dot { background: #A32D2D; }
-
-        .badge-approve   { background: #EDFAF5; color: #0F6E56; }
-        .badge-approve .badge-dot { background: #0F6E56; }
-
-        .badge-reject    { background: #FCEBEB; color: #A32D2D; }
-        .badge-reject .badge-dot { background: #A32D2D; }
-
-        .badge-request   { background: #FEF3E2; color: #BA7517; }
-        .badge-request .badge-dot { background: #BA7517; }
-
-        .badge-retire    { background: #F0F0EF; color: #5F5E5A; }
-        .badge-retire .badge-dot { background: #5F5E5A; }
-
-        .badge-check_out { background: #EDE9FE; color: #5B21B6; }
-        .badge-check_out .badge-dot { background: #5B21B6; }
-
-        .badge-check_in  { background: #EDFAF5; color: #0F6E56; }
-        .badge-check_in .badge-dot { background: #0F6E56; }
-
-        .badge-deactivate { background: #FCEBEB; color: #A32D2D; }
-        .badge-deactivate .badge-dot { background: #A32D2D; }
-
-        /* TIMESTAMP CELL */
-        .time-cell {
-          display: flex;
-          flex-direction: column;
-          gap: 1px;
-        }
-
-        .time-date {
-          font-size: 13px;
-          color: var(--text-primary);
-        }
-
-        .time-time {
-          font-size: 11px;
-          color: var(--text-tertiary);
-          font-family: var(--font-mono);
-        }
-
-        /* EMPTY STATE */
-        .empty-state {
-          text-align: center;
-          padding: 48px 20px;
-          color: var(--text-tertiary);
-          font-size: 14px;
-        }
-
-        .empty-state svg {
-          margin-bottom: 12px;
-          opacity: 0.3;
-        }
-
-        /* RECORD COUNT */
-        .record-count {
-          font-size: 12px;
-          color: var(--text-tertiary);
-          font-family: var(--font-mono);
-          margin-bottom: 10px;
-        }
-
-        /* BUTTONS */
-        .page-wrap button,
-        .page-wrap .btn {
-          font-family: inherit;
-          font-size: 13px;
-          font-weight: 500;
-          border-radius: var(--radius-md);
-          height: 36px;
-          padding: 0 14px;
-          cursor: pointer;
-          border: 1px solid var(--border);
-          background: var(--surface);
-          color: var(--text-secondary);
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          transition: background 0.15s;
-          text-decoration: none;
-        }
-
-        .page-wrap button:hover { background: var(--bg); }
-
-        .btn-primary {
-          background: var(--accent);
-          color: white;
-          border-color: var(--accent);
-        }
-
-        .btn-primary:hover { opacity: 0.9; background: var(--accent); }
-
-        /* API STATUS */
-        .api-status {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          color: var(--text-tertiary);
-        }
-
-        .api-dot {
-          width: 7px; height: 7px;
-          border-radius: 50%;
-          background: var(--text-tertiary);
-          transition: background 0.3s;
-        }
-
-        .api-dot.live { background: #0F6E56; }
-        .api-dot.error { background: #A32D2D; }
-    </style>
+    <title>Sientenium | Audit Logs</title>
 </head>
-
 <body data-admin-page="audit-log">
-
 <div class="dashboard">
+    <aside class="sidebar" data-admin-sidebar></aside>
 
-<aside class="sidebar" data-admin-sidebar></aside>
-
-<main class="main-content">
-<div class="page-wrap">
-
-    <div class="page-header">
-        <div>
-            <div style="font-size:12px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Administration</div>
-            <h1>Audit Logs</h1>
-            <p>Complete activity trail — every action taken across assets, loans, and users.</p>
-        </div>
-        <div class="header-actions">
-            <div class="api-status">
-                <span class="api-dot" id="apiDot"></span>
-                <span id="apiLabel">Connecting…</span>
+    <main class="main-content">
+        <div class="top-bar">
+            <div>
+                <h1>Audit Logs</h1>
+                <p>Complete activity trail — every action taken across assets, loans, and users.</p>
             </div>
-            <button onclick="loadLogs()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-                Refresh
-            </button>
-            <button class="btn-primary" onclick="exportCSV()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Export CSV
-            </button>
+            <div class="header-actions">
+                <div class="api-status">
+                    <span class="api-dot" id="apiDot"></span>
+                    <span id="apiLabel">Connecting...</span>
+                </div>
+                <button class="btn-secondary" onclick="loadLogs()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn-primary" onclick="exportCSV()"><i class="fas fa-file-export"></i> Export CSV</button>
+            </div>
         </div>
-    </div>
 
-    <!-- FILTERS -->
-    <div class="filter-bar">
-        <input type="text" id="searchInput" placeholder="Search by user ID or entity ID…" oninput="renderTable()">
-        <span class="filter-label">Entity:</span>
-        <select id="entityFilter" onchange="renderTable()">
-            <option value="">All entities</option>
-            <option value="ASSET">Asset</option>
-            <option value="LOAN">Loan</option>
-            <option value="USER">User</option>
-        </select>
-        <span class="filter-label">Action:</span>
-        <select id="actionFilter" onchange="renderTable()">
-            <option value="">All actions</option>
-            <option value="CREATE">Create</option>
-            <option value="UPDATE">Update</option>
-            <option value="DELETE">Delete</option>
-            <option value="APPROVE">Approve</option>
-            <option value="REJECT">Reject</option>
-            <option value="REQUEST">Request</option>
-            <option value="RETIRE">Retire</option>
-            <option value="CHECK_OUT">Check Out</option>
-            <option value="CHECK_IN">Check In</option>
-            <option value="DEACTIVATE">Deactivate</option>
-        </select>
-    </div>
-
-    <div class="record-count" id="recordCount">— records</div>
-
-    <!-- TABLE -->
-    <div class="table-wrap">
-        <table>
-            <thead>
-            <tr>
-                <th>Log ID</th>
-                <th>Who</th>
-                <th>Action</th>
-                <th>What happened</th>
-                <th>Entity</th>
-                <th>When</th>
-            </tr>
-            </thead>
-            <tbody id="logBody">
-            <tr><td colspan="6" class="empty-state">Loading audit logs…</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-</div>
-</main>
-
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> Activity Trail</h2>
+                <div class="filter-bar" style="border:none; padding:0; background:none; margin:0; display:flex; gap:10px;">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by user or entity..." oninput="renderTable()">
+                    <select id="entityFilter" class="search-input" style="min-width:120px;" onchange="renderTable()">
+                        <option value="">All Entities</option>
+                        <option value="ASSET">Asset</option>
+                        <option value="LOAN">Loan</option>
+                        <option value="USER">User</option>
+                    </select>
+                    <select id="actionFilter" class="search-input" style="min-width:120px;" onchange="renderTable()">
+                        <option value="">All Actions</option>
+                        <option value="CREATE">Create</option>
+                        <option value="UPDATE">Update</option>
+                        <option value="DELETE">Delete</option>
+                        <option value="APPROVE">Approve</option>
+                        <option value="REJECT">Reject</option>
+                        <option value="REQUEST">Request</option>
+                        <option value="RETIRE">Retire</option>
+                        <option value="CHECK_OUT">Check Out</option>
+                        <option value="CHECK_IN">Check In</option>
+                        <option value="DEACTIVATE">Deactivate</option>
+                    </select>
+                </div>
+            </div>
+            <div class="record-count" id="recordCount" style="margin-bottom:15px; font-size:0.8rem; color:var(--muted);">— records</div>
+            <div class="table-wrapper">
+                <table id="auditTable">
+                    <thead>
+                    <tr>
+                        <th>Log ID</th>
+                        <th>Username</th>
+                        <th>Action</th>
+                        <th>Activity</th>
+                        <th>Entity</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody id="logBody">
+                    <tr><td colspan="6" class="empty-state">Loading audit logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 </div>
 
 <script src="../scripts/admin-sidebar.js"></script>

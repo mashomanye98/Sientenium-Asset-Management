@@ -1,15 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
     const productGrid = document.getElementById("productGrid");
+    const profileName = document.getElementById("profileName");
+    const profileRoleDept = document.getElementById("profileRoleDept");
     const searchInput = document.getElementById("searchInput");
     const filterButtons = document.querySelectorAll('.filter-chip');
     const locationMap = {
-        'Cape Town': ['CPT', 'CT', 'Cape Town'],
-        'Johannesburg': ['JHB', 'Joburg', 'Johannesburg'],
-        'Durban': ['DBN', 'Durban']
+        'Finance & Accounting': ['Finance', 'Accounting'],
+        'IT': ['IT', 'Tech', 'Information'],
+        'Logistics': ['Logistics', 'Warehouse', 'Warehousing'],
+        'HR': ['HR', 'Human Resources']
     };
 
-    let assets = [];
-    let activeLocation = null;
+    function getCurrentUser() {
+        try {
+            return JSON.parse(sessionStorage.getItem("currentUser")) || {};
+        } catch (error) {
+            return {};
+        }
+    }
+
+    const currentUser = getCurrentUser();
+
+    function updateProfile() {
+        if (currentUser.fullName) {
+            if (profileName) profileName.textContent = currentUser.fullName;
+
+            if (profileRoleDept && currentUser.role && currentUser.department) {
+                const roleDisplay = currentUser.role === 'ROLE_MANAGER' ? 'Manager' : 'Staff';
+                profileRoleDept.textContent = `${roleDisplay}-${currentUser.department} Department`;
+            }
+        }
+    }
 
     function formatCurrency(value) {
         if (value === null || value === undefined) return 'R 0.00';
@@ -61,11 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const price = formatCurrency(asset.cost);
             const conditionBadge = asset.condition ? `${asset.condition}` : 'Unknown';
 
-            // Location normalization for old data (Boardroom/Finance)
+            // Location display
             let displayLocation = asset.location || 'Unknown location';
-            if (displayLocation === 'Boardroom' || displayLocation.includes('Finance')) {
-                displayLocation = 'Johannesburg'; // Default fallback for old data
-            }
 
             const cardHtml = `
                 <div class="product-card">
@@ -147,4 +165,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     fetchAssets();
+    updateProfile();
 });

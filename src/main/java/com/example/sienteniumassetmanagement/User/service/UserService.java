@@ -38,7 +38,7 @@ public class UserService {
             throw new IllegalArgumentException("Email already registered");
         }
 
-        Role role = mapDepartmentToRole(request.getDepartment());
+        Role role = mapStringToRole(request.getRole());
 
         User user = new User();
         user.setFullName(request.getFullName().trim());
@@ -133,13 +133,14 @@ public class UserService {
                 user.getDepartment());
     }
 
-    private Role mapDepartmentToRole(String department) {
-        String normalized = department.trim().toLowerCase();
-        if (normalized.contains("admin")) {
-            return Role.ROLE_ADMIN;
-        }
+    private Role mapStringToRole(String roleStr) {
+        if (roleStr == null) return Role.ROLE_STAFF;
+        String normalized = roleStr.trim().toLowerCase();
         if (normalized.contains("manage")) {
             return Role.ROLE_MANAGER;
+        }
+        if (normalized.contains("admin")) {
+            return Role.ROLE_ADMIN;
         }
         return Role.ROLE_STAFF;
     }

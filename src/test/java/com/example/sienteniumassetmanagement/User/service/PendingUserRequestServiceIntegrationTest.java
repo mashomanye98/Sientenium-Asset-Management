@@ -25,8 +25,12 @@ public class PendingUserRequestServiceIntegrationTest {
     @Autowired
     private PendingUserRequestRepository pendingUserRequestRepository;
 
+    @Autowired
+    private com.example.sienteniumassetmanagement.User.repository.PasswordResetTokenRepository passwordResetTokenRepository;
+
     @BeforeEach
     void setUp() {
+        passwordResetTokenRepository.deleteAll();
         userRepository.deleteAll();
         pendingUserRequestRepository.deleteAll();
     }
@@ -38,6 +42,7 @@ public class PendingUserRequestServiceIntegrationTest {
         request.setEmail("john.doe@example.com");
         request.setPassword("password123");
         request.setDepartment("IT");
+        request.setRole("Staff/Borrower");
 
         assertDoesNotThrow(() -> pendingUserRequestService.createRequest(request));
     }
@@ -49,6 +54,7 @@ public class PendingUserRequestServiceIntegrationTest {
         request.setEmail("john.doe@example.com");
         request.setPassword("password123");
         request.setDepartment("IT");
+        request.setRole("Staff/Borrower");
 
         pendingUserRequestService.createRequest(request);
 
@@ -57,6 +63,7 @@ public class PendingUserRequestServiceIntegrationTest {
         duplicateRequest.setEmail("john.doe@example.com");
         duplicateRequest.setPassword("password456");
         duplicateRequest.setDepartment("HR");
+        duplicateRequest.setRole("Staff/Borrower");
 
         assertThrows(IllegalArgumentException.class, () -> pendingUserRequestService.createRequest(duplicateRequest));
     }
@@ -68,6 +75,7 @@ public class PendingUserRequestServiceIntegrationTest {
         request.setEmail(" john.doe@example.com ");
         request.setPassword("password123");
         request.setDepartment("IT");
+        request.setRole("Staff/Borrower");
 
         // If it throws here, it means it thinks it exists already, which is what the user reports.
         // But in a clean DB it should NOT exist.
@@ -78,6 +86,7 @@ public class PendingUserRequestServiceIntegrationTest {
         duplicateRequest.setEmail("john.doe@example.com");
         duplicateRequest.setPassword("password456");
         duplicateRequest.setDepartment("HR");
+        duplicateRequest.setRole("Staff/Borrower");
 
         // This SHOULD throw if the first one was saved correctly.
         assertThrows(IllegalArgumentException.class, () -> pendingUserRequestService.createRequest(duplicateRequest));

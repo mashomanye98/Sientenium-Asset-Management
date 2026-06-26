@@ -123,7 +123,7 @@ async function fetchAwaitingCheckInLoans() {
     }
 }
 
-async function checkInAsset(loanId, assetId, condition) {
+async function checkInAsset(loanId, assetId, condition, button) {
     if (!condition) {
         showToast('Select the returned asset condition before check-in.', 'error');
         return;
@@ -132,6 +132,10 @@ async function checkInAsset(loanId, assetId, condition) {
     if (!confirm('Are you sure you want to process this return?')) {
         return;
     }
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Processing...';
 
     try {
         const asset = await apiRequest(`/api/assets/${assetId}`);
@@ -160,6 +164,8 @@ async function checkInAsset(loanId, assetId, condition) {
     } catch (error) {
         console.error('Error checking in asset:', error);
         showToast('Failed to check in asset: ' + error.message, 'error');
+        button.disabled = false;
+        button.textContent = originalText;
     }
 }
 
@@ -235,7 +241,7 @@ function renderAwaitingCheckInLoans() {
     document.querySelectorAll('.btn-checkin').forEach(btn => {
         btn.addEventListener('click', () => {
             const conditionSelect = document.querySelector(`.condition-select[data-loan-id="${btn.dataset.loanId}"]`);
-            checkInAsset(parseInt(btn.dataset.loanId), parseInt(btn.dataset.assetId), conditionSelect?.value);
+            checkInAsset(parseInt(btn.dataset.loanId), parseInt(btn.dataset.assetId), conditionSelect?.value, btn);
         });
     });
 }

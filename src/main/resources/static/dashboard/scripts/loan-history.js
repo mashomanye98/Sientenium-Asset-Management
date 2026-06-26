@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const profileName = document.getElementById('profileName');
+    const profileRoleDept = document.getElementById('profileRoleDept');
     const historyBody = document.getElementById('historyBody');
     const historySearch = document.getElementById('historySearch');
     const statusFilter = document.getElementById('statusFilter');
@@ -49,6 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateProfile() {
         if (currentUser.fullName) {
             profileName.textContent = currentUser.fullName;
+            
+            if (profileRoleDept && currentUser.role && currentUser.department) {
+                const roleDisplay = currentUser.role === 'ROLE_MANAGER' ? 'Manager' : 'Staff';
+                profileRoleDept.textContent = `${roleDisplay}-${currentUser.department} Department`;
+            }
         }
     }
 
@@ -121,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historyBody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading loan history...</td></tr>';
 
         try {
-            const response = await fetch(`/loans/user/${currentUser.id}`);
+            const response = await fetch(`/api/loans/user/${currentUser.id}`);
 
             if (!response.ok) {
                 throw new Error('Could not load your loan history.');

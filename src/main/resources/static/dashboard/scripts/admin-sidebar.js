@@ -6,7 +6,7 @@
         { page: "loan-requests", href: "/dashboard/admin/admin-loan-requests.html", icon: "fa-hand-holding", label: "Loan Requests" },
         { page: "retire-assets", href: "/dashboard/admin/admin-retire-assets.html", icon: "fa-box-archive", label: "Retire Assets" },
         { page: "reports", href: "/dashboard/admin/admin-report.html", icon: "fa-chart-line", label: "Reports & Insights" },
-        { page: "audit-log", href: "/dashboard/audit-log.html", icon: "fa-clock-rotate-left", label: "Audit Logs" }
+        { page: "audit-log", href: "/dashboard/admin/audit-log.html", icon: "fa-clock-rotate-left", label: "Audit Logs" }
     ];
 
     function getCurrentUser() {

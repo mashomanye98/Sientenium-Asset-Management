@@ -7,7 +7,7 @@ function showAlert(msg, type="error"){
     alertEl.textContent = msg;
     alertEl.className = "alert " + type;
     alertEl.style.display = "block";
-    setTimeout(()=>{ alertEl.style.display="none"; },6000);
+    setTimeout(()=>{ alertEl.style.display="none"; },3000);
 }
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -70,6 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("department")
                 .value;
 
+        const role =
+            document.getElementById("role")
+                .value;
+
         const email =
             document.getElementById("email")
                 .value
@@ -83,6 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const confirmPassword =
             document.getElementById("confirmPassword")
                 .value;
+
+        const termsCheckbox =
+            document.getElementById("termsCheckbox");
 
         // ================================
         // BASIC VALIDATION
@@ -101,6 +108,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!department) {
             showAlert(
                 "Please select a department.",
+                "error"
+            );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!role) {
+            showAlert(
+                "Please select a role.",
                 "error"
             );
             submitBtn.disabled = false;
@@ -138,6 +155,16 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        if (!termsCheckbox.checked) {
+            showAlert(
+                "Please agree to the Terms and Conditions before registering.",
+                "error"
+            );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+            return;
+        }
+
         // ================================
         // BUILD REQUEST BODY
         // Must match RegisterRequest.java
@@ -151,7 +178,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             password: password,
 
-            department: department
+            department: department,
+
+            role: role
         };
 
         try {

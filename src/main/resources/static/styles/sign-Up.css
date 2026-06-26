@@ -22,7 +22,7 @@ body{
     max-width:1000px;
     height:600px;
     display:flex;
-    border-radius:20px;
+    border-radius:12px;
     overflow:hidden;
     background:#fff;
     box-shadow: 0 25px 60px rgba(0,0,0,0.15);
@@ -66,16 +66,11 @@ body{
     padding:2px;
     box-shadow: 0 0 10px rgba(0, 102, 255, 0.4);
 }
-.left-logo .logo-icon i{
+.left-logo .logo-icon img{
     width:100%;
     height:100%;
-    background:#fff;
     border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:14px;
-    color:#0066ff;
+    object-fit:cover;
 }
 
 /* Tagline at top center */
@@ -103,7 +98,7 @@ body{
     padding:20px 30px;
 
     /* ADD THESE */
-    border-radius:20px;              /* rounded card look */
+    border-radius:12px;              /* rounded card look */
     margin-left:-40px;               /* overlap into left panel */
     box-shadow:0 20px 50px rgba(0,0,0,0.15); /* depth */
     z-index:2;                       /* sits above left panel */
@@ -113,7 +108,7 @@ body{
 .back-btn{
     width:40px;
     height:40px;
-    border-radius:50%;
+    border-radius:8px;
 
     display:flex;
     justify-content:center;
@@ -184,16 +179,11 @@ body{
     padding:2px;
     box-shadow: 0 0 10px rgba(0, 102, 255, 0.4);
 }
-.logo-icon i{
+.logo-icon img{
     width:100%;
     height:100%;
-    background:#fff;
     border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:14px;
-    color:#0066ff;
+    object-fit:cover;
 }
 
 /* SIGNUP LINK */
@@ -273,7 +263,7 @@ body{
     width:100%;
     padding:12px 10px 12px 40px; /* 🔥 space for icon */
     border:1px solid #ddd;
-    border-radius:25px;
+    border-radius:10px;
     outline:none;
     transition:0.3s;
     font-size:14px;
@@ -285,7 +275,7 @@ body{
     width:100%;
     padding:12px 10px 12px 40px; /* space for icon */
     border:1px solid #ddd;
-    border-radius:25px;
+    border-radius:10px;
     outline:none;
     transition:0.3s;
     font-size:14px;
@@ -342,7 +332,7 @@ body{
     width:100%;
     padding:12px;
     border:none;
-    border-radius:25px;
+    border-radius:8px;
     background: #747E90;
     color:white;
     font-weight:bold;

@@ -25,7 +25,7 @@
         /* FILTER BAR */
         .filter-bar{
             background:var(--white);
-            border-radius:14px;
+            border-radius:12px;
             padding:18px 24px;
             display:flex;
             align-items:center;
@@ -85,7 +85,7 @@
             gap:8px;
             background:#f4f6fb;
             border:1.5px solid #e4e8f0;
-            border-radius:10px;
+            border-radius:8px;
             padding:9px 14px;
         }
 
@@ -111,7 +111,7 @@
         /* PRODUCT CARD */
         .product-card{
             background:var(--white);
-            border-radius:16px;
+            border-radius:12px;
             overflow:hidden;
             position:relative;
             box-shadow:0 4px 16px rgba(0,0,0,.05);
@@ -151,7 +151,7 @@
             font-size:.75rem;
             font-weight:700;
             padding:4px 8px;
-            border-radius:6px;
+            border-radius:8px;
             z-index:2;
         }
 
@@ -363,7 +363,8 @@
                 <div class="profile-image">
                     <img src="../../images/SeinteniumPageLogo.png" alt="Profile">
                 </div>
-                <p>Staff</p>
+                <h3 id="profileName">Loading...</h3>
+                <p id="profileRoleDept">Staff</p>
             </div>
 
             <nav>
@@ -397,11 +398,12 @@
 
     <main class="main-content">
         <div class="filter-bar">
-        <span class="filter-bar-label"><i class="fas fa-bolt" style="color:var(--primary);margin-right:6px"></i>Get It Fast Near You</span>
+        <span class="filter-bar-label"><i class="fas fa-filter" style="color:var(--primary);margin-right:6px"></i>Filter By Department:</span>
         <div class="filter-chips">
-            <button class="filter-chip" onclick="filterLocation(this,'Cape Town')">Cape Town</button>
-            <button class="filter-chip" onclick="filterLocation(this,'Johannesburg')">Johannesburg</button>
-            <button class="filter-chip" onclick="filterLocation(this,'Durban')">Durban</button>
+            <button class="filter-chip" onclick="filterLocation(this,'Finance & Accounting')">Finance & Accounting</button>
+            <button class="filter-chip" onclick="filterLocation(this,'IT')">IT</button>
+            <button class="filter-chip" onclick="filterLocation(this,'Logistics')">Logistics</button>
+            <button class="filter-chip" onclick="filterLocation(this,'HR')">HR</button>
         </div>
         <div class="search-wrap">
             <i class="fas fa-search"></i>
@@ -415,19 +417,6 @@
     </main>
 </div>
 
-<script>
-    function updateProfileName() {
-        try {
-            const user = JSON.parse(sessionStorage.getItem('currentUser'));
-            if (user && user.fullName) {
-                document.getElementById('profileName').textContent = user.fullName;
-            }
-        } catch (e) {
-            console.log('Could not load user profile');
-        }
-    }
-    updateProfileName();
-</script>
 <script src="/dashboard/scripts/available-assets.js"></script>
 </body>
 </html>

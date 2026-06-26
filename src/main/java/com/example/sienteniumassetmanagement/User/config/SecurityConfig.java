@@ -101,7 +101,8 @@ public class SecurityConfig {
                                 "/signIn.html",
                                 "/signUp.html",
                                 "/forgot-password.html",
-                                "/reset-password.html"
+                                "/reset-password.html",
+                                "/termsandconditions.html"
                         ).permitAll()
 
                         /*
