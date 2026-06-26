@@ -144,7 +144,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ]);
     }
 
-    async function updateRequest(requestId, action) {
+    async function updateRequest(requestId, action, button) {
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = "Processing...";
+
         try {
             const response = await fetch(`${API_BASE}/api/auth/pending/${requestId}/${action}`, {
                 method: "PUT",
@@ -159,6 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
             await loadData();
         } catch (error) {
             showAlert(error.message, "error");
+            button.disabled = false;
+            button.textContent = originalText;
         }
     }
 
@@ -246,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!button) return;
         const requestId = button.dataset.id;
         const action = button.dataset.action;
-        updateRequest(requestId, action);
+        updateRequest(requestId, action, button);
     });
 
     activeTableBody.addEventListener("click", (event) => {

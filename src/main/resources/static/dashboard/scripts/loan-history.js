@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const profileName = document.getElementById('profileName');
+    const profileRoleDept = document.getElementById('profileRoleDept');
     const historyBody = document.getElementById('historyBody');
     const historySearch = document.getElementById('historySearch');
     const statusFilter = document.getElementById('statusFilter');
@@ -11,8 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCurrentUser() {
         try {
-            return JSON.parse(sessionStorage.getItem('currentUser')) || {};
+            const user = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!user) {
+                window.location.href = '../../signIn.html';
+                return {};
+            }
+            return user;
         } catch (error) {
+            window.location.href = '../../signIn.html';
             return {};
         }
     }
@@ -43,6 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateProfile() {
         if (currentUser.fullName) {
             profileName.textContent = currentUser.fullName;
+            
+            if (profileRoleDept && currentUser.role && currentUser.department) {
+                const roleDisplay = currentUser.role === 'ROLE_MANAGER' ? 'Manager' : 'Staff';
+                profileRoleDept.textContent = `${roleDisplay}-${currentUser.department} Department`;
+            }
         }
     }
 
@@ -115,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historyBody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading loan history...</td></tr>';
 
         try {
-            const response = await fetch(`/loans/user/${currentUser.id}`);
+            const response = await fetch(`/api/loans/user/${currentUser.id}`);
 
             if (!response.ok) {
                 throw new Error('Could not load your loan history.');
@@ -136,8 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
         window.location.href = '../../signIn.html';
     });
 

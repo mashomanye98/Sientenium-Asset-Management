@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-PH-001",
             acquisitionDate: "2024-06-01",
             cost: 8500.00,
-            location: "Johannesburg",
+            location: "IT",
             condition: "NEW",
             photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/projector/e/k/j/-original-imahd2h7vyrnm6dh.jpeg?q=70"
         },
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-LT-001",
             acquisitionDate: "2024-01-15",
             cost: 18000.00,
-            location: "Cape Town",
+            location: "Logistics",
             condition: "GOOD",
             photoPath: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=300&q=80"
         },
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-PR-001",
             acquisitionDate: "2023-11-10",
             cost: 5500.00,
-            location: "Durban",
+            location: "HR",
             condition: "GOOD",
             photoPath: "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&w=300&q=80"
         },
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-DT-001",
             acquisitionDate: "2023-08-20",
             cost: 12000.00,
-            location: "Johannesburg",
+            location: "Finance & Accounting",
             condition: "FAIR",
             photoPath: "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=300&q=80"
         },
@@ -90,49 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
             serialNumber: "SN-PJ-001",
             acquisitionDate: "2024-03-05",
             cost: 9500.00,
-            location: "Cape Town",
+            location: "IT",
             condition: "NEW",
             photoPath: "https://www.makro.co.za/asset/rukmini/fccp/300/300/ng-fkpublic-ui-user-fbbe/projector/2/w/u/eb-w51-wxga-3lcd-projector-each-2-wxga-epson-original-imahafedv8gmwzr3.jpeg"
-        },
-        {
-            title: "Ergonomic Office Chair",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-001",
-            acquisitionDate: "2023-05-10",
-            cost: 3500.00,
-            location: "Durban",
-            condition: "GOOD",
-            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/office-study-chair/v/j/n/-original-imah7tkvhgxufegs.jpeg?q=70"
-        },
-        {
-            title: "Conference Table 10-Seater",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-002",
-            acquisitionDate: "2022-11-20",
-            cost: 15000.00,
-            location: "Johannesburg",
-            condition: "GOOD",
-            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/office-study-chair/h/d/c/mdf-medium-density-fiber-11-320-tc-q736-3-2-818d-rimmisk-original-imah5bubzpgat8r5.jpeg?q=70"
-        },
-        {
-            title: "Reception Front Desk",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-003",
-            acquisitionDate: "2022-08-15",
-            cost: 8000.00,
-            location: "Cape Town",
-            condition: "FAIR",
-            photoPath: "https://www.makro.co.za/kc-furn-modern-reception-desk-contemporary-front-counter-wood-marble-finish-office-table/p/itm68c99fdf2ee40?pid=OSTH57HKJNGYRUEC&srsltid=AfmBOopddcutRMxkc-rBei5f4xosbmSRV_wHXzX6d95tKi3xX_uhdCWa"
-        },
-        {
-            title: "4-Drawer Filing Cabinet",
-            category: "FURNITURE",
-            serialNumber: "SN-FC-004",
-            acquisitionDate: "2023-01-08",
-            cost: 2500.00,
-            location: "Durban",
-            condition: "GOOD",
-            photoPath: "https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/cabinet-drawer/f/u/g/-original-imah4s8yjmwnfhje.jpeg?q=70"
         }
     ];
 
@@ -152,6 +112,16 @@ document.addEventListener("DOMContentLoaded", () => {
         assetPhotoPath.value = "";
         assetPhotoFile.value = "";
         setUploadedPhotoLabel(null, null);
+    }
+
+    function setFormDisabled(disabled) {
+        assetName.disabled = disabled;
+        assetCategory.disabled = disabled;
+        assetSerialNumber.disabled = disabled;
+        assetAcquisitionDate.disabled = disabled;
+        assetCost.disabled = disabled;
+        assetLocation.disabled = disabled;
+        assetCondition.disabled = disabled;
     }
 
     function setUploadedPhotoLabel(url, fileName) {
@@ -279,7 +249,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const filtered = assets.filter(asset => {
             return String(asset.assetId).includes(normalizedQuery) ||
                 (asset.title && asset.title.toLowerCase().includes(normalizedQuery)) ||
-                (asset.serialNumber && asset.serialNumber.toLowerCase().includes(normalizedQuery));
+                (asset.serialNumber && asset.serialNumber.toLowerCase().includes(normalizedQuery)) ||
+                (asset.category && asset.category.toLowerCase().includes(normalizedQuery)) ||
+                (asset.status && asset.status.toLowerCase().includes(normalizedQuery));
         });
 
         renderAssets(filtered);
@@ -337,6 +309,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const originalText = saveAssetBtn.innerHTML;
+        saveAssetBtn.disabled = true;
+        saveAssetBtn.innerHTML = "Processing...";
+
         try {
             const method = id ? "PUT" : "POST";
             const url = id ? `${apiBase}/${id}` : apiBase;
@@ -358,6 +334,9 @@ document.addEventListener("DOMContentLoaded", () => {
             clearForm();
         } catch (error) {
             showAlert(error.message || "Failed to save asset.", "error");
+        } finally {
+            saveAssetBtn.disabled = false;
+            saveAssetBtn.innerHTML = originalText;
         }
     }
 
@@ -369,6 +348,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function deleteAsset() {
         if (!assetToDeleteId) return;
+
+        const originalText = confirmDeleteBtn.innerHTML;
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.innerHTML = "Processing...";
+
         try {
             const response = await fetch(`${apiBase}/${assetToDeleteId}`, {
                 method: "DELETE"
@@ -380,11 +364,14 @@ document.addEventListener("DOMContentLoaded", () => {
             assetToDeleteId = null;
         } catch (error) {
             showAlert(error.message || "Failed to delete asset.", "error");
+        } finally {
+            confirmDeleteBtn.disabled = false;
+            confirmDeleteBtn.innerHTML = originalText;
         }
     }
 
     async function seedSampleAssets() {
-        if (!confirm("This will clear all existing assets and seed new sample data with city-based locations. Continue?")) {
+        if (!confirm("This will clear all existing assets and seed 5 new sample assets. Continue?")) {
             return;
         }
 
@@ -392,15 +379,15 @@ document.addEventListener("DOMContentLoaded", () => {
             seedAssetsBtn.disabled = true;
             showAlert("Cleaning up old data...");
 
-            // 1. Delete all existing assets first to avoid duplicates and old data (Boardroom/Finance)
+            // 1. Delete all existing assets
             const currentAssets = [...assets];
             for (const asset of currentAssets) {
                 await fetch(`${apiBase}/${asset.assetId}`, { method: "DELETE" });
             }
 
-            showAlert("Seeding fresh sample assets...");
+            showAlert("Seeding 5 sample assets...");
 
-            // 2. Seed the new ones
+            // 2. Seed exactly 5
             const promises = sampleAssets.map(asset =>
                 fetch(apiBase, {
                     method: "POST",
@@ -414,7 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             );
             await Promise.all(promises);
-            showAlert("Sample assets seeded successfully with city locations.");
+            showAlert("5 sample assets seeded successfully.");
             await fetchAssets();
         } catch (error) {
             showAlert(error.message || "Failed to seed sample assets.", "error");
@@ -424,8 +411,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     createAssetBtn.addEventListener("click", () => {
+        if (assets.length >= 9) {
+            showAlert("Maximum limit of 9 assets reached. You cannot create more assets manually.", "error");
+            return;
+        }
         modalTitle.textContent = "Create Asset";
         clearForm();
+        setFormDisabled(false);
         saveAssetBtn.style.display = "inline-block";
         uploadPhotoBtn.style.display = "inline-block";
         toggleModal(assetModal, true);
@@ -460,6 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const asset = await fetchAssetById(id);
                 modalTitle.textContent = "View Asset";
                 populateForm(asset);
+                setFormDisabled(true);
                 saveAssetBtn.style.display = "none";
                 uploadPhotoBtn.style.display = "none";
                 toggleModal(assetModal, true);
@@ -474,6 +467,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const asset = await fetchAssetById(id);
                 modalTitle.textContent = "Edit Asset";
                 populateForm(asset);
+                setFormDisabled(false);
                 saveAssetBtn.style.display = "inline-block";
                 uploadPhotoBtn.style.display = "inline-block";
                 toggleModal(assetModal, true);

@@ -23,74 +23,6 @@
 
     <aside class="sidebar" data-admin-sidebar></aside>
 
-    <!-- ==========================
-         SIDEBAR
-    =========================== -->
-    <aside class="sidebar" style="display:none;">
-
-        <div>
-
-            <div class="profile">
-
-                <div class="profile-image">
-                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/651/small_2x/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg" alt="Profile">
-                </div>
-
-                <h3>System Administrator</h3>
-                <p>Sientenium</p>
-                <span>ADMIN</span>
-
-            </div>
-
-            <nav>
-
-                <a href="#" class="active">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
-
-                <a href="assets-admin.html">
-                    <i class="fa-solid fa-boxes-stacked"></i>
-                    Assets
-                </a>
-
-                <a href="users.html">
-                    <i class="fa-solid fa-users"></i>
-                    Users
-                </a>
-
-                <a href="admin-loan-requests.html">
-                    <i class="fa-solid fa-hand-holding"></i>
-                    Loan Requests
-
-                </a>
-
-                <a href="admin-retire-assets.html">
-                    <i class="fa-solid fa-box-archive"></i>
-                    Retire Assets
-                </a>
-
-                <a href="admin-report.html" class="nav-link">
-                    <span class="nav-icon">📈</span>
-                    Reports & Insights
-                </a>
-
-
-                <a href="audit-log.html">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    Audit Logs
-                </a>
-
-            </nav>
-
-        </div>
-
-        <button class="logout-btn">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Logout
-        </button>
-
-    </aside>
 
     <!-- ==========================
          MAIN CONTENT
@@ -123,7 +55,7 @@
                 </div>
 
                 <div>
-                    <h3>245</h3>
+                    <h3 id="totalAssetsCount">0</h3>
                     <p>Total Assets</p>
                 </div>
             </div>
@@ -134,7 +66,7 @@
                 </div>
 
                 <div>
-                    <h3>187</h3>
+                    <h3 id="availableAssetsCount">0</h3>
                     <p>Available Assets</p>
                 </div>
             </div>
@@ -145,7 +77,7 @@
                 </div>
 
                 <div>
-                    <h3>52</h3>
+                    <h3 id="totalUsersCount">0</h3>
                     <p>System Users</p>
                 </div>
             </div>
@@ -156,7 +88,7 @@
                 </div>
 
                 <div>
-                    <h3>8</h3>
+                    <h3 id="pendingRequestsCount">0</h3>
                     <p>Pending Requests</p>
                 </div>
             </div>
@@ -171,7 +103,7 @@
                 <a href="admin-loan-requests.html">View All</a>
             </div>
 
-            <table>
+            <table id="pending-loans-table">
 
                 <thead>
                 <tr>
@@ -183,40 +115,8 @@
                 </tr>
                 </thead>
 
-                <tbody>
-
-                <tr>
-                    <td>John Smith</td>
-                    <td>Dell Latitude 5420</td>
-                    <td>08 June 2026</td>
-                    <td>
-                        <span class="status proposal">
-                            Pending
-                        </span>
-                    </td>
-                    <td>
-                        <a class="review-link" href="admin-loan-requests.html">
-                            Review
-                        </a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Sarah Jones</td>
-                    <td>Epson Projector</td>
-                    <td>08 June 2026</td>
-                    <td>
-                        <span class="status proposal">
-                            Pending
-                        </span>
-                    </td>
-                    <td>
-                        <a class="review-link" href="admin-loan-requests.html">
-                            Review
-                        </a>
-                    </td>
-                </tr>
-
+                <tbody id="recent-staff-loans-body">
+                <!-- Data will be loaded here from the database -->
                 </tbody>
 
             </table>
@@ -226,40 +126,36 @@
         <!-- Bottom Section -->
         <div class="bottom-grid">
 
-            <!-- User Management -->
+            <!-- Administrator Feature Hub -->
             <div class="card">
-
                 <div class="card-header">
-                    <h2>User Management</h2>
+                    <h2>Administrator Feature Hub</h2>
+                    <p style="font-size: 0.85rem; color: var(--muted);">Important system modules</p>
                 </div>
-
-                <ul class="document-list">
-
-                    <li>
-                        <i class="fa-solid fa-user-plus"></i>
-                        Create New User
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-user-pen"></i>
-                        Update User Details
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-user-shield"></i>
-                        Assign Roles
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-user-lock"></i>
-                        Disable Accounts
-                    </li>
-
-                </ul>
-
+                
+                <div id="admin-features-grid" class="quick-links-grid">
+                    <!-- Dynamic feature modules will be loaded here -->
+                    <div class="loading-placeholder">Initializing features...</div>
+                </div>
             </div>
 
             <!-- Notifications -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Recent Notifications</h2>
+                    <span class="badge" id="notificationCount">0</span>
+                </div>
+                
+                <ul class="document-list" id="notificationList">
+                    <li class="empty-state">No new notifications.</li>
+                </ul>
+                
+                <div class="card-footer" style="padding: 1rem; text-align: center; border-top: 1px solid var(--border);">
+                    <a href="audit-log.html" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+                        View System Audit Logs
+                    </a>
+                </div>
+            </div>
 
 
         </div>
@@ -269,5 +165,6 @@
 </div>
 
 <script src="../scripts/admin-sidebar.js"></script>
+<script src="../scripts/admin-dashboard.js"></script>
 </body>
 </html>

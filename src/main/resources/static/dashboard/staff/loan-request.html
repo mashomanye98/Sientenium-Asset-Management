@@ -41,7 +41,7 @@
         .form-group textarea {
             width: 100%;
             border: 1px solid #dcdce4;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 12px 14px;
             font-family: 'Inter', sans-serif;
             font-size: .95rem;
@@ -76,7 +76,7 @@
         .secondary-button {
             border: none;
             padding: 14px 20px;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 700;
             font-size: .95rem;
@@ -223,7 +223,8 @@
                 <div class="profile-image">
                     <img src="../../images/SeinteniumPageLogo.png" alt="Profile">
                 </div>
-                <p>Staff</p>
+                <h3 id="profileName">Loading...</h3>
+                <p id="profileRoleDept">Staff</p>
             </div>
 
             <nav>
@@ -337,49 +338,9 @@
             </section>
         </div>
 
-        <section class="card">
-            <div class="card-header">
-                <h2>My Loan Requests</h2>
-                <button class="secondary-button" id="refreshRequestsBtn" type="button">
-                    <i class="fa-solid fa-rotate-right"></i>
-                    Refresh
-                </button>
-            </div>
-            <div class="requests-table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Asset</th>
-                        <th>Category</th>
-                        <th>Requested</th>
-                        <th>Due Date</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody id="loanRequestsBody">
-                    <tr>
-                        <td colspan="5" class="empty-state">Loading loan requests...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
     </main>
 </div>
 
-<script>
-    function updateProfileName() {
-        try {
-            const user = JSON.parse(sessionStorage.getItem('currentUser'));
-            if (user && user.fullName) {
-                document.getElementById('profileName').textContent = user.fullName;
-            }
-        } catch (e) {
-            console.log('Could not load user profile');
-        }
-    }
-    updateProfileName();
-</script>
 <script src="/dashboard/scripts/loan-request.js"></script>
 </body>
 </html>

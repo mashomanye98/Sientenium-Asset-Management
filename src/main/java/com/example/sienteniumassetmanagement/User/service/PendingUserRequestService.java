@@ -44,18 +44,20 @@ public class PendingUserRequestService {
     }
 
     public PendingUserRequestResponse createRequest(RegisterRequest request) {
+        String email = (request.getEmail() != null) ? request.getEmail().trim().toLowerCase() : null;
+
         // Prevent duplicate email registration for both active users and pending requests.
-        if (userRepository.existsByEmail(request.getEmail()) || pendingRequestRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(email) || pendingRequestRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already registered or awaiting approval");
         }
 
-        Role role = mapDepartmentToRole(request.getDepartment());
+        Role role = mapStringToRole(request.getRole());
 
         PendingUserRequest pendingRequest = new PendingUserRequest();
-        pendingRequest.setFullName(request.getFullName());
-        pendingRequest.setEmail(request.getEmail());
+        pendingRequest.setFullName(request.getFullName().trim());
+        pendingRequest.setEmail(email);
         pendingRequest.setPassword(passwordEncoder.encode(request.getPassword()));
-        pendingRequest.setDepartment(request.getDepartment());
+        pendingRequest.setDepartment(request.getDepartment().trim());
         pendingRequest.setRole(role);
         pendingRequest.setStatus(RequestStatus.PENDING);
         pendingRequest.setRequestedAt(LocalDateTime.now());
@@ -147,18 +149,18 @@ public class PendingUserRequestService {
         );
     }
 
-    private Role mapDepartmentToRole(String department) {
-        // Map the selected department string to the matching application role.
-        if (department == null) {
+    private Role mapStringToRole(String roleStr) {
+        // Map the selected role string from the UI to the matching application Role enum.
+        if (roleStr == null) {
             return Role.ROLE_STAFF;
         }
 
-        String normalized = department.trim().toLowerCase();
-        if (normalized.contains("admin")) {
-            return Role.ROLE_ADMIN;
-        }
+        String normalized = roleStr.trim().toLowerCase();
         if (normalized.contains("manage")) {
             return Role.ROLE_MANAGER;
+        }
+        if (normalized.contains("admin")) {
+            return Role.ROLE_ADMIN;
         }
         return Role.ROLE_STAFF;
     }

@@ -33,7 +33,7 @@
             margin: 0 auto;
             background: var(--card-bg);
             padding: 50px;
-            border-radius: 15px;
+            border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
@@ -52,11 +52,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .logo i {
-            color: var(--secondary-color);
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--secondary-color);
         }
 
         h1 {
@@ -143,7 +147,7 @@
     <div class="terms-container">
         <header>
             <div class="logo">
-                <i class="fa-solid fa-chart-line"></i>
+                <img src="images/Sientenium.jpg" alt="Sientenium Logo">
                 SIENTENIUM
             </div>
             <h1>Terms and Conditions</h1>
@@ -214,10 +218,14 @@
             </p>
         </section>
 
-        <div class="footer-actions">
+        <div class="footer-actions" style="display: flex; justify-content: center; gap: 20px;">
             <a href="signIn.html" class="btn-back">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Sign In
+            </a>
+            <a href="signUp.html" class="btn-back" style="background-color: #64748b;">
+                <i class="fa-solid fa-user-plus"></i>
+                Back to Sign Up
             </a>
         </div>
     </div>

@@ -7,7 +7,7 @@ function showAlert(msg, type="error"){
     alertEl.textContent = msg;
     alertEl.className = "alert " + type;
     alertEl.style.display = "block";
-    setTimeout(()=>{ alertEl.style.display="none"; },6000);
+    setTimeout(()=>{ alertEl.style.display="none"; },3000);
 }
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -49,6 +49,15 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         // ================================
+        // PREVENT DOUBLE SUBMISSION
+        // ================================
+        const submitBtn = signupForm.querySelector('button[type="submit"]');
+        if (submitBtn.disabled) return;
+        submitBtn.disabled = true;
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.textContent = "Processing...";
+
+        // ================================
         // GET USER INPUTS
         // ================================
 
@@ -59,6 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const department =
             document.getElementById("department")
+                .value;
+
+        const role =
+            document.getElementById("role")
                 .value;
 
         const email =
@@ -75,6 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("confirmPassword")
                 .value;
 
+        const termsCheckbox =
+            document.getElementById("termsCheckbox");
+
         // ================================
         // BASIC VALIDATION
         // ================================
@@ -84,6 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Please enter your full name.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -92,6 +110,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Please select a department.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!role) {
+            showAlert(
+                "Please select a role.",
+                "error"
+            );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -100,6 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Please enter an email address.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -108,6 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Password must be at least 8 characters.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -116,6 +150,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Passwords do not match.",
                 "error"
             );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!termsCheckbox.checked) {
+            showAlert(
+                "Please agree to the Terms and Conditions before registering.",
+                "error"
+            );
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             return;
         }
 
@@ -132,7 +178,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             password: password,
 
-            department: department
+            department: department,
+
+            role: role
         };
 
         try {
@@ -171,6 +219,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     "error"
                 );
 
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
                 return;
             }
 
@@ -204,6 +254,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 "A connection error occurred. Please restart the application and try again.",
                 "error"
             );
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
         }
 
     });

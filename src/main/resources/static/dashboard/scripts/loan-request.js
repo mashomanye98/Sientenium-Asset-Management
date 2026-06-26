@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("loanRequestForm");
     const alertBox = document.getElementById("loanAlert");
-    const loanRequestsBody = document.getElementById("loanRequestsBody");
-    const refreshRequestsBtn = document.getElementById("refreshRequestsBtn");
 
     const fields = {
         assetId: document.getElementById("assetId"),
@@ -146,59 +144,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return users.find(user => user.email === email) || null;
     }
 
-    function renderLoanRequestsTable() {
-        if (!loanRequestsBody) return;
-
-        if (!currentUser?.id) {
-            loanRequestsBody.innerHTML = '<tr><td colspan="5" class="empty-state">Please sign in again to view your loan requests.</td></tr>';
-            return;
-        }
-
-        if (!userLoans.length) {
-            loanRequestsBody.innerHTML = '<tr><td colspan="5" class="empty-state">No loan requests submitted yet.</td></tr>';
-            return;
-        }
-
-        const sortedLoans = [...userLoans].sort((a, b) => new Date(b.requestDate || 0) - new Date(a.requestDate || 0));
-
-        loanRequestsBody.innerHTML = sortedLoans.map(loan => {
-            const status = cleanStatus(loan.status);
-
-            return `
-                <tr>
-                    <td>
-                        <strong>${escapeHtml(loan.assetName || "N/A")}</strong>
-                        <div class="muted-text">Loan ID: ${escapeHtml(loan.loanId || "N/A")}</div>
-                    </td>
-                    <td>${escapeHtml(loan.assetCategory || "N/A")}</td>
-                    <td>${formatDate(loan.requestDate)}</td>
-                    <td>${formatDate(loan.dueDate)}</td>
-                    <td><span class="${statusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
-                </tr>
-            `;
-        }).join("");
-    }
 
     async function loadUserLoanRequests() {
-        if (!loanRequestsBody || !currentUser?.id) {
-            renderLoanRequestsTable();
+        if (!currentUser?.id) {
             return;
         }
 
-        loanRequestsBody.innerHTML = '<tr><td colspan="5" class="empty-state">Loading loan requests...</td></tr>';
-
         try {
-            const response = await fetch(`/loans/user/${encodeURIComponent(currentUser.id)}`);
+            const response = await fetch(`/api/loans/user/${encodeURIComponent(currentUser.id)}`);
             if (!response.ok) {
                 throw new Error("Could not load your loan requests.");
             }
 
             userLoans = await response.json();
-            renderLoanRequestsTable();
             await updatePendingRequestsBadge();
         } catch (error) {
             console.error(error);
-            loanRequestsBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
         }
     }
 
@@ -219,8 +180,15 @@ document.addEventListener("DOMContentLoaded", () => {
         fillDepartment(currentUser.department);
 
         const profileName = document.getElementById("profileName");
+        const profileRoleDept = document.getElementById("profileRoleDept");
+
         if (profileName && currentUser.fullName) {
             profileName.textContent = currentUser.fullName;
+        }
+
+        if (profileRoleDept && currentUser.role && currentUser.department) {
+            const roleDisplay = currentUser.role === 'ROLE_MANAGER' ? 'Manager' : 'Staff';
+            profileRoleDept.textContent = `${roleDisplay}-${currentUser.department} Department`;
         }
 
         await loadUserLoanRequests();
@@ -234,11 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
         fields.dueDate.min = toDateInputValue(new Date());
         fields.dueDate.value = getDefaultReturnDate();
 
-        // Location normalization for old data (Boardroom/Finance)
+        // Location display
         let displayLocation = asset.location || "Unknown";
-        if (displayLocation === "Boardroom" || displayLocation.includes("Finance")) {
-            displayLocation = "Johannesburg";
-        }
 
         preview.title.textContent = asset.title || "Untitled Asset";
         preview.location.textContent = displayLocation;
@@ -312,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
         hideMessage();
 
         try {
-            const response = await fetch("/loans", {
+            const response = await fetch("/api/loans", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(buildLoanRequest())
@@ -327,6 +292,14 @@ document.addEventListener("DOMContentLoaded", () => {
             sessionStorage.removeItem("selectedLoanAsset");
             fields.notes.value = "";
             fields.dueDate.value = getDefaultReturnDate();
+
+            // After a successful submission, we take the user to their loan history 
+            // page. This allows them to immediately see the status of their request.
+            // We use a small timeout so they have time to see the success alert.
+            setTimeout(() => {
+                window.location.href = "loan-history.html";
+            }, 3000);
+
             await loadUserLoanRequests();
         } catch (error) {
             showMessage(error.message);
@@ -337,7 +310,6 @@ document.addEventListener("DOMContentLoaded", () => {
         await fillUserDetails();
         await loadSelectedAsset();
         form.addEventListener("submit", submitLoanRequest);
-        refreshRequestsBtn?.addEventListener("click", loadUserLoanRequests);
     }
 
     startPage();

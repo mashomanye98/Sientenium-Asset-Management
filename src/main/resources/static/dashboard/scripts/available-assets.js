@@ -1,20 +1,47 @@
 document.addEventListener("DOMContentLoaded", () => {
     const productGrid = document.getElementById("productGrid");
+    const profileName = document.getElementById("profileName");
+    const profileRoleDept = document.getElementById("profileRoleDept");
     const searchInput = document.getElementById("searchInput");
     const filterButtons = document.querySelectorAll('.filter-chip');
-    const locationMap = {
-        'Cape Town': ['CPT', 'CT', 'Cape Town'],
-        'Johannesburg': ['JHB', 'Joburg', 'Johannesburg'],
-        'Durban': ['DBN', 'Durban']
-    };
-
     let assets = [];
     let activeLocation = null;
+    const locationMap = {
+        'Finance & Accounting': ['Finance', 'Accounting'],
+        'IT': ['IT', 'Tech', 'Information'],
+        'Logistics': ['Logistics', 'Warehouse', 'Warehousing'],
+        'HR': ['HR', 'Human Resources']
+    };
+
+    function getCurrentUser() {
+        try {
+            return JSON.parse(sessionStorage.getItem("currentUser")) || {};
+        } catch (error) {
+            return {};
+        }
+    }
+
+    const currentUser = getCurrentUser();
+
+    function updateProfile() {
+        if (currentUser.fullName) {
+            if (profileName) profileName.textContent = currentUser.fullName;
+
+            if (profileRoleDept && currentUser.role && currentUser.department) {
+                const roleDisplay = currentUser.role === 'ROLE_MANAGER' ? 'Manager' : 'Staff';
+                profileRoleDept.textContent = `${roleDisplay}-${currentUser.department} Department`;
+            }
+        }
+    }
 
     function formatCurrency(value) {
         if (value === null || value === undefined) return 'R 0.00';
         const number = typeof value === 'string' ? parseFloat(value) : value;
         return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 2 }).format(number);
+    }
+
+    function normalizeText(value) {
+        return String(value ?? '').trim().toLowerCase();
     }
 
     function getImageUrl(photoPath) {
@@ -26,22 +53,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getFilteredAssets() {
-        const query = searchInput.value.trim().toLowerCase();
+        const query = normalizeText(searchInput?.value);
         return assets.filter(asset => {
-            const matchesStatus = asset.status === 'AVAILABLE';
+            const matchesStatus = normalizeText(asset.status) === 'available';
             if (!matchesStatus) return false;
 
-            const titleMatch = asset.title?.toLowerCase().includes(query);
-            const categoryMatch = asset.category?.toLowerCase().includes(query);
-            const locationMatch = asset.location?.toLowerCase().includes(query);
-            const conditionMatch = asset.condition?.toLowerCase().includes(query);
+            const titleMatch = normalizeText(asset.title).includes(query);
+            const categoryMatch = normalizeText(asset.category).includes(query);
+            const locationMatch = normalizeText(asset.location).includes(query);
+            const conditionMatch = normalizeText(asset.condition).includes(query);
             const universalMatch = query === '' || titleMatch || categoryMatch || locationMatch || conditionMatch;
 
             if (!universalMatch) return false;
             if (!activeLocation) return true;
 
             const allowed = locationMap[activeLocation] || [activeLocation];
-            return allowed.some(code => asset.location?.toUpperCase().includes(code.toUpperCase()));
+            const assetLocation = normalizeText(asset.location);
+            const assetDepartment = normalizeText(asset.department);
+            return allowed.some(code => {
+                const normalizedCode = normalizeText(code);
+                return assetLocation.includes(normalizedCode) || assetDepartment.includes(normalizedCode);
+            });
         });
     }
 
@@ -61,11 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const price = formatCurrency(asset.cost);
             const conditionBadge = asset.condition ? `${asset.condition}` : 'Unknown';
 
-            // Location normalization for old data (Boardroom/Finance)
+            // Location display
             let displayLocation = asset.location || 'Unknown location';
-            if (displayLocation === 'Boardroom' || displayLocation.includes('Finance')) {
-                displayLocation = 'Johannesburg'; // Default fallback for old data
-            }
 
             const cardHtml = `
                 <div class="product-card">
@@ -126,9 +155,10 @@ document.addEventListener("DOMContentLoaded", () => {
     async function fetchAssets() {
         productGrid.innerHTML = '<div class="no-results"><i class="fas fa-box-open" style="font-size:2rem;margin-bottom:12px;display:block"></i>Loading assets...</div>';
         try {
-            const response = await fetch('/api/assets');
+            const response = await fetch('/api/assets/search/status?status=AVAILABLE');
             if (!response.ok) throw new Error('Unable to load assets from the database.');
-            assets = await response.json();
+            const data = await response.json();
+            assets = Array.isArray(data) ? data : [];
             applyFilters();
         } catch (error) {
             productGrid.innerHTML = `<div class="no-results">${error.message}</div>`;
@@ -142,11 +172,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('currentUser');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userName');
             window.location.href = '../../signIn.html';
         });
     }
 
     fetchAssets();
+    updateProfile();
 });

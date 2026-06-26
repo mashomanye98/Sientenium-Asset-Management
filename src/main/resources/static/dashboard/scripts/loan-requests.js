@@ -16,11 +16,6 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Get auth token from localStorage
-function getAuthToken() {
-    return localStorage.getItem('authToken');
-}
-
 // Make API request with headers
 async function apiRequest(url, options = {}) {
     const headers = {
@@ -28,7 +23,8 @@ async function apiRequest(url, options = {}) {
         ...options.headers
     };
 
-    const token = getAuthToken();
+    // Include Authorization header if token exists
+    const token = localStorage.getItem('authToken');
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
@@ -60,22 +56,28 @@ async function apiRequest(url, options = {}) {
 // Fetch all loans
 async function fetchAllLoans() {
     try {
-        const loans = await apiRequest('/loans');
+        // Updated to use /api/loans for consistency with other modules
+        const loans = await apiRequest('/api/loans');
         allLoans = loans;
         updateUI();
         return loans;
     } catch (error) {
         console.error('Error fetching loans:', error);
         showToast('Failed to load loans: ' + error.message, 'error');
-        return [];
+        throw error; // Propagate error so loadData can handle it
     }
 }
 
 
         // Approve loan. The backend checks availability and marks the asset as loaned.
-        async function approveLoan(loanId) {
+        async function approveLoan(loanId, button) {
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Processing...';
+
             try {
-                await apiRequest('/loans/' + loanId + '/approve', {
+                // Updated to use /api/loans prefix
+                await apiRequest('/api/loans/' + loanId + '/approve', {
                     method: 'PUT'
                 });
 
@@ -84,13 +86,20 @@ async function fetchAllLoans() {
             } catch (error) {
                 console.error('Error:', error);
                 showToast('Failed: ' + error.message, 'error');
+                button.disabled = false;
+                button.textContent = originalText;
             }
         }
 
         // Reject loan only. Rejection must not change asset availability.
-        async function rejectLoan(loanId) {
+        async function rejectLoan(loanId, button) {
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Processing...';
+
             try {
-                await apiRequest('/loans/' + loanId + '/reject', {
+                // Updated to use /api/loans prefix
+                await apiRequest('/api/loans/' + loanId + '/reject', {
                     method: 'PUT'
                 });
 
@@ -99,6 +108,8 @@ async function fetchAllLoans() {
             } catch (error) {
                 console.error('Error:', error);
                 showToast('Failed: ' + error.message, 'error');
+                button.disabled = false;
+                button.textContent = originalText;
             }
         }
 
@@ -157,8 +168,13 @@ function updateUserInfo() {
 // Render loans table with filters
 async function renderLoansTable() {
     const tbody = document.getElementById('loans-tbody');
-    const statusFilter = document.getElementById('status-filter').value;
-    const searchTerm = document.getElementById('search-input').value.toLowerCase();
+    if (!tbody) return;
+
+    const statusFilterEl = document.getElementById('status-filter');
+    const searchInputEl = document.getElementById('search-input');
+
+    const statusFilter = statusFilterEl ? statusFilterEl.value : 'ALL';
+    const searchTerm = searchInputEl ? searchInputEl.value.toLowerCase() : '';
 
     let filteredLoans = [...allLoans];
 
@@ -204,11 +220,11 @@ async function renderLoansTable() {
 
     // Attach event listeners to buttons
     document.querySelectorAll('.btn-approve').forEach(btn => {
-        btn.addEventListener('click', () => approveLoan(parseInt(btn.dataset.loanId)));
+        btn.addEventListener('click', () => approveLoan(parseInt(btn.dataset.loanId), btn));
     });
 
     document.querySelectorAll('.btn-reject').forEach(btn => {
-        btn.addEventListener('click', () => rejectLoan(parseInt(btn.dataset.loanId)));
+        btn.addEventListener('click', () => rejectLoan(parseInt(btn.dataset.loanId), btn));
     });
 }
 
@@ -219,11 +235,17 @@ function updateStats() {
     const rejected = allLoans.filter(l => l.status === 'REJECTED').length;
     const returned = allLoans.filter(l => l.status === 'RETURNED').length;
 
-    document.getElementById('stat-pending').textContent = `${pending} Request${pending !== 1 ? 's' : ''}`;
-    document.getElementById('stat-approved').textContent = `${approved} Request${approved !== 1 ? 's' : ''}`;
-    document.getElementById('stat-rejected').textContent = `${rejected} Request${rejected !== 1 ? 's' : ''}`;
+    const pendingEl = document.getElementById('stat-pending');
+    const approvedEl = document.getElementById('stat-approved');
+    const rejectedEl = document.getElementById('stat-rejected');
+    const totalCountEl = document.getElementById('total-count');
 
-    document.getElementById('total-count').textContent = `Total: ${allLoans.length} requests`;
+    if (pendingEl) pendingEl.textContent = `${pending} Request${pending !== 1 ? 's' : ''}`;
+    if (approvedEl) approvedEl.textContent = `${approved} Request${approved !== 1 ? 's' : ''}`;
+    if (rejectedEl) rejectedEl.textContent = `${rejected} Request${rejected !== 1 ? 's' : ''}`;
+
+    if (totalCountEl) totalCountEl.textContent = `Total: ${allLoans.length} requests`;
+    
     const pendingCount = document.getElementById('pending-count');
     if (pendingCount) {
         pendingCount.textContent = pending;
@@ -262,9 +284,24 @@ async function loadData() {
 
 // Setup event listeners
 function setupEventListeners() {
-    document.getElementById('status-filter').addEventListener('change', renderLoansTable);
-    document.getElementById('search-input').addEventListener('input', renderLoansTable);
-    document.getElementById('refresh-btn').addEventListener('click', loadData);
+    const statusFilter = document.getElementById('status-filter');
+    const searchInput = document.getElementById('search-input');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (statusFilter) statusFilter.addEventListener('change', renderLoansTable);
+    if (searchInput) searchInput.addEventListener('input', renderLoansTable);
+    if (refreshBtn) refreshBtn.addEventListener('click', loadData);
+
+    // Sidebar usually handles logout, but we keep this as a fallback if the ID exists
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            window.location.href = '../../signIn.html';
+        });
+    }
 }
 
 // Initialize

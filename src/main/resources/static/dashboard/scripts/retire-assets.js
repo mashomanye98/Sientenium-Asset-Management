@@ -1,102 +1,98 @@
+/**
+ * Retire Assets Management Script
+ * Handles fetching, filtering, retiring and restoring assets.
+ * Compatible with both Admin and Manager dashboards.
+ */
+
 // API Base URL
 const API_BASE_URL = window.location.origin;
 
-// Store data
+// State management
 let allAssets = [];
 let currentTab = 'eligible';
 
-function normalizeValue(value) {
-    return String(value || '').toUpperCase();
-}
+/**
+ * Normalizes values for consistent comparison (e.g., status, condition)
+ */
+const normalizeValue = (value) => String(value || '').trim().toUpperCase();
 
-function isEligibleForRetirement(asset) {
-    var status = normalizeValue(asset.status);
-    var condition = normalizeValue(asset.condition);
-    return status === 'AVAILABLE' && (condition === 'POOR' || condition === 'DAMAGED');
-}
+/**
+ * Checks if an asset is eligible for retirement.
+ * Eligibility: Status is AVAILABLE.
+ * (Highlighting logic for POOR/DAMAGED is handled during rendering)
+ */
+const isEligibleForRetirement = (asset) => {
+    const status = normalizeValue(asset.status);
+    return status === 'AVAILABLE';
+};
 
-// Helper function to show toast notifications
-function showToast(message, type) {
-    type = type || 'info';
-    var toast = document.createElement('div');
-    toast.className = 'toast toast-' + type;
+/**
+ * Helper to show toast notifications
+ */
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
     toast.textContent = message;
     document.body.appendChild(toast);
 
-    setTimeout(function() {
+    setTimeout(() => {
         toast.remove();
     }, 4000);
 }
 
-// Get auth token from localStorage
-function getAuthToken() {
-    return localStorage.getItem('authToken');
-}
-
-// Make API request with headers
-async function apiRequest(url, options) {
-    options = options || {};
-    var headers = {
-        'Content-Type': 'application/json'
+/**
+ * Generic API request helper with authentication
+ */
+async function apiRequest(url, options = {}) {
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
     };
 
-    // Copy existing headers
-    if (options.headers) {
-        for (var key in options.headers) {
-            headers[key] = options.headers[key];
-        }
-    }
-
-    var token = getAuthToken();
+    // Include Authorization header if token exists
+    const token = localStorage.getItem('authToken');
     if (token) {
-        headers['Authorization'] = 'Bearer ' + token;
+        headers['Authorization'] = `Bearer ${token}`;
     }
 
     try {
-        var response = await fetch(API_BASE_URL + url, {
-            method: options.method || 'GET',
-            headers: headers,
-            body: options.body || null
+        const response = await fetch(`${API_BASE_URL}${url}`, {
+            ...options,
+            headers
         });
 
         if (!response.ok) {
-            var errorText = await response.text();
-            throw new Error(errorText || 'HTTP ' + response.status);
+            const errorText = await response.text();
+            let errorMessage = errorText;
+            try {
+                const errorJson = JSON.parse(errorText);
+                errorMessage = errorJson.error || errorJson.message || errorMessage;
+            } catch (e) { /* use raw text */ }
+            throw new Error(errorMessage || `HTTP ${response.status}`);
         }
 
-        if (response.status === 204) {
-            return null;
-        }
-
-        var data = await response.json();
-        return data;
+        if (response.status === 204) return null;
+        return response.json();
     } catch (error) {
-        console.error('API Request Error:', error);
+        console.error(`API Request Error [${url}]:`, error);
         throw error;
     }
 }
 
-// Fetch all assets
+/**
+ * Fetch all assets from the database
+ */
 async function fetchAssets() {
     try {
-        console.log('Fetching assets from:', API_BASE_URL + '/api/assets');
-        var assets = await apiRequest('/api/assets');
-        console.log('Raw assets response:', assets);
-
-        // Handle different response formats
+        const assets = await apiRequest('/api/assets');
+        
+        // Handle different response formats (Spring Data Page vs List)
         if (Array.isArray(assets)) {
             allAssets = assets;
         } else if (assets && typeof assets === 'object') {
             allAssets = assets.content || assets.data || [];
         } else {
             allAssets = [];
-        }
-
-        console.log('Processed assets:', allAssets);
-        console.log('Number of assets loaded:', allAssets.length);
-
-        if (allAssets.length === 0) {
-            showToast('No assets found in the system', 'info');
         }
 
         return allAssets;
@@ -108,462 +104,267 @@ async function fetchAssets() {
     }
 }
 
-// Retire an asset
+/**
+ * Mark an asset as retired
+ */
 async function retireAsset(assetId, reason, notes) {
-    try {
-        var asset = null;
-        for (var i = 0; i < allAssets.length; i++) {
-            if (allAssets[i].assetId === assetId) {
-                asset = allAssets[i];
-                break;
-            }
-        }
+    const asset = allAssets.find(a => a.assetId === assetId);
+    if (!asset) throw new Error('Asset not found');
 
-        if (!asset) {
-            throw new Error('Asset not found');
-        }
-
-        // Check if asset is loaned
-        if (normalizeValue(asset.status) === 'LOANED') {
-            throw new Error('Cannot retire an asset that is currently loaned out. Please check it in first.');
-        }
-
-        // Create a proper request DTO with all required fields
-        var requestData = {
-            title: asset.title || 'N/A',
-            category: asset.category || 'IT_EQUIPMENT',
-            serialNumber: asset.serialNumber || 'N/A',
-            acquisitionDate: asset.acquisitionDate || new Date().toISOString().split('T')[0],
-            cost: asset.cost || 0,
-            location: asset.location || 'N/A',
-            condition: asset.condition || 'GOOD',
-            photoPath: asset.photoPath || null,
-            status: 'RETIRED'
-        };
-
-        console.log('Retiring asset with data:', requestData);
-
-        // Update asset status to RETIRED
-        var updatedAsset = await apiRequest('/api/assets/' + assetId, {
-            method: 'PUT',
-            body: JSON.stringify(requestData)
-        });
-
-        // Record audit log
-        try {
-            await apiRequest('/api/audit-logs', {
-                method: 'POST',
-                body: JSON.stringify({
-                    userId: 1,
-                    entityType: 'ASSET',
-                    entityId: assetId,
-                    action: 'DELETE'
-                })
-            });
-        } catch (auditError) {
-            console.warn('Audit log failed but asset was retired:', auditError);
-        }
-
-        showToast('Asset "' + asset.title + '" retired successfully!', 'success');
-        await loadData();
-        return updatedAsset;
-    } catch (error) {
-        console.error('Error retiring asset:', error);
-        showToast('Failed to retire asset: ' + error.message, 'error');
-        throw error;
+    if (normalizeValue(asset.status) === 'LOANED') {
+        throw new Error('Cannot retire a loaned asset. Please check it in first.');
     }
+
+    // Prepare update payload (preserving existing data)
+    const requestData = {
+        title: asset.title,
+        category: asset.category,
+        serialNumber: asset.serialNumber,
+        acquisitionDate: asset.acquisitionDate,
+        cost: asset.cost,
+        location: asset.location,
+        condition: asset.condition,
+        photoPath: asset.photoPath,
+        status: 'RETIRED'
+    };
+
+    // Update via API
+    await apiRequest(`/api/assets/${assetId}`, {
+        method: 'PUT',
+        body: JSON.stringify(requestData)
+    });
+
+    showToast(`Asset "${asset.title}" has been retired.`, 'success');
+    await loadData();
 }
 
-// Restore an asset (undo retirement)
-async function restoreAsset(assetId) {
-    if (!confirm('Are you sure you want to restore this asset?')) {
-        return;
-    }
+/**
+ * Restore a retired asset to available status
+ */
+async function restoreAsset(assetId, button) {
+    if (!confirm('Are you sure you want to restore this asset to active inventory?')) return;
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Processing...';
 
     try {
-        var asset = null;
-        for (var i = 0; i < allAssets.length; i++) {
-            if (allAssets[i].assetId === assetId) {
-                asset = allAssets[i];
-                break;
-            }
-        }
+        const asset = allAssets.find(a => a.assetId === assetId);
+        if (!asset) throw new Error('Asset not found');
 
-        if (!asset) {
-            throw new Error('Asset not found');
-        }
-
-        // Create a proper request DTO
-        var requestData = {
-            title: asset.title || 'N/A',
-            category: asset.category || 'IT_EQUIPMENT',
-            serialNumber: asset.serialNumber || 'N/A',
-            acquisitionDate: asset.acquisitionDate || new Date().toISOString().split('T')[0],
-            cost: asset.cost || 0,
-            location: asset.location || 'N/A',
-            condition: asset.condition || 'GOOD',
-            photoPath: asset.photoPath || null,
+        const requestData = {
+            title: asset.title,
+            category: asset.category,
+            serialNumber: asset.serialNumber,
+            acquisitionDate: asset.acquisitionDate,
+            cost: asset.cost,
+            location: asset.location,
+            condition: asset.condition,
+            photoPath: asset.photoPath,
             status: 'AVAILABLE'
         };
 
-        console.log('Restoring asset with data:', requestData);
-
-        // Update asset status back to AVAILABLE
-        var updatedAsset = await apiRequest('/api/assets/' + assetId, {
+        await apiRequest(`/api/assets/${assetId}`, {
             method: 'PUT',
             body: JSON.stringify(requestData)
         });
 
-        // Record audit log
-        try {
-            await apiRequest('/api/audit-logs', {
-                method: 'POST',
-                body: JSON.stringify({
-                    userId: 1,
-                    entityType: 'ASSET',
-                    entityId: assetId,
-                    action: 'UPDATE'
-                })
-            });
-        } catch (auditError) {
-            console.warn('Audit log failed but asset was restored:', auditError);
-        }
-
-        showToast('Asset "' + asset.title + '" restored successfully!', 'success');
+        showToast(`Asset "${asset.title}" restored successfully!`, 'success');
         await loadData();
-        return updatedAsset;
     } catch (error) {
-        console.error('Error restoring asset:', error);
-        showToast('Failed to restore asset: ' + error.message, 'error');
-        throw error;
+        showToast('Failed to restore: ' + error.message, 'error');
+        button.disabled = false;
+        button.textContent = originalText;
     }
 }
 
-// Render assets table
+/**
+ * Render the assets table with current filters and tabs
+ */
 function renderAssets() {
-    console.log('Rendering assets. Current allAssets:', allAssets);
+    const tbody = document.getElementById('retire-tbody');
+    if (!tbody) return;
 
-    var tbody = document.getElementById('retire-tbody');
-    var statusFilter = document.getElementById('status-filter').value;
-    var searchTerm = document.getElementById('search-input').value.toLowerCase();
-
-    // Make sure allAssets is an array
-    if (!Array.isArray(allAssets)) {
-        console.error('allAssets is not an array:', allAssets);
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Error: Invalid data format</td></tr>';
-        return;
+    // Toggle Action column header visibility based on the active tab
+    const actionHeader = document.querySelector('#retire-table th:last-child');
+    if (actionHeader) {
+        // Hide the column entirely when in the "Retired Assets" tab as requested
+        actionHeader.style.display = currentTab === 'retired' ? 'none' : 'table-cell';
     }
 
-    var filtered = [];
-    for (var i = 0; i < allAssets.length; i++) {
-        filtered.push(allAssets[i]);
-    }
+    const statusFilter = document.getElementById('status-filter')?.value || 'ALL';
+    const searchTerm = document.getElementById('search-input')?.value?.toLowerCase() || '';
 
-    // Apply status filter
+    let filtered = [...allAssets];
+
+    // 1. Status Filter (Dropdown)
     if (statusFilter !== 'ALL') {
-        var tempFiltered = [];
-        for (var j = 0; j < filtered.length; j++) {
-            if (normalizeValue(filtered[j].status) === statusFilter) {
-                tempFiltered.push(filtered[j]);
-            }
-        }
-        filtered = tempFiltered;
+        filtered = filtered.filter(a => normalizeValue(a.status) === statusFilter);
     }
 
-    // Apply tab filter
+    // 2. Tab Filter
+    const titleEl = document.getElementById('table-title');
     if (currentTab === 'eligible') {
-        var tempFiltered = [];
-        for (var k = 0; k < filtered.length; k++) {
-            if (isEligibleForRetirement(filtered[k])) {
-                tempFiltered.push(filtered[k]);
-            }
-        }
-        filtered = tempFiltered;
-        document.getElementById('table-title').textContent = 'Assets Eligible for Retirement';
+        // Now "Eligible" shows all non-retired assets as requested, with highlighting logic below
+        filtered = filtered.filter(a => normalizeValue(a.status) !== 'RETIRED');
+        if (titleEl) titleEl.textContent = 'Assets Eligible for Retirement';
     } else if (currentTab === 'retired') {
-        var tempFiltered = [];
-        for (var l = 0; l < filtered.length; l++) {
-            if (normalizeValue(filtered[l].status) === 'RETIRED') {
-                tempFiltered.push(filtered[l]);
-            }
-        }
-        filtered = tempFiltered;
-        document.getElementById('table-title').textContent = 'Retired Assets';
+        filtered = filtered.filter(a => normalizeValue(a.status) === 'RETIRED');
+        if (titleEl) titleEl.textContent = 'Retired Assets';
     } else {
-        document.getElementById('table-title').textContent = 'All Assets';
+        // "All Assets" tab - fallback or kept if needed
+        if (titleEl) titleEl.textContent = 'All Assets';
     }
 
-    // Apply search filter
+    // 3. Search Filter
     if (searchTerm) {
-        var tempFiltered = [];
-        for (var m = 0; m < filtered.length; m++) {
-            var asset = filtered[m];
-            var title = asset.title || '';
-            var serial = asset.serialNumber || '';
-            var location = asset.location || '';
-            if (title.toLowerCase().includes(searchTerm) ||
-                serial.toLowerCase().includes(searchTerm) ||
-                location.toLowerCase().includes(searchTerm)) {
-                tempFiltered.push(asset);
-            }
-        }
-        filtered = tempFiltered;
+        filtered = filtered.filter(a => 
+            (a.title || '').toLowerCase().includes(searchTerm) ||
+            (a.serialNumber || '').toLowerCase().includes(searchTerm) ||
+            (a.location || '').toLowerCase().includes(searchTerm) ||
+            (a.category || '').toLowerCase().includes(searchTerm)
+        );
     }
 
-    // Update count
-    document.getElementById('total-count').textContent = 'Total: ' + filtered.length + ' assets';
+    // Update Counts
+    const countEl = document.getElementById('total-count');
+    if (countEl) countEl.textContent = `Total: ${filtered.length} assets`;
 
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No assets found</td></tr>';
+        // Adjust colspan based on whether the action column is hidden
+        const colSpan = currentTab === 'retired' ? 6 : 7;
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" class="empty-state">No assets found matching criteria</td></tr>`;
+        updateStats();
         return;
     }
 
-    tbody.innerHTML = '';
-    for (var n = 0; n < filtered.length; n++) {
-        var asset = filtered[n];
-        var row = document.createElement('tr');
+    tbody.innerHTML = filtered.map(asset => {
+        const status = normalizeValue(asset.status);
+        const condition = normalizeValue(asset.condition);
+        const statusClass = `status-${status.toLowerCase()}`;
+        const isRetired = status === 'RETIRED';
+        const eligible = isEligibleForRetirement(asset);
+        
+        // Highlight poor or damaged condition
+        const isCritical = condition === 'POOR' || condition === 'DAMAGED';
+        const rowClass = isRetired ? 'retired-row' : (isCritical ? 'condition-critical' : '');
 
-        var assetStatus = normalizeValue(asset.status);
-        if (assetStatus === 'RETIRED') {
-            row.className = 'retired-row';
-        }
-
-        var statusClass = 'status-available';
-        if (assetStatus === 'LOANED') {
-            statusClass = 'status-loaned';
-        } else if (assetStatus === 'RETIRED') {
-            statusClass = 'status-retired';
-        }
-
-        var actionHtml = '';
-        if (isEligibleForRetirement(asset)) {
-            actionHtml = '<button class="btn-retire" data-asset-id="' + asset.assetId + '" data-asset-title="' + (asset.title || 'N/A') + '">Retire</button>';
-        } else if (assetStatus === 'RETIRED') {
-            actionHtml = '<button class="btn-restore" data-asset-id="' + asset.assetId + '" data-asset-title="' + (asset.title || 'N/A') + '">Restore</button>';
+        let actionHtml = '';
+        if (eligible) {
+            actionHtml = `<button class="btn-retire" onclick="handleRetireClick(${asset.assetId}, '${asset.title.replace(/'/g, "\\'")}', this)">Retire</button>`;
+        } else if (isRetired) {
+            actionHtml = `<button class="btn-restore" onclick="restoreAsset(${asset.assetId}, this)">Restore</button>`;
         } else {
-            actionHtml = '<span style="color: var(--muted); font-size: 0.75rem;">Cannot retire</span>';
+            actionHtml = `<span style="color: var(--muted); font-size: 0.75rem;">In Use / Active</span>`;
         }
 
-        row.innerHTML = `
-            <td><strong>${asset.title || 'N/A'}</strong></td>
-            <td>${asset.serialNumber || 'N/A'}</td>
-            <td>${asset.category || 'N/A'}</td>
-            <td>${asset.condition || 'N/A'}</td>
-            <td>${asset.location || 'N/A'}</td>
-            <td><span class="status-badge ${statusClass}">${asset.status || 'N/A'}</span></td>
-            <td>${actionHtml}</td>
+        return `
+            <tr class="${rowClass}">
+                <td><strong>${asset.title || 'N/A'}</strong></td>
+                <td>${asset.serialNumber || 'N/A'}</td>
+                <td>${asset.category || 'N/A'}</td>
+                <td>${asset.condition || 'N/A'}</td>
+                <td>${asset.location || 'N/A'}</td>
+                <td><span class="status-badge ${statusClass}">${asset.status}</span></td>
+                ${currentTab !== 'retired' ? `<td>${actionHtml}</td>` : ''}
+            </tr>
         `;
-        tbody.appendChild(row);
-    }
+    }).join('');
 
-    // Attach event listeners to retire buttons
-    var retireBtns = document.querySelectorAll('.btn-retire');
-    for (var o = 0; o < retireBtns.length; o++) {
-        (function(btn) {
-            btn.addEventListener('click', function() {
-                var assetId = parseInt(this.dataset.assetId);
-                var assetTitle = this.dataset.assetTitle;
-                document.getElementById('retire-asset').value = assetId;
-                document.getElementById('retire-asset').dispatchEvent(new Event('change'));
-                document.getElementById('retire-form').scrollIntoView({ behavior: 'smooth' });
-                showToast('Selected "' + assetTitle + '" for retirement', 'info');
-            });
-        })(retireBtns[o]);
-    }
-
-    // Attach event listeners to restore buttons
-    var restoreBtns = document.querySelectorAll('.btn-restore');
-    for (var p = 0; p < restoreBtns.length; p++) {
-        (function(btn) {
-            btn.addEventListener('click', function() {
-                var assetId = parseInt(this.dataset.assetId);
-                restoreAsset(assetId);
-            });
-        })(restoreBtns[p]);
-    }
-
-    // Update stats
     updateStats();
 }
 
-// Update stats
-function updateStats() {
-    if (!Array.isArray(allAssets)) {
-        return;
-    }
+/**
+ * Handle direct retirement action from the table button
+ */
+window.handleRetireClick = async (assetId, title, button) => {
+    if (!confirm(`Are you sure you want to retire "${title}"?`)) return;
 
-    var total = allAssets.length;
-    var available = 0;
-    var loaned = 0;
-    var retired = 0;
-
-    for (var i = 0; i < allAssets.length; i++) {
-        var status = normalizeValue(allAssets[i].status);
-        if (status === 'AVAILABLE') available++;
-        else if (status === 'LOANED') loaned++;
-        else if (status === 'RETIRED') retired++;
-    }
-
-    document.getElementById('stat-total').textContent = total + ' Assets';
-    document.getElementById('stat-available').textContent = available + ' Assets';
-    document.getElementById('stat-loaned').textContent = loaned + ' Assets';
-    document.getElementById('stat-retired').textContent = retired + ' Assets';
-
-    // Update sidebar badge
-    var pendingCount = document.getElementById('pending-count');
-    if (pendingCount) {
-        pendingCount.textContent = available;
-    }
-}
-
-// Populate retire form dropdown
-function populateRetireForm() {
-    var select = document.getElementById('retire-asset');
-    var currentValue = select.value;
-
-    select.innerHTML = '<option value="">-- Select an asset --</option>';
-
-    if (!Array.isArray(allAssets)) {
-        return;
-    }
-
-    // Only poor or damaged available assets are eligible for retirement
-    for (var i = 0; i < allAssets.length; i++) {
-        var asset = allAssets[i];
-        if (isEligibleForRetirement(asset)) {
-            var option = document.createElement('option');
-            option.value = asset.assetId;
-            option.textContent = (asset.title || 'N/A') + ' (' + (asset.serialNumber || 'No SN') + ')';
-            select.appendChild(option);
-        }
-    }
-
-    if (currentValue) {
-        select.value = currentValue;
-    }
-}
-
-// Handle retire form submission
-async function handleRetireSubmit(event) {
-    event.preventDefault();
-
-    var assetId = parseInt(document.getElementById('retire-asset').value);
-    var reason = document.getElementById('retire-reason').value;
-    var notes = document.getElementById('retire-notes').value;
-    var submitBtn = document.getElementById('retire-submit-btn');
-    var messageDiv = document.getElementById('retire-form-message');
-
-    // Validation
-    if (!assetId) {
-        messageDiv.innerHTML = '<span style="color: #dc2626;">Please select an asset.</span>';
-        return;
-    }
-    if (!reason) {
-        messageDiv.innerHTML = '<span style="color: #dc2626;">Please select a reason for retirement.</span>';
-        return;
-    }
-
-    // Find the asset for confirmation
-    var asset = null;
-    for (var i = 0; i < allAssets.length; i++) {
-        if (allAssets[i].assetId === assetId) {
-            asset = allAssets[i];
-            break;
-        }
-    }
-
-    if (!confirm('Are you sure you want to retire "' + (asset?.title || 'N/A') + '"?\nReason: ' + reason + '\n\nThis action will mark the asset as RETIRED.')) {
-        return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = 'Processing...';
-    messageDiv.innerHTML = '';
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Retiring...';
 
     try {
-        await retireAsset(assetId, reason, notes);
-        messageDiv.innerHTML = '<span style="color: #10b981;">✓ Asset retired successfully!</span>';
-        document.getElementById('retire-form').reset();
-        populateRetireForm();
+        await retireAsset(assetId);
+        // Toast and reload handled inside retireAsset
     } catch (error) {
-        messageDiv.innerHTML = '<span style="color: #dc2626;">✗ ' + error.message + '</span>';
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-box-archive"></i> Retire Asset';
+        showToast('Failed to retire asset: ' + error.message, 'error');
+        button.disabled = false;
+        button.textContent = originalText;
     }
+};
+
+/**
+ * Update the statistics cards
+ */
+function updateStats() {
+    const stats = {
+        total: allAssets.length,
+        available: allAssets.filter(a => normalizeValue(a.status) === 'AVAILABLE').length,
+        loaned: allAssets.filter(a => normalizeValue(a.status) === 'LOANED').length,
+        retired: allAssets.filter(a => normalizeValue(a.status) === 'RETIRED').length
+    };
+
+    const updateEl = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = `${val} Assets`;
+    };
+
+    updateEl('stat-total', stats.total);
+    updateEl('stat-available', stats.available);
+    updateEl('stat-loaned', stats.loaned);
+    updateEl('stat-retired', stats.retired);
 }
 
-// Load all data
+
+/**
+ * Main data loading sequence
+ */
 async function loadData() {
-    console.log('Loading data...');
+    const tbody = document.getElementById('retire-tbody');
+    if (tbody && allAssets.length === 0) {
+        const colSpan = currentTab === 'retired' ? 6 : 7;
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" class="loading"><i class="fas fa-sync fa-spin"></i> Loading assets...</td></tr>`;
+    }
+
     try {
         await fetchAssets();
         renderAssets();
-        populateRetireForm();
-        console.log('Data loaded successfully');
     } catch (error) {
-        console.error('Error loading data:', error);
-        showToast('Failed to load data: ' + error.message, 'error');
+        console.error('Data load failed:', error);
     }
 }
 
-// Setup event listeners
+/**
+ * Initialize event listeners
+ */
 function setupEventListeners() {
-    document.getElementById('refresh-btn').addEventListener('click', loadData);
-    document.getElementById('status-filter').addEventListener('change', renderAssets);
-    document.getElementById('search-input').addEventListener('input', renderAssets);
-    document.getElementById('retire-form').addEventListener('submit', handleRetireSubmit);
+    document.getElementById('refresh-btn')?.addEventListener('click', loadData);
+    document.getElementById('status-filter')?.addEventListener('change', renderAssets);
+    document.getElementById('search-input')?.addEventListener('input', renderAssets);
 
-    // Tab switching
-    var tabBtns = document.querySelectorAll('.tab-btn');
-    for (var i = 0; i < tabBtns.length; i++) {
-        (function(btn) {
-            btn.addEventListener('click', function() {
-                var allBtns = document.querySelectorAll('.tab-btn');
-                for (var j = 0; j < allBtns.length; j++) {
-                    allBtns[j].classList.remove('active');
-                }
-                this.classList.add('active');
-                currentTab = this.dataset.tab;
-                renderAssets();
-            });
-        })(tabBtns[i]);
-    }
-
-    document.getElementById('retire-asset').addEventListener('change', function() {
-        document.getElementById('retire-form-message').innerHTML = '';
+    // Tab switching logic
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentTab = this.dataset.tab;
+            renderAssets();
+        });
     });
 
-    document.getElementById('retire-reason').addEventListener('change', function() {
-        document.getElementById('retire-form-message').innerHTML = '';
+    // Logout button - handled by sidebar but kept for standalone compatibility
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '../../signIn.html';
     });
 }
 
-// Update user name
-function updateUserInfo() {
-    var userNameElement = document.getElementById('user-name');
-    if (!userNameElement) {
-        return;
-    }
-
-    var currentUser = {};
-    try {
-        currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || {};
-    } catch (error) {
-        currentUser = {};
-    }
-
-    var userName = currentUser.fullName || localStorage.getItem('userName') || userNameElement.textContent || 'System Administrator';
-    userNameElement.textContent = userName;
-}
-
-// Initialize
-function init() {
-    console.log('Initializing retire assets page...');
-    updateUserInfo();
+/**
+ * Page Initialization
+ */
+document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     loadData();
-}
-
-// Run initialization
-document.addEventListener('DOMContentLoaded', init);
+});

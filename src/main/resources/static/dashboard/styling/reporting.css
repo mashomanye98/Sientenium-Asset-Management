@@ -54,7 +54,7 @@
 
   .topbar-logo {
     width: 30px; height: 30px;
-    border-radius: 7px;
+    border-radius: 8px;
     background: var(--accent);
     color: white;
     display: flex; align-items: center; justify-content: center;
@@ -136,7 +136,7 @@
   .filter-bar select {
     height: 34px;
     border: 1px solid var(--border);
-    border-radius: 1px var(--radius-md);
+    border-radius: 8px;
     padding: 0 10px;
     font-size: 13px;
     font-family: inherit;
@@ -157,7 +157,7 @@
   .table-wrap {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 1px var(--radius-lg);
+    border-radius: 8px;
     overflow: hidden;
   }
 
@@ -186,7 +186,7 @@
   .badge {
     display: inline-block;
     padding: 2px 8px;
-    border-radius: 99px;
+    border-radius: 8px;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -217,7 +217,7 @@
   .summary-pill {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 1px  var(--radius-md);
+    border-radius: 12px;
     padding: 8px 14px;
     font-size: 13px;
     color: var(--text-secondary);
@@ -274,7 +274,7 @@
   /* PHOTO THUMB */
   .photo-thumb {
     width: 32px; height: 32px;
-    border-radius: 6px;
+    border-radius: 8px;
     object-fit: cover;
     background: var(--bg);
     border: 1px solid var(--border);
@@ -282,7 +282,7 @@
 
   .no-photo {
     width: 32px; height: 32px;
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--bg);
     border: 1px solid var(--border);
     display: flex;

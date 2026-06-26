@@ -33,17 +33,18 @@ public class UserService {
     }
 
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        String email = (request.getEmail() != null) ? request.getEmail().trim().toLowerCase() : null;
+        if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already registered");
         }
 
-        Role role = mapDepartmentToRole(request.getDepartment());
+        Role role = mapStringToRole(request.getRole());
 
         User user = new User();
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName().trim());
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setDepartment(request.getDepartment());
+        user.setDepartment(request.getDepartment().trim());
         user.setRole(role);
 
         userRepository.save(user);
@@ -111,20 +112,17 @@ public class UserService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-
-        if (!user.isActive()) {
-            throw new IllegalStateException("This account has been deactivated. Please contact an administrator.");
-        }
-
+        String email = (request.getEmail() != null) ? request.getEmail().trim().toLowerCase() : request.getEmail();
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(email, request.getPassword())
         );
 
         if (!authentication.isAuthenticated()) {
             throw new IllegalArgumentException("Invalid email or password");
         }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return new AuthResponse(
                 "Login successful",
@@ -135,13 +133,14 @@ public class UserService {
                 user.getDepartment());
     }
 
-    private Role mapDepartmentToRole(String department) {
-        String normalized = department.trim().toLowerCase();
-        if (normalized.contains("admin")) {
-            return Role.ROLE_ADMIN;
-        }
+    private Role mapStringToRole(String roleStr) {
+        if (roleStr == null) return Role.ROLE_STAFF;
+        String normalized = roleStr.trim().toLowerCase();
         if (normalized.contains("manage")) {
             return Role.ROLE_MANAGER;
+        }
+        if (normalized.contains("admin")) {
+            return Role.ROLE_ADMIN;
         }
         return Role.ROLE_STAFF;
     }
@@ -152,8 +151,9 @@ public class UserService {
      */
     @Transactional
     public String createPasswordResetTokenForUser(String email) {
+        String normalizedEmail = (email != null) ? email.trim().toLowerCase() : email;
         // First, let's find the user. If they don't exist, we'll let the controller know.
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Oops! We couldn't find a user with that email."));
 
         // If they already have an old token, let's get rid of it. Fresh start!
@@ -198,7 +198,8 @@ public class UserService {
      * A small helper to get the user's name so we can personalize the email.
      */
     public String getUserFullNameByEmail(String email) {
-        return userRepository.findByEmail(email)
+        String normalizedEmail = (email != null) ? email.trim().toLowerCase() : email;
+        return userRepository.findByEmail(normalizedEmail)
                 .map(User::getFullName)
                 .orElse("User");
     }

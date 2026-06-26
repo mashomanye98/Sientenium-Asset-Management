@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const profileName = document.getElementById('profileName');
+    const profileRoleDept = document.getElementById('profileRoleDept');
     const returnBody = document.getElementById('returnBody');
     const returnSearch = document.getElementById('returnSearch');
     const returnFilter = document.getElementById('returnFilter');
@@ -46,6 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateProfile() {
         if (currentUser.fullName) {
             profileName.textContent = currentUser.fullName;
+            
+            if (profileRoleDept && currentUser.role && currentUser.department) {
+                const roleDisplay = currentUser.role === 'ROLE_MANAGER' ? 'Manager' : 'Staff';
+                profileRoleDept.textContent = `${roleDisplay}-${currentUser.department} Department`;
+            }
         }
     }
 
@@ -130,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function returnAsset(loanId) {
         try {
-            const response = await fetch(`/loans/${encodeURIComponent(loanId)}/return`, {
+            const response = await fetch(`/api/loans/${encodeURIComponent(loanId)}/return`, {
                 method: 'PUT'
             });
 
@@ -155,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         returnBody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading borrowed assets...</td></tr>';
 
         try {
-            const response = await fetch(`/loans/user/${currentUser.id}`);
+            const response = await fetch(`/api/loans/user/${currentUser.id}`);
 
             if (!response.ok) {
                 throw new Error('Could not load borrowed assets.');
@@ -191,8 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userName');
         window.location.href = '../../signIn.html';
     });
 

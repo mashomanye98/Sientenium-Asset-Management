@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,8 @@ public class EmailService {
     @Value("${spring.mail.from:admin.sientenium@gmail.com}")
     private String mailFrom;
 
-    private final String loginUrl = "http://localhost:8081/signIn.html";
-    private final String resetPasswordUrl = "http://localhost:8081/reset-password.html?token=";
+    private final String loginUrl = "http://localhost:8082/signIn.html";
+    private final String resetPasswordUrl = "http://localhost:8082/reset-password.html?token=";
 
     /**
      * This sends a special email to the user with a link they can click to reset their password.
@@ -41,6 +42,13 @@ public class EmailService {
             // Now we stick that link into our nice HTML template
             helper.setText(buildPasswordResetTemplate(fullName, fullResetLink), true);
 
+            helper.addInline(
+                "logo",
+                new ClassPathResource(
+                    "static/images/email-logo.png"
+                )
+            );
+
             // And off it goes!
             mailSender.send(message);
         } catch (Exception e) {
@@ -58,6 +66,13 @@ public class EmailService {
             helper.setTo(recipientEmail);
             helper.setSubject("Your Sientenium Account Has Been Approved");
             helper.setText(buildApprovalTemplate(fullName), true);
+
+            helper.addInline(
+                "logo",
+                new ClassPathResource(
+                    "static/images/email-logo.png"
+                )
+            );
 
             mailSender.send(message);
         } catch (MessagingException e) {
@@ -77,6 +92,13 @@ public class EmailService {
             helper.setSubject("Sientenium Registration Received - Awaiting Approval");
             helper.setText(buildRegistrationReceivedTemplate(fullName), true);
 
+            helper.addInline(
+                "logo",
+                new ClassPathResource(
+                    "static/images/email-logo.png"
+                )
+            );
+
             mailSender.send(message);
         } catch (Exception e) {
             throw new RuntimeException("Failed to send registration received email", e);
@@ -92,6 +114,13 @@ public class EmailService {
             helper.setTo(recipientEmail);
             helper.setSubject("Update Regarding Your Sientenium Account Request");
             helper.setText(buildRejectionTemplate(fullName), true);
+
+            helper.addInline(
+                "logo",
+                new ClassPathResource(
+                    "static/images/email-logo.png"
+                )
+            );
 
             mailSender.send(message);
         } catch (Exception e) {
@@ -134,16 +163,11 @@ style="
     padding:30px;
 ">
 
-            <img src="https://raw.githubusercontent.com/snenhlanhla/sientenium-assets/main/logo.png"
-                 width="120"
-                 alt="Sientenium Logo">
+<img src="cid:logo"
+     width="600"
+     height="220"
+     alt="Sientenium Logo">
 
-<h1 style="
-    color:white;
-    margin-top:15px;
-">
-SIENTENIUM
-</h1>
 
 </td>
 </tr>
@@ -204,7 +228,7 @@ the platform.
    border-radius:6px;
    font-weight:bold;
    ">
-   Login To Sientenium
+   Login
 </a>
 
 </div>
@@ -286,16 +310,10 @@ style="
     padding:30px;
 ">
 
-<img src="https://raw.githubusercontent.com/snenhlanhla/sientenium-assets/main/logo.png"
-     width="120"
+<img src="cid:logo"
+     width="600"
+     height="220"
      alt="Sientenium Logo">
-
-<h1 style="
-    color:white;
-    margin-top:15px;
-">
-SIENTENIUM
-</h1>
 
 </td>
 </tr>
@@ -425,16 +443,10 @@ style="
     padding:30px;
 ">
 
-<img src="https://raw.githubusercontent.com/snenhlanhla/sientenium-assets/main/logo.png"
-     width="120"
+<img src="cid:logo"
+     width="600"
+     height="220"
      alt="Sientenium Logo">
-
-<h1 style="
-    color:white;
-    margin-top:15px;
-">
-SIENTENIUM
-</h1>
 
 </td>
 </tr>
@@ -475,7 +487,7 @@ Sientenium Asset Management System.
 ">
 After careful review, we regret to inform you 
 that your account registration request could not 
-be approved at this time.
+be approved due to more than 2 assets returned with poor conditions.
 </p>
 
 <p style="
@@ -564,18 +576,10 @@ style="
     background:#0f172a;
     padding:30px;
 ">
-
-<img src="https://raw.githubusercontent.com/snenhlanhla/sientenium-assets/main/logo.png"
-     width="120"
+<img src="cid:logo"
+     width="600"
+     height="220"
      alt="Sientenium Logo">
-
-<h1 style="
-    color:white;
-    margin-top:15px;
-">
-SIENTENIUM
-</h1>
-
 </td>
 </tr>
 

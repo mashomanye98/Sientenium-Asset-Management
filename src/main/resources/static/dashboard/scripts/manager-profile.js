@@ -23,9 +23,13 @@
 
         let nameEl = profile.querySelector("#user-name");
         const roleEl = profile.querySelector("p");
+        
+        const user = readCurrentUser();
 
         if (roleEl) {
-            roleEl.textContent = "Manager";
+            const role = user.role === 'ROLE_MANAGER' ? 'Manager' : 'Staff';
+            const department = user.department || "N/A";
+            roleEl.textContent = `${role}-${department} Department`;
             roleEl.removeAttribute("id");
         }
 

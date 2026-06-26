@@ -33,7 +33,7 @@
     <!-- Logo RIGHT -->
     <div class="logo">
         <div class="logo-icon">
-            <i class="fa-solid fa-chart-line"></i>
+            <img src="images/Sientenium.jpg" alt="Sientenium Logo">
         </div>
         <span>Sientenium</span>
     </div>
@@ -56,8 +56,19 @@
     <i class="fa-solid fa-building"></i>
     <select id="department" required>
         <option value="" disabled selected>Select Department</option>
-        <option value="Management">Management</option>
+        <option value="Finance & Accounting">Finance & Accounting</option>
+        <option value="IT">IT</option>
+        <option value="Logistics">Logistics</option>
+        <option value="HR">HR</option>
+    </select>
+</div>
+
+<div class="input-group">
+    <i class="fa-solid fa-user-tag"></i>
+    <select id="role" required>
+        <option value="" disabled selected>Select Role</option>
         <option value="Staff/Borrower">Staff/Borrower</option>
+        <option value="Manager">Manager</option>
     </select>
 </div>
             <div class="input-group">
@@ -91,6 +102,15 @@
 
                 <i class="fa-solid fa-eye toggle-password"
                 data-target="confirmPassword"></i>
+            </div>
+
+
+
+            <div class="terms-group" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                <input type="checkbox" id="termsCheckbox" required style="width: 18px; height: 18px; cursor: pointer;">
+                <label for="termsCheckbox" style="cursor: pointer;">
+                    I agree to the <a href="termsandconditions.html" target="_blank" style="color: #003366; text-decoration: underline; font-weight: 600;">Terms and Conditions</a>
+                </label>
             </div>
 
             <button type="submit" class="btn">Sign Up</button>

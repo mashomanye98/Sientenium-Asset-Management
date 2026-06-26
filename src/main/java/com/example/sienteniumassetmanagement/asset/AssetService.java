@@ -20,6 +20,12 @@ public class AssetService {
 
     // CREATE
     public AssetResponseDTO createAsset(AssetRequestDTO dto) {
+        // Enforce maximum of 9 assets limit
+        long count = assetRepository.count();
+        if (count >= 9) {
+            throw new IllegalStateException("Maximum limit of 9 assets reached.");
+        }
+
         Asset asset = mapToEntity(dto);
         asset.setStatus(Asset.AssetStatus.AVAILABLE); // default status
         Asset saved = assetRepository.save(asset);
@@ -88,7 +94,7 @@ public class AssetService {
         asset.setStatus(Asset.AssetStatus.RETIRED);
         assetRepository.save(asset);
 
-        // Record audit log — use a system userId e.g. 1L for now
+        // Record audit log — use a system userId for example 1L for now
         auditLogService.recordAction(1L, AuditLog.EntityType.ASSET, id, AuditLog.Action.RETIRE);
     }
 
@@ -167,13 +173,6 @@ public class AssetService {
                 .collect(Collectors.toList());
     }
 
-//    // HARD DELETE - permanently removes the asset from the database
-//    public void deleteAsset(Long id) {
-//        if (!assetRepository.existsById(id)) {
-//            throw new RuntimeException("Asset not found");
-//        }
-//        assetRepository.deleteById(id);
-//    }
 
     @Transactional
     public AssetResponseDTO updateAssetStatus(Long id, String status) {
