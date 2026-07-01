@@ -132,7 +132,7 @@ async function renderOverdueTable() {
     });
 
     if (filteredLoans.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No overdue loans found 🎉</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No overdue loans found </td></tr>';
         return;
     }
 
@@ -233,7 +233,7 @@ function setupEventListeners() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('currentUser');
-            window.location.href = '../../signIn.html';
+        window.location.href = '/logout';
         });
     }
 

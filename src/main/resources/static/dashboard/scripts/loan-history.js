@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        window.location.href = '../../signIn.html';
+        window.location.href = '/logout';
     });
 
     updateProfile();

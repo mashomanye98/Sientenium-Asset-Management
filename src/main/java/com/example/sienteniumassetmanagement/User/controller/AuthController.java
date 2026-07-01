@@ -4,6 +4,8 @@ import com.example.sienteniumassetmanagement.User.dto.*;
 import com.example.sienteniumassetmanagement.User.service.EmailService;
 import com.example.sienteniumassetmanagement.User.service.PendingUserRequestService;
 import com.example.sienteniumassetmanagement.User.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -42,8 +44,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(userService.login(request));
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
+        return ResponseEntity.ok(userService.login(request, httpRequest, httpResponse));
     }
 
     @GetMapping("/users")

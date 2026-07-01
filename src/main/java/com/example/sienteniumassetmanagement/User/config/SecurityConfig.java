@@ -1,8 +1,9 @@
 package com.example.sienteniumassetmanagement.User.config;
 
-
+import com.example.sienteniumassetmanagement.User.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,62 +15,26 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import com.example.sienteniumassetmanagement.User.service.CustomUserDetailsService;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    /*
-     * Spring Security will use our custom service
-     * to load users from the database.
-     */
     private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(
-            CustomUserDetailsService customUserDetailsService) {
-
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-
-                /*
-                 * JWT APIs normally disable CSRF.
-                 * CSRF protection is mainly needed
-                 * for server-rendered forms.
-                 */
                 .csrf(AbstractHttpConfigurer::disable)
-
-                /*
-                 * We do not want Spring Security
-                 * generating a login page for us.
-                 *
-                 * Our frontend already contains:
-                 * - signIn.html
-                 * - signUp.html
-                 */
                 .formLogin(AbstractHttpConfigurer::disable)
-
-                /*
-                 * Disable HTTP Basic authentication.
-                 *
-                 * We will authenticate users
-                 * using JWT tokens instead.
-                 */
                 .httpBasic(AbstractHttpConfigurer::disable)
-
-                //SLENDER
-                .csrf(AbstractHttpConfigurer::disable)
-
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new org.springframework.web.cors.CorsConfiguration();
                     config.setAllowedOrigins(java.util.List.of("*"));
@@ -77,103 +42,54 @@ public class SecurityConfig {
                     config.setAllowedHeaders(java.util.List.of("*"));
                     return config;
                 }))
-
-                /*
-                 * JWT applications should be stateless.
-                 *
-                 * Spring must NOT create sessions.
-                 * Every request will carry its own token.
-                 */
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS))
-
-                /*
-                 * Access Rules
-                 */
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .securityContext(securityContext ->
+                        securityContext.securityContextRepository(new HttpSessionSecurityContextRepository()))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect(request.getContextPath() + "/signIn.html"))
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendRedirect(request.getContextPath() + "/signIn.html")))
                 .authorizeHttpRequests(auth -> auth
-
-                        /*
-                         * Public Pages
-                         */
                         .requestMatchers(
                                 "/",
                                 "/signIn.html",
                                 "/signUp.html",
                                 "/forgot-password.html",
                                 "/reset-password.html",
-                                "/termsandconditions.html"
+                                "/termsandconditions.html",
+                                "/logout"
                         ).permitAll()
-
-                        /*
-                         * Dashboard Pages (protected by frontend JWT)
-                         */
-                        .requestMatchers(
-                                "/dashboard/**"
-                        ).permitAll()
-
-                        /*
-                         * Public Static Resources
-                         */
                         .requestMatchers(
                                 "/styles/**",
                                 "/scripts/**",
                                 "/images/**",
                                 "/uploads/**",
                                 "/photo/**",
-                               "/",
-                                "/assets/**",
-                                "/loans/**"
+                                "/dashboard/scripts/**",
+                                "/dashboard/styling/**"
                         ).permitAll()
-
-                        /*
-                         * Public Authentication APIs
-                         */
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
-                                "/api/auth/pending/**",
-                                "/api/auth/users/**",
-                                "/api/upload/**",      // ← to be removed
-                                "/api/audit-logs/**",
-                                "/api/assets/**",      // ← add this
-                                "/api/loans/**",
-                                "/swagger-ui/**",      // ← add this
+                                "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/error", // ← add this
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/error"
                         ).permitAll()
-
-                        /*
-                         * Admin Endpoints
-                         */
-                        .requestMatchers("/api/admin/**")
+                        .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/dashboard/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/dashboard/staff/**").hasRole("STAFF")
+                        .requestMatchers("/api/auth/users/**", "/api/auth/pending/**", "/api/audit-logs/**")
                         .hasRole("ADMIN")
-
-                        /*
-                         * Management Endpoints
-                         */
-                        .requestMatchers("/api/manager/**")
-                        .hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
-
-                        /*
-                         * Staff Endpoints
-                         */
-                        .requestMatchers("/api/staff/**")
-                        .hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "STAFF"
-                        )
-                        /*
-                         * Everything else requires
-                         * authentication.
-                         */
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/api/staff/**").hasRole("STAFF")
+                        .requestMatchers("/api/assets/**", "/api/loans/**", "/api/upload/**")
+                        .authenticated()
                         .anyRequest()
                         .authenticated()
                 )
@@ -182,35 +98,18 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
-        /*
-         * BCrypt is the industry standard
-         * for password hashing.
-         */
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-
-        DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider(
-                        customUserDetailsService
-        );
-
-        provider.setPasswordEncoder(
-                passwordEncoder()
-        );
-
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            DaoAuthenticationProvider authenticationProvider) {
-
-        return new ProviderManager(
-                authenticationProvider
-        );
+    public AuthenticationManager authenticationManager(DaoAuthenticationProvider authenticationProvider) {
+        return new ProviderManager(authenticationProvider);
     }
 }

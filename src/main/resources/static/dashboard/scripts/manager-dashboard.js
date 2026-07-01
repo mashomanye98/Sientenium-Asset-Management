@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logout
     document.getElementById('logout-btn')?.addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        window.location.href = '../../signIn.html';
+        window.location.href = '/logout';
     });
 
     // Load dashboard

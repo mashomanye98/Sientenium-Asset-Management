@@ -9,10 +9,15 @@ import com.example.sienteniumassetmanagement.User.entity.User;
 import com.example.sienteniumassetmanagement.User.repository.PasswordResetTokenRepository;
 import com.example.sienteniumassetmanagement.User.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -111,7 +116,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String email = (request.getEmail() != null) ? request.getEmail().trim().toLowerCase() : request.getEmail();
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, request.getPassword())
@@ -120,6 +125,11 @@ public class UserService {
         if (!authentication.isAuthenticated()) {
             throw new IllegalArgumentException("Invalid email or password");
         }
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        new HttpSessionSecurityContextRepository().saveContext(context, httpRequest, httpResponse);
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));

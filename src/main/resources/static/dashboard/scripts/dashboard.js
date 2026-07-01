@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     logoutBtn.addEventListener("click", () => {
 
-        window.location.href = "../signIn.html";
+        window.location.href = "/logout";
 
     });
 

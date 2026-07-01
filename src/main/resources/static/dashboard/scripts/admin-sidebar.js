@@ -79,7 +79,7 @@
             sessionStorage.removeItem("currentUser");
             localStorage.removeItem("authToken");
             localStorage.removeItem("userName");
-            window.location.href = "/signIn.html";
+            window.location.href = "/logout";
         });
     }
 

@@ -357,7 +357,7 @@ function setupEventListeners() {
     document.getElementById('logout-btn')?.addEventListener('click', () => {
         localStorage.clear();
         sessionStorage.clear();
-        window.location.href = '../../signIn.html';
+        window.location.href = '/logout';
     });
 }
 
